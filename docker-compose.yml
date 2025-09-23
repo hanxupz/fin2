@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: transactions_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transactions
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - portainer_default
+
+  backend:
+    build: ./backend
+    container_name: transactions_backend
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/transactions
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - portainer_default
+
+  frontend:
+    build: ./frontend
+    container_name: transactions_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - portainer_default
+
+networks:
+  portainer_default:
+    external: true
+    name: portainer_default
+    
+volumes:
+  db_data:
