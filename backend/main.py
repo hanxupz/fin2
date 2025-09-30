@@ -70,13 +70,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-logger.info(f"CORS middleware configured. Allowed origins: {origins}")
 
 # -------------------------------
 # Logging setup
 # -------------------------------
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.info(f"CORS middleware configured. Allowed origins: {origins}")
 
 # -------------------------------
 # Pydantic Model
