@@ -17,7 +17,7 @@ const ExpensesByTypeGraph = ({ transactions }) => {
     labels: Object.keys(grouped),
     datasets: [
       {
-        label: 'Expenses by Type',
+        label: 'Transactions by Category',
         data: Object.values(grouped),
         backgroundColor: 'rgba(75,192,192,0.6)',
         borderColor: 'rgba(75,192,192,1)',
@@ -30,7 +30,7 @@ const ExpensesByTypeGraph = ({ transactions }) => {
     responsive: true,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: 'Expenses by Type' },
+      title: { display: true, text: 'Transactions by Category' },
     },
   };
 
