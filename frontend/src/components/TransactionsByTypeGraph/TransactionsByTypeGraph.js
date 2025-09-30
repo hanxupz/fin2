@@ -21,6 +21,8 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
 
   const categories = Object.keys(grouped);
 
+  const labelColor = theme.palette.text.primary;
+
   // If no categories, show a dummy dataset to avoid chartjs errors
   const datasets = categories.length > 0 ? categories.map((cat) => {
     const value = grouped[cat];
@@ -53,8 +55,6 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     labels: ['Conta Corrente'],
     datasets,
   };
-
-  const labelColor = theme.palette.text.primary;
 
   const options = {
     indexAxis: 'y', // horizontal bar
