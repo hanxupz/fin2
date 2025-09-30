@@ -81,7 +81,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         },
         titleColor: labelColor,
         bodyColor: labelColor,
-        backgroundColor: dark ? '#222' : '#fff',
+        backgroundColor: theme.palette.background.paper,
       }
     },
     scales: {
@@ -92,19 +92,19 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         max,
         title: { display: true, text: 'Valor', color: labelColor },
         ticks: { color: labelColor },
-        grid: { color: dark ? 'rgba(255,255,255,0.2)' : '#fff' },
+        grid: { color: labelColor },
       },
       y: {
         stacked: true,
         ticks: { color: labelColor },
-        grid: { color: dark ? 'rgba(255,255,255,0.2)' : '#fff' },
+        grid: { color: labelColor },
       },
     },
     maintainAspectRatio: false,
   };
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
+    <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
       <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
         <Bar data={data} options={options} />
       </Paper>
