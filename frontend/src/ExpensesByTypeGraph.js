@@ -4,11 +4,12 @@ import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from '
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const ExpensesByTypeGraph = ({ expenses }) => {
-  // Group expenses by type for the current control date
-  const grouped = expenses.reduce((acc, expense) => {
-    const { type, amount } = expense;
-    acc[type] = (acc[type] || 0) + amount;
+
+const ExpensesByTypeGraph = ({ transactions }) => {
+  // Group transactions by category for the current control date
+  const grouped = transactions.reduce((acc, transaction) => {
+    const { category, amount } = transaction;
+    acc[category] = (acc[category] || 0) + amount;
     return acc;
   }, {});
 
