@@ -6,13 +6,6 @@ import { useTheme } from '@mui/material/styles';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const isDarkMode = () => {
-  if (typeof document !== 'undefined') {
-    return document.body.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'dark';
-  }
-  return false;
-};
-
 const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   // Filter for 'Corrente' account only
   const theme = useTheme();
@@ -37,8 +30,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
       stack: 'total',
       borderWidth: 1,
+      borderColor: labelColor,
     };
-  }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total' }];
+  }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total', borderColor: labelColor }];
 
   // Calculate min/max for x axis as the sum of all negative and positive values
   let min = 0, max = 0;
@@ -60,9 +54,8 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     datasets,
   };
 
-  const dark = isDarkMode();
   const labelColor = theme.palette.text.primary;
-  console.log('labelColor:', labelColor);
+
   const options = {
     indexAxis: 'y', // horizontal bar
     responsive: true,
