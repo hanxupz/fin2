@@ -49,10 +49,10 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
         <Card key={t.id} style={{ marginBottom: "1rem" }}>
           <CardContent>
             <Typography variant="subtitle1">
-              {t.description} {t.amount.toFixed(2)}€
+              {(categoryEmojis[t.category] || t.category || "-")} {t.amount.toFixed(2)}€
             </Typography>
             <Typography variant="body2" style={{ color: theme.palette.text.primary }}>
-              {(t.date || "-")} | {(categoryEmojis[t.category] || t.category || "-")} | {(t.account || "-")}
+              {(t.date || "-")} | {t.description} | {(t.account || "-")}
             </Typography>
           </CardContent>
           <CardActions>
