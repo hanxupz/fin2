@@ -104,7 +104,14 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
         min,
         max,
         title: { display: true, text: 'Valor', color: labelColor },
-        ticks: { color: labelColor },
+        ticks: {
+          color: labelColor,
+          callback: function(value) {
+            // Always include 0 tick
+            if (value === 0) return '0';
+            return value;
+          },
+        },
         grid: { color: labelColor },
       },
       y: {
