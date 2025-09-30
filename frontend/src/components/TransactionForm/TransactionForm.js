@@ -95,4 +95,4 @@ function TransactionForm({
   );
 }
 
-export default TransactionForm;
+export { default } from './components/TransactionForm/TransactionForm';

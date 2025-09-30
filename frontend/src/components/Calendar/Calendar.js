@@ -79,4 +79,4 @@ const Calendar = ({ transactions, year, month }) => {
   );
 };
 
-export default Calendar;
+export { Calendar as default };

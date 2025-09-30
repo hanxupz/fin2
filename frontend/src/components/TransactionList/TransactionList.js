@@ -65,4 +65,4 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   );
 }
 
-export default TransactionList;
+export { TransactionList as default };

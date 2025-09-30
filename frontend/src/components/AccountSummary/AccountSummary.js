@@ -51,4 +51,4 @@ const AccountSummary = ({ transactions, controlDate }) => {
   );
 };
 
-export default AccountSummary;
+export { default } from './components/AccountSummary/AccountSummary';

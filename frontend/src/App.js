@@ -19,13 +19,13 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import './App.css';
 
-import AccountSummary from "./AccountSummary";
-import TransactionForm from "./TransactionForm";
-import ControlDateConfig from "./ControlDateConfig";
-import Filters from "./Filters";
-import TransactionList from "./TransactionList";
-import Calendar from "./Calendar";
-import TransactionsByTypeGraph from "./TransactionsByTypeGraph";
+import AccountSummary from "./components/AccountSummary/AccountSummary";
+import TransactionForm from "./components/TransactionForm/TransactionForm";
+import ControlDateConfig from "./components/ControlDateConfig/ControlDateConfig";
+import Filters from "./components/Filters/Filters";
+import TransactionList from "./components/TransactionList/TransactionList";
+import Calendar from "./components/Calendar/Calendar";
+import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
 
 // Color palettes
 const getDesignTokens = (mode) => ({

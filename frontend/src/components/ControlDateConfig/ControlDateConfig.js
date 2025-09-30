@@ -59,4 +59,4 @@ function ControlDateConfig({
   );
 }
 
-export default ControlDateConfig;
+export { default } from './components/ControlDateConfig/ControlDateConfig';
