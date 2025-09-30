@@ -1,4 +1,5 @@
 import React from "react";
+import Paper from "@mui/material";
 import "./Calendar.css"; // For styling
 
 const Calendar = ({ transactions, year, month }) => {
