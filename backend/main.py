@@ -13,28 +13,29 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import os
 
 # -------------------------------
-# Database setup
 # -------------------------------
-DATABASE_URL = "postgresql://user:password@db:5432/transactions"
-database = databases.Database(DATABASE_URL)
-metadata = sqlalchemy.MetaData()
+# Logging setup
+# -------------------------------
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Users table
-users = sqlalchemy.Table(
-    "users",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("username", sqlalchemy.String, unique=True, index=True),
-    sqlalchemy.Column("hashed_password", sqlalchemy.String),
+# -------------------------------
+# FastAPI setup
+app = FastAPI()
+
+# CORS settings
+origins = [
+    "http://localhost:3000",
+    "http://192.168.1.97:3000",  # Replace with your host IP
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all origins for debugging
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
-transactions = sqlalchemy.Table(
-    "transactions",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("description", sqlalchemy.String),
-    sqlalchemy.Column("amount", sqlalchemy.Float),
-    sqlalchemy.Column("date", sqlalchemy.Date),
+logger.info(f"CORS middleware configured. Allowed origins: {origins}")
     sqlalchemy.Column("control_date", sqlalchemy.Date),
     sqlalchemy.Column("category", sqlalchemy.String),   # plain string
     sqlalchemy.Column("account", sqlalchemy.String),    # plain string
@@ -65,11 +66,12 @@ origins = [
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow all origins for debugging
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+logger.info(f"CORS middleware configured. Allowed origins: {origins}")
 
 # -------------------------------
 # Logging setup
@@ -173,7 +175,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 # -------------------------------
 @app.on_event("startup")
 async def startup():
-    await database.connect()
+    logger.info("Connecting to database...")
+    try:
+        await database.connect()
+        logger.info("Database connection established.")
+    except Exception as e:
+        logger.error(f"Database connection failed: {e}")
+        raise
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -186,13 +194,21 @@ async def shutdown():
 # Registration endpoint
 @app.post("/register", response_model=User)
 async def register(user: UserCreate):
-    existing = await get_user(user.username)
-    if existing:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    hashed_password = get_password_hash(user.password)
-    query = users.insert().values(username=user.username, hashed_password=hashed_password)
-    user_id = await database.execute(query)
-    return {"id": user_id, "username": user.username}
+    logger.info(f"Register request received: username={user.username}")
+    try:
+        existing = await get_user(user.username)
+        if existing:
+            logger.warning(f"Username already registered: {user.username}")
+            raise HTTPException(status_code=400, detail="Username already registered")
+        hashed_password = get_password_hash(user.password)
+        logger.debug(f"Hashed password for {user.username}: {hashed_password}")
+        query = users.insert().values(username=user.username, hashed_password=hashed_password)
+        user_id = await database.execute(query)
+        logger.info(f"User registered successfully: id={user_id}, username={user.username}")
+        return {"id": user_id, "username": user.username}
+    except Exception as e:
+        logger.error(f"Error during registration for {user.username}: {e}")
+        raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
 
 # Login endpoint (token)
 @app.post("/token", response_model=Token)
