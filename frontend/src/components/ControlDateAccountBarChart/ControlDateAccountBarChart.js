@@ -1,38 +1,79 @@
+
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Bar } from 'react-chartjs-2';
+import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
 
-// Example data format:
-// [
-//   { control_date: '2025-09-01', accountA: 100, accountB: 200 },
-//   { control_date: '2025-09-02', accountA: 150, accountB: 120 },
-// ]
+Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1", "#a4de6c", "#d0ed57", "#888888"];
-
-function getAccountKeys(data) {
-  if (!data || data.length === 0) return [];
-  return Object.keys(data[0]).filter(key => key !== 'control_date');
-}
-
+// Accepts data: [ { control_date, accountA, accountB, ... } ]
 const ControlDateAccountBarChart = ({ data }) => {
-  const accountKeys = getAccountKeys(data);
+  const theme = useTheme();
+  if (!data || data.length === 0) {
+    return <Paper style={{ padding: 24, textAlign: 'center' }}>No data available</Paper>;
+  }
+
+  // Get all account keys
+  const accountKeys = Object.keys(data[0]).filter(k => k !== 'control_date');
+  const controlDates = data.map(d => d.control_date);
+
+  // Color palette from theme
+  const palette = [
+    theme.palette.primary.main,
+    theme.palette.secondary.main,
+    '#81d4fa', '#ffd54f', '#ce93d8', '#ffab91', '#a5d6a7', '#f48fb1', '#b39ddb', '#ffcc80'
+  ];
+
+  // Build datasets for Chart.js
+  const datasets = accountKeys.map((acc, idx) => ({
+    label: acc,
+    data: data.map(d => d[acc] || 0),
+    backgroundColor: palette[idx % palette.length],
+    stack: 'accounts',
+    borderWidth: 1,
+  }));
+
+  const chartData = {
+    labels: controlDates,
+    datasets,
+  };
+
+  const options = {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { color: theme.palette.text.primary },
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.x}`;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { color: theme.palette.divider },
+        ticks: { color: theme.palette.text.primary },
+      },
+      y: {
+        stacked: true,
+        grid: { color: theme.palette.divider },
+        ticks: { color: theme.palette.text.primary },
+      },
+    },
+  };
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <BarChart
-        data={data}
-        layout="vertical"
-        margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-      >
-        <XAxis type="number" />
-        <YAxis dataKey="control_date" type="category" />
-        <Tooltip />
-        <Legend />
-        {accountKeys.map((key, idx) => (
-          <Bar key={key} dataKey={key} stackId="a" fill={COLORS[idx % COLORS.length]} />
-        ))}
-      </BarChart>
-    </ResponsiveContainer>
+    <Paper elevation={3} style={{ padding: 24, marginTop: 16 }}>
+      <Bar data={chartData} options={options} height={400} />
+    </Paper>
   );
 };
 
