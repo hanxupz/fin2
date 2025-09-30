@@ -1,3 +1,21 @@
+:root {
+  --calendar-weekday-bg: #fffbe6;
+  --calendar-weekday-text: #222;
+  --calendar-weekend-bg: #ffe6e6;
+  --calendar-weekend-text: #b71c1c;
+  --calendar-today-bg: #bbdefb;
+  --calendar-today-border: #2196f3;
+}
+
+[data-theme='dark'] {
+  --calendar-weekday-bg: #232323;
+  --calendar-weekday-text: #eee;
+  --calendar-weekend-bg: #2d1a1a;
+  --calendar-weekend-text: #ff8a80;
+  --calendar-today-bg: #1976d2;
+  --calendar-today-border: #90caf9;
+}
+
 .calendar-container {
   display: flex;
   flex-direction: column;
@@ -45,19 +63,21 @@
 }
 
 /* Weekdays */
-.weekday {
-  background-color: #fffbe6;
+.calendar-day.weekday {
+  background-color: var(--calendar-weekday-bg);
+  color: var(--calendar-weekday-text);
 }
 
 /* Weekends */
-.weekend {
-  background-color: #ffe6e6;
+.calendar-day.weekend {
+  background-color: var(--calendar-weekend-bg);
+  color: var(--calendar-weekend-text);
 }
 
 /* Today */
-.today {
-  border: 2px solid #2196f3;
-  background-color: #bbdefb !important;
+.calendar-day.today {
+  border: 2px solid var(--calendar-today-border);
+  background-color: var(--calendar-today-bg) !important;
 }
 
 /* Day number */

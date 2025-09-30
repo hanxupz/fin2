@@ -2,7 +2,7 @@ import React from "react";
 import { Paper, Typography, useTheme } from "@mui/material";
 import "./Calendar.css"; // For styling
 
-const Calendar = ({ categoryColors, transactions, year, month }) => {
+const Calendar = ({ transactions, year, month }) => {
   const theme = useTheme();
   const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
   const getStartDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
@@ -27,11 +27,6 @@ const Calendar = ({ categoryColors, transactions, year, month }) => {
   for (let i = 0; i < startDay; i++) {
     calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty other-month"></div>);
   }
-
-  // Helper to get color for a category
-  const getCategoryColor = (category) => {
-    return categoryColors && categoryColors[category] ? categoryColors[category] : theme.palette.primary.main;
-  };
 
   // Days of the current month
   for (let day = 1; day <= daysInMonth; day++) {

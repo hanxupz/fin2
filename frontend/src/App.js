@@ -247,7 +247,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ backgroundColor: theme.palette.background.default, padding: "2rem", position: 'relative', minHeight: '100vh' }}>
+        <Box style={{ backgroundColor: theme.palette.background.default, padding: "2rem", position: 'relative', minHeight: '100vh' }} data-theme={themeMode}>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
               {/* Left Panel */}
@@ -275,7 +275,6 @@ function App() {
                           transactions={filteredTransactions}
                           year={controlDate.getFullYear()}
                           month={controlDate.getMonth()}
-                          categoryColors={categoryColors}
                         />
                       </Grid>
                     </>
