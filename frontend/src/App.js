@@ -27,6 +27,7 @@ import TransactionList from "./components/TransactionList/TransactionList";
 import Calendar from "./components/Calendar/Calendar";
 import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
 import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/TransactionsByTypeGraphAll";
+import AccountSumChart from "./components/AccountSumChart/AccountSumChart";
 
 const getDesignTokens = (mode) => ({
   palette: {
@@ -335,6 +336,9 @@ function App() {
                           categoryColors={categoryColors}
                         />
                       </Grid>
+                        <Grid item>
+                          <AccountSumChart transactions={transactions} />
+                        </Grid>
                     </>
                   )}
                 </Grid>
