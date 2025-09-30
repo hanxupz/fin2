@@ -1,21 +1,3 @@
-:root {
-  --calendar-weekday-bg: #fffbe6;
-  --calendar-weekday-text: #222;
-  --calendar-weekend-bg: #ffe6e6;
-  --calendar-weekend-text: #b71c1c;
-  --calendar-today-bg: #bbdefb;
-  --calendar-today-border: #2196f3;
-}
-
-[data-theme='dark'] {
-  --calendar-weekday-bg: #232323;
-  --calendar-weekday-text: #eee;
-  --calendar-weekend-bg: #2d1a1a;
-  --calendar-weekend-text: #ff8a80;
-  --calendar-today-bg: #1976d2;
-  --calendar-today-border: #90caf9;
-}
-
 .calendar-container {
   display: flex;
   flex-direction: column;

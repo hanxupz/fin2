@@ -277,6 +277,19 @@ function App() {
     return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo;
   });
 
+  // Inject calendar palette colors as CSS variables for Calendar.css
+  const calendarVars = theme.palette.calendar;
+  const calendarCssVars = {
+    '--calendar-weekday-bg': calendarVars.weekdayBg,
+    '--calendar-weekday-text': calendarVars.weekdayText,
+    '--calendar-weekend-bg': calendarVars.weekendBg,
+    '--calendar-weekend-text': calendarVars.weekendText,
+    '--calendar-today-bg': calendarVars.todayBg,
+    '--calendar-today-border': calendarVars.todayBorder,
+    '--calendar-other-month-bg': calendarVars.otherMonthBg,
+    '--calendar-other-month-text': calendarVars.otherMonthText,
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -287,7 +300,7 @@ function App() {
         <div className="animated-bg-light" aria-hidden="true" />
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1 }} data-theme={themeMode}>
+        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1, ...calendarCssVars }} data-theme={themeMode}>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
               {/* Left Panel */}
