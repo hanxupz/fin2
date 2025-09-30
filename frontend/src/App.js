@@ -265,7 +265,7 @@ function App() {
         <div className="animated-bg-light" aria-hidden="true" />
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ backgroundColor: theme.palette.background.default, padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1 }} data-theme={themeMode}>
+        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1 }} data-theme={themeMode}>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
               {/* Left Panel */}
