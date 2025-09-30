@@ -14,8 +14,14 @@ const ControlDateAccountBarChart = ({ data }) => {
     return <Paper style={{ padding: 24, textAlign: 'center' }}>No data available</Paper>;
   }
 
-  // Get all account keys
-  const accountKeys = Object.keys(data[0]).filter(k => k !== 'control_date');
+
+  // Full account list from App.js
+  const allAccounts = [
+    "Corrente", "Poupança Física", "Poupança Objectivo", "Shareworks", "Etoro",
+    "Cartão Refeição", "Nexo", "Crédito", "Dívida", "Investimento"
+  ];
+
+  // Get all control_dates
   const controlDates = data.map(d => d.control_date);
 
   // Color palette from theme
@@ -25,8 +31,8 @@ const ControlDateAccountBarChart = ({ data }) => {
     '#81d4fa', '#ffd54f', '#ce93d8', '#ffab91', '#a5d6a7', '#f48fb1', '#b39ddb', '#ffcc80'
   ];
 
-  // Build datasets for Chart.js
-  const datasets = accountKeys.map((acc, idx) => ({
+  // Build datasets for Chart.js, always show all accounts
+  const datasets = allAccounts.map((acc, idx) => ({
     label: acc,
     data: data.map(d => d[acc] || 0),
     backgroundColor: palette[idx % palette.length],
