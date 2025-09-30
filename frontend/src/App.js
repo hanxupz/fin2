@@ -184,52 +184,68 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box style={{ backgroundColor: "antiquewhite", padding: "2rem", position: 'relative' }}>
           <Container maxWidth="lg">
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               {/* Left Panel */}
               <Grid item xs={12} md={8}>
-                <Typography variant="h4" gutterBottom align="center">
-                  💰 My Account Summary
-                </Typography>
-                {controlDate && (
-                  <>
-                    <AccountSummary transactions={transactions} controlDate={controlDate} />
-                    {/* Expenses by Type Graph for current control date */}
-                    <TransactionsByTypeGraph
-                      transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
-                    />
-                    <Calendar
-                      transactions={filteredTransactions}
-                      year={controlDate.getFullYear()}
-                      month={controlDate.getMonth()}
-                    />
-                  </>
-                )}
+                <Grid container direction="column" spacing={3}>
+                  <Grid item>
+                    <Typography variant="h4" gutterBottom align="center">
+                      💰 My Account Summary
+                    </Typography>
+                  </Grid>
+                  {controlDate && (
+                    <>
+                      <Grid item>
+                        <AccountSummary transactions={transactions} controlDate={controlDate} />
+                      </Grid>
+                      <Grid item>
+                        {/* Expenses by Type Graph for current control date */}
+                        <TransactionsByTypeGraph
+                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Calendar
+                          transactions={filteredTransactions}
+                          year={controlDate.getFullYear()}
+                          month={controlDate.getMonth()}
+                        />
+                      </Grid>
+                    </>
+                  )}
+                </Grid>
               </Grid>
 
               {/* Right Panel */}
               <Grid item xs={12} md={4}>
-                <Typography variant="h4" gutterBottom>
-                  💰 My Transactions
-                </Typography>
-
-                <Filters
-                  filterCategory={filterCategory}
-                  setFilterCategory={setFilterCategory}
-                  filterAccount={filterAccount}
-                  setFilterAccount={setFilterAccount}
-                  filterDateFrom={filterDateFrom}
-                  setFilterDateFrom={setFilterDateFrom}
-                  filterDateTo={filterDateTo}
-                  setFilterDateTo={setFilterDateTo}
-                  categories={categories}
-                  accounts={accounts}
-                />
-
-                <TransactionList
-                  filteredTransactions={filteredTransactions}
-                  editTransaction={editTransaction}
-                  deleteTransaction={deleteTransaction}
-                />
+                <Grid container direction="column" spacing={3}>
+                  <Grid item>
+                    <Typography variant="h4" gutterBottom>
+                      💰 My Transactions
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Filters
+                      filterCategory={filterCategory}
+                      setFilterCategory={setFilterCategory}
+                      filterAccount={filterAccount}
+                      setFilterAccount={setFilterAccount}
+                      filterDateFrom={filterDateFrom}
+                      setFilterDateFrom={setFilterDateFrom}
+                      filterDateTo={filterDateTo}
+                      setFilterDateTo={setFilterDateTo}
+                      categories={categories}
+                      accounts={accounts}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TransactionList
+                      filteredTransactions={filteredTransactions}
+                      editTransaction={editTransaction}
+                      deleteTransaction={deleteTransaction}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
 
