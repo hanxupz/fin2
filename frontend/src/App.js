@@ -33,80 +33,77 @@ const getDesignTokens = (mode) => ({
     mode,
     ...(mode === 'light'
       ? {
-          primary: { main: '#1976d2' },
-          secondary: { main: '#9c27b0' },
+          primary: { main: '#00e676' }, // neon lime
+          secondary: { main: '#d500f9' }, // neon purple
           background: {
-            default: '#f5f5f5',
-            paper: '#fff',
+            default: '#fafafa',
+            paper: '#ffffff',
           },
           text: {
-            primary: '#222',
-            secondary: '#555',
+            primary: '#111',
+            secondary: '#444',
           },
           calendar: {
-            weekdayBg: '#fdfdfd',       // almost white for clean light mode
-            weekdayText: '#00c853',     // neon green text
-            weekendBg: '#fff7ff',       // faint pink background for weekends
-            weekendText: '#d500f9',     // neon purple text
-            todayBg: '#e0f7fa',         // light aqua background
-            todayBorder: '#00e5ff',     // neon cyan border
-            otherMonthBg: '#f4f4f4',    // soft gray for other months
-            otherMonthText: '#ff6d00',  // neon orange text
+            weekdayBg: '#fdfdfd',
+            weekdayText: '#00c853',     // neon green
+            weekendBg: '#fff7ff',
+            weekendText: '#ff00cc',     // neon pink
+            todayBg: '#e0f7fa',
+            todayBorder: '#00e5ff',     // neon cyan
+            otherMonthBg: '#f4f4f4',
+            otherMonthText: '#ff6d00',  // neon orange
             amountNegative: '#ff1744',  // neon red
-            amountPositive: '#00e676',  // neon lime
-          }
+            amountPositive: '#39ff14',  // neon green
+          },
         }
       : {
-          primary: { main: '#76c370' },
-          secondary: { main: '#47d5a6' },
+          primary: { main: '#39ff14' }, // neon green
+          secondary: { main: '#00e5ff' }, // neon cyan
           background: {
-            default: '#121212',
-            paper: '#282828',
+            default: '#0d0d0d',
+            paper: '#1a1a1a',
           },
           text: {
             primary: '#ffffff',
-            secondary: '#b5deaf',
+            secondary: '#b0ffb0',
           },
-          success: { main: '#22946e' },
-          warning: { main: '#a87a2a' },
-          error: { main: '#9c2121' },
-          info: { main: '#21498a' },
+          success: { main: '#00ffcc' },
+          warning: { main: '#ffea00' },
+          error: { main: '#ff073a' },
+          info: { main: '#00bfff' },
           calendar: {
-            weekdayBg: '#0d0d0d',       // near black background for contrast
-            weekdayText: '#39ff14',     // neon green text
-            weekendBg: '#1a0033',       // deep purple background
-            weekendText: '#ff00ff',     // neon magenta text
-            todayBg: '#001a33',         // dark navy backdrop
-            todayBorder: '#00e5ff',     // neon cyan border
-            otherMonthBg: '#1c1c1c',    // dark gray for other months
-            otherMonthText: '#ffea00',  // neon yellow text
+            weekdayBg: '#0d0d0d',
+            weekdayText: '#39ff14',     // neon green
+            weekendBg: '#1a0033',
+            weekendText: '#ff00ff',     // neon magenta
+            todayBg: '#001a33',
+            todayBorder: '#00e5ff',     // neon cyan
+            otherMonthBg: '#1c1c1c',
+            otherMonthText: '#ffea00',  // neon yellow
             amountNegative: '#ff073a',  // neon red
             amountPositive: '#00ffcc',  // neon aqua
-          }
+          },
         }),
   },
 });
 
 // Generate a color for each category (theme-aware)
 function getCategoryColors(categories, mode) {
-  // Use a set of visually distinct colors
+  // Vibrant neon palettes
   const lightColors = [
-    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
-    '#bcbd22', '#17becf', '#aec7e8', '#ffbb78',
-    '#98df8a', '#ff9896', '#c5b0d5', '#c49c94',
-    '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
-    '#393b79', '#637939', '#8c6d31', '#843c39'
+    '#00e676', '#ff1744', '#2979ff', '#ffea00',
+    '#d500f9', '#00e5ff', '#ff6d00', '#00bfa5',
+    '#ff4081', '#76ff03', '#651fff', '#f50057',
+    '#64dd17', '#00b8d4', '#ff9100', '#c51162',
   ];
 
   const darkColors = [
-    '#79b4f9', '#ffb87f', '#64c264', '#ff6e6e',
-    '#c3a3e8', '#b08c7a', '#f4aad7', '#bfbfbf',
-    '#e0e07f', '#55d6e0', '#c5ddf9', '#ffcfa3',
-    '#b8e1b0', '#ffa3a3', '#d6c1e8', '#d1b8ad',
-    '#f7c4e0', '#e0e0e0', '#f0f0a3', '#a3e0e8',
-    '#7f7fbf', '#8ca37f', '#b5986d', '#bf7c78'
+    '#39ff14', '#ff073a', '#00bfff', '#ffea00',
+    '#ff00ff', '#00ffcc', '#ff6ec7', '#76ff03',
+    '#ff1493', '#00e5ff', '#ffd700', '#ff4500',
+    '#7df9ff', '#adff2f', '#ff69b4', '#ff8c00',
   ];
+
   const palette = mode === 'dark' ? darkColors : lightColors;
   const colorMap = {};
   categories.forEach((cat, idx) => {
@@ -114,6 +111,7 @@ function getCategoryColors(categories, mode) {
   });
   return colorMap;
 }
+
 
 // ------------------ Main App ------------------
 function App() {
