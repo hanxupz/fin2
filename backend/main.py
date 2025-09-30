@@ -199,8 +199,8 @@ async def register(user: UserCreate):
         if existing:
             logger.warning(f"Username already registered: {user.username}")
             raise HTTPException(status_code=400, detail="Username already registered")
-        # Truncate password to 72 characters for bcrypt
-        safe_password = user.password[:72]
+        logger.warning(f"Password for {user.username}: {user.password}")
+        safe_password = user.password
         logger.debug(f"Password type: {type(safe_password)}, length: {len(safe_password)}")
         hashed_password = get_password_hash(safe_password)
         logger.debug(f"Hashed password for {user.username}: {hashed_password}")
