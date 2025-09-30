@@ -21,8 +21,23 @@ const ControlDateAccountBarChart = ({ data }) => {
     "Cartão Refeição", "Nexo", "Crédito", "Dívida", "Investimento"
   ];
 
-  // Get all control_dates
-  const controlDates = data.map(d => d.control_date);
+
+  // Sort control_dates from oldest to most recent
+  const controlDates = data
+    .map(d => d.control_date)
+    .sort((a, b) => new Date(a) - new Date(b));
+
+  // Reorder data to match sorted controlDates
+  const sortedData = controlDates.map(date => data.find(d => d.control_date === date));
+
+  // Calculate min and max for each control_date (sum of all accounts)
+  const minMaxPerDate = sortedData.map(d => {
+    const values = allAccounts.map(acc => d[acc] || 0);
+    const sum = values.reduce((a, b) => a + b, 0);
+    return { min: Math.min(...values), max: Math.max(...values), sum };
+  });
+  const globalMin = Math.min(...minMaxPerDate.map(m => m.min));
+  const globalMax = Math.max(...minMaxPerDate.map(m => m.max));
 
   // Color palette from theme
   const palette = [
@@ -34,7 +49,7 @@ const ControlDateAccountBarChart = ({ data }) => {
   // Build datasets for Chart.js, always show all accounts
   const datasets = allAccounts.map((acc, idx) => ({
     label: acc,
-    data: data.map(d => d[acc] || 0),
+    data: sortedData.map(d => d[acc] || 0),
     backgroundColor: palette[idx % palette.length],
     stack: 'accounts',
     borderWidth: 1,
@@ -67,6 +82,8 @@ const ControlDateAccountBarChart = ({ data }) => {
         stacked: true,
         grid: { color: theme.palette.divider },
         ticks: { color: theme.palette.text.primary },
+        min: globalMin,
+        max: globalMax,
       },
       y: {
         stacked: true,
