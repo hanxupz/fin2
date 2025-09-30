@@ -24,7 +24,7 @@ function Register({ onRegister }) {
         setError(data.detail || 'Registration failed');
       }
     } catch (err) {
-      setError('Network error');
+      setError('Network error' + err);
     }
   };
 
