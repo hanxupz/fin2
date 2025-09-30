@@ -51,7 +51,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
             <Typography variant="subtitle1">
               {t.description} {t.amount.toFixed(2)}€
             </Typography>
-            <Typography variant="body2" style={{ color: '#fff' }}>
+            <Typography variant="body2" style={{ color: theme.palette.text.primary }}>
               {(t.date || "-")} | {(categoryEmojis[t.category] || t.category || "-")} | {(t.account || "-")}
             </Typography>
           </CardContent>
