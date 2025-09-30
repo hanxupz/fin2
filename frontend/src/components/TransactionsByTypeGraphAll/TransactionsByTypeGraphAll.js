@@ -7,7 +7,7 @@ import { useTheme } from '@mui/material/styles';
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const accountLabels = {
-  'Corrente': 'Corrente',
+  'Corrente': 'Conta Corrente',
   'Poupança': 'Poupança',
   'Investimento': 'Investimento',
 };
@@ -104,28 +104,12 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
         min,
         max,
         title: { display: true, text: 'Valor', color: labelColor },
-        ticks: {
-          color: labelColor,
-          callback: function(value) {
-            // Always include 0 tick
-            if (value === 0) return '0';
-            return value;
-          },
-        },
+        ticks: { color: labelColor },
         grid: { color: labelColor },
       },
       y: {
         stacked: true,
-        ticks: {
-          color: labelColor,
-          callback: function(value) {
-            // Format tick values to max 2 decimal places
-            if (typeof value === 'number') {
-              return value.toFixed(2);
-            }
-            return value;
-          },
-        },
+        ticks: { color: labelColor },
         grid: { color: labelColor },
       },
     },
