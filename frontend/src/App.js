@@ -33,7 +33,6 @@ const getDesignTokens = (mode) => ({
     mode,
     ...(mode === 'light'
       ? {
-          // palette values for light mode
           primary: { main: '#1976d2' },
           secondary: { main: '#9c27b0' },
           background: {
@@ -44,23 +43,46 @@ const getDesignTokens = (mode) => ({
             primary: '#222',
             secondary: '#555',
           },
+          calendar: {
+            weekdayBg: '#fffbe6',
+            weekdayText: '#222',
+            weekendBg: '#ffe6e6',
+            weekendText: '#b71c1c',
+            todayBg: '#bbdefb',
+            todayBorder: '#2196f3',
+            otherMonthBg: '#f0f0f0',
+            otherMonthText: '#aaa',
+            amountNegative: 'red',
+            amountPositive: 'green',
+          },
         }
       : {
-          // palette values for dark mode using provided CSS variable colors
-          primary: { main: '#76c370' }, // var(--clr-primary-a0)
-          secondary: { main: '#47d5a6' }, // var(--clr-success-a10)
+          primary: { main: '#76c370' },
+          secondary: { main: '#47d5a6' },
           background: {
-            default: '#121212', // var(--clr-surface-a0)
-            paper: '#282828',   // var(--clr-surface-a10)
+            default: '#121212',
+            paper: '#282828',
           },
           text: {
-            primary: '#ffffff', // var(--clr-light-a0)
-            secondary: '#b5deaf', // var(--clr-primary-a40)
+            primary: '#ffffff',
+            secondary: '#b5deaf',
           },
-          success: { main: '#22946e' }, // var(--clr-success-a0)
-          warning: { main: '#a87a2a' }, // var(--clr-warning-a0)
-          error: { main: '#9c2121' },   // var(--clr-danger-a0)
-          info: { main: '#21498a' },    // var(--clr-info-a0)
+          success: { main: '#22946e' },
+          warning: { main: '#a87a2a' },
+          error: { main: '#9c2121' },
+          info: { main: '#21498a' },
+          calendar: {
+            weekdayBg: '#232323',
+            weekdayText: '#eee',
+            weekendBg: '#2d1a1a',
+            weekendText: '#ff8a80',
+            todayBg: '#1976d2',
+            todayBorder: '#90caf9',
+            otherMonthBg: '#f0f0f0',
+            otherMonthText: '#aaa',
+            amountNegative: 'red',
+            amountPositive: 'green',
+          },
         }),
   },
 });

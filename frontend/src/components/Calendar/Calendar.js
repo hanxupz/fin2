@@ -51,14 +51,14 @@ const Calendar = ({ transactions, year, month }) => {
     }
 
     calendarDays.push(
-      <div key={day} className={dayClass}>
-        <div className="day-number">{day.toString().padStart(2, "0")}</div>
-        {totalAmount !== 0 && (
-          <div className={`amount ${totalAmount < 0 ? "negative" : "positive"}`}>
-            {totalAmount.toFixed(2)}
+          <div key={day} className={dayClass}>
+            <div className="day-number">{day.toString().padStart(2, "0")}</div>
+            {totalAmount !== 0 && (
+              <div className="amount">
+                {totalAmount.toFixed(2)}
+              </div>
+            )}
           </div>
-        )}
-      </div>
     );
   }
 
