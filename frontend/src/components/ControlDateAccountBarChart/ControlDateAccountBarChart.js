@@ -64,10 +64,7 @@ const ControlDateAccountBarChart = ({ data }) => {
     indexAxis: 'y',
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top',
-        labels: { color: theme.palette.text.primary },
-      },
+      legend: { display: false },
       tooltip: {
         enabled: true,
         callbacks: {
