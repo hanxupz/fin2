@@ -68,12 +68,13 @@ const ControlDateAccountBarChart = ({ data }) => {
         ticks: { color: theme.palette.text.primary },
       },
     },
+    maintainAspectRatio: false,
   };
 
   return (
     <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
         <Paper elevation={3} sx={{ width: '100%', height: 600, p: 2 }}>
-            <Bar data={chartData} options={options} height={400} />
+            <Bar data={chartData} options={options} />
         </Paper>
     </div>
   );
