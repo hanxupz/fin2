@@ -6,4 +6,4 @@ psycopg2-binary
 passlib[bcrypt]
 python-jose
 python-multipart
-bcrypt>=4.0.1
+bcrypt==4.3.0
