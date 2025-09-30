@@ -19,7 +19,7 @@ const AccountSumChart = ({ transactions, controlDate }) => {
   const grouped = {};
   let poupancaSum = 0;
   filtered.forEach(({ account, amount }) => {
-    if (account === 'poupança física' || account === 'poupança objectivo') {
+    if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
       poupancaSum += amount;
     } else {
       if (!grouped[account]) grouped[account] = 0;
@@ -30,8 +30,8 @@ const AccountSumChart = ({ transactions, controlDate }) => {
   if (poupancaSum !== 0) {
     grouped['Poupança'] = poupancaSum;
     // Remove individual poupança accounts if present
-    delete grouped['poupança física'];
-    delete grouped['poupança objectivo'];
+    delete grouped['Poupança Física'];
+    delete grouped['Poupança Objectivo'];
   }
 
   const accounts = Object.keys(grouped);
