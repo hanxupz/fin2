@@ -34,11 +34,14 @@ const TransactionsByTypeGraph = ({ transactions }) => {
     };
   }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total' }];
 
-  // Calculate min/max for x axis, always include zero
+  // Calculate min/max for x axis as the sum of all negative and positive values
   let min = 0, max = 0;
   if (categories.length > 0) {
-    min = Math.min(0, ...categories.map(cat => grouped[cat]));
-    max = Math.max(0, ...categories.map(cat => grouped[cat]));
+    const values = categories.map(cat => grouped[cat]);
+    const sumNeg = values.filter(v => v < 0).reduce((a, b) => a + b, 0);
+    const sumPos = values.filter(v => v > 0).reduce((a, b) => a + b, 0);
+    min = Math.min(0, sumNeg);
+    max = Math.max(0, sumPos);
     if (min === max) {
       // If all values are the same, expand the range a bit
       min = min > 0 ? 0 : min * 1.2;
