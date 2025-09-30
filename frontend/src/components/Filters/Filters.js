@@ -106,4 +106,4 @@ function Filters({
   );
 }
 
-export { default } from './components/Filters/Filters';
+export default Filters;

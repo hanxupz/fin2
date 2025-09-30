@@ -107,4 +107,4 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   );
 };
 
-export { default } from './components/TransactionsByTypeGraph/TransactionsByTypeGraph';
+export default TransactionsByTypeGraph;
