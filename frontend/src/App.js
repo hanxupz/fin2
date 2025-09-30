@@ -17,6 +17,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import './App.css';
 
 import AccountSummary from "./AccountSummary";
 import TransactionForm from "./TransactionForm";
@@ -77,12 +78,12 @@ function getCategoryColors(categories, mode) {
   ];
 
   const darkColors = [
-      '#79b4f9', '#ffb87f', '#64c264', '#ff6e6e',
-      '#c3a3e8', '#b08c7a', '#f4aad7', '#bfbfbf',
-      '#e0e07f', '#55d6e0', '#c5ddf9', '#ffcfa3',
-      '#b8e1b0', '#ffa3a3', '#d6c1e8', '#d1b8ad',
-      '#f7c4e0', '#e0e0e0', '#f0f0a3', '#a3e0e8',
-      '#7f7fbf', '#8ca37f', '#b5986d', '#bf7c78'
+    '#79b4f9', '#ffb87f', '#64c264', '#ff6e6e',
+    '#c3a3e8', '#b08c7a', '#f4aad7', '#bfbfbf',
+    '#e0e07f', '#55d6e0', '#c5ddf9', '#ffcfa3',
+    '#b8e1b0', '#ffa3a3', '#d6c1e8', '#d1b8ad',
+    '#f7c4e0', '#e0e0e0', '#f0f0a3', '#a3e0e8',
+    '#7f7fbf', '#8ca37f', '#b5986d', '#bf7c78'
   ];
   const palette = mode === 'dark' ? darkColors : lightColors;
   const colorMap = {};
@@ -257,8 +258,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* Animated background for current theme */}
+      {themeMode === 'dark' ? (
+        <div className="animated-bg-dark" aria-hidden="true" />
+      ) : (
+        <div className="animated-bg-light" aria-hidden="true" />
+      )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ backgroundColor: theme.palette.background.default, padding: "2rem", position: 'relative', minHeight: '100vh' }} data-theme={themeMode}>
+        <Box style={{ backgroundColor: theme.palette.background.default, padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1 }} data-theme={themeMode}>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
               {/* Left Panel */}
