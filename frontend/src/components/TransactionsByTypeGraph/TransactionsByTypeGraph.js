@@ -2,6 +2,7 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -14,6 +15,7 @@ const isDarkMode = () => {
 
 const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   // Filter for 'Corrente' account only
+  const theme = useTheme();
   const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
 
@@ -101,9 +103,11 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
-      <Bar data={data} options={options} />
-    </Paper>
+    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
+      <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
+        <Bar data={data} options={options} />
+      </Paper>
+    </div>
   );
 };
 
