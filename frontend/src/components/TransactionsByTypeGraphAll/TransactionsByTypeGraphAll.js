@@ -53,11 +53,12 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
   // Calculate min/max for x axis
   let min = 0, max = 0;
   if (categories.length > 0) {
-    const values = accounts.flatMap(acc => categories.map(cat => grouped[acc]?.[cat] || 0));
-    const sumNeg = values.filter(v => v < 0).reduce((a, b) => a + b, 0);
-    const sumPos = values.filter(v => v > 0).reduce((a, b) => a + b, 0);
-    min = Math.min(0, sumNeg);
-    max = Math.max(0, sumPos);
+    // For each account, sum all category values
+    const accountSums = accounts.map(acc => {
+      return categories.reduce((sum, cat) => sum + (grouped[acc]?.[cat] || 0), 0);
+    });
+    min = Math.min(0, ...accountSums);
+    max = Math.max(0, ...accountSums);
     if (min === max) {
       min = min > 0 ? 0 : min * 1.2;
       max = max < 0 ? 0 : max * 1.2;
