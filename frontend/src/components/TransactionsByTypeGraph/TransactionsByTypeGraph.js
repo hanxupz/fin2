@@ -50,7 +50,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   }
 
   const data = {
-    labels: ['Conta Corrente'],
+    labels: ['Corrente'],
     datasets,
   };
 
@@ -61,7 +61,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       legend: { display: false },
       title: {
         display: true,
-        text: 'Total por Categoria (Conta Corrente)',
+        text: 'Total por Categoria (Corrente)',
         color: labelColor,
       },
       tooltip: {
@@ -96,7 +96,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
 
   return (
     <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
+      <Paper elevation={3} sx={{ width: '100%', height: 200, p: 2 }}>
         <Bar data={data} options={options} />
       </Paper>
     </div>

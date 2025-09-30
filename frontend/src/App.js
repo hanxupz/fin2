@@ -26,6 +26,9 @@ import Filters from "./components/Filters/Filters";
 import TransactionList from "./components/TransactionList/TransactionList";
 import Calendar from "./components/Calendar/Calendar";
 import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
+import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/TransactionsByTypeGraphAll";
+import AccountSumChart from "./components/AccountSumChart/AccountSumChart";
+import ControlDateAccountBarChart from "./components/ControlDateAccountBarChart/ControlDateAccountBarChart";
 
 const getDesignTokens = (mode) => ({
   palette: {
@@ -112,6 +115,22 @@ function getCategoryColors(categories, mode) {
 }
 
 
+
+// Helper to format data for ControlDateAccountBarChart
+function getControlDateAccountBarData(transactions) {
+  // Group by control_date, then sum by account
+  const grouped = {};
+  transactions.forEach(t => {
+    if (!t.control_date || !t.account || !t.amount) return;
+    if (!grouped[t.control_date]) grouped[t.control_date] = {};
+    grouped[t.control_date][t.account] = (grouped[t.control_date][t.account] || 0) + t.amount;
+  });
+  // Convert to array format for recharts
+  return Object.entries(grouped).map(([control_date, accounts]) => ({
+    control_date,
+    ...accounts
+  }));
+}
 
 // ------------------ Main App ------------------
 function App() {
@@ -328,6 +347,18 @@ function App() {
                           categoryColors={categoryColors}
                         />
                       </Grid>
+                      <Grid item>
+                        <TransactionsByTypeGraphAll
+                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                          categoryColors={categoryColors}
+                        />
+                      </Grid>
+                        <Grid item>
+                          <AccountSumChart transactions={transactions} controlDate={controlDate} />
+                        </Grid>
+                        <Grid item>
+                          <ControlDateAccountBarChart data={getControlDateAccountBarData(transactions)} />
+                        </Grid>
                     </>
                   )}
                 </Grid>
