@@ -12,8 +12,11 @@ import {
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import AccountSummary from "./AccountSummary";
 import TransactionForm from "./TransactionForm";
@@ -22,6 +25,40 @@ import Filters from "./Filters";
 import TransactionList from "./TransactionList";
 import Calendar from "./Calendar";
 import TransactionsByTypeGraph from "./TransactionsByTypeGraph";
+
+// Color palettes
+const getDesignTokens = (mode) => ({
+  palette: {
+    mode,
+    ...(mode === 'light'
+      ? {
+          // palette values for light mode
+          primary: { main: '#1976d2' },
+          secondary: { main: '#9c27b0' },
+          background: {
+            default: '#f5f5f5',
+            paper: '#fff',
+          },
+          text: {
+            primary: '#222',
+            secondary: '#555',
+          },
+        }
+      : {
+          // palette values for dark mode
+          primary: { main: '#90caf9' },
+          secondary: { main: '#ce93d8' },
+          background: {
+            default: '#121212',
+            paper: '#1e1e1e',
+          },
+          text: {
+            primary: '#fff',
+            secondary: '#aaa',
+          },
+        }),
+  },
+});
 
 // ------------------ Main App ------------------
 function App() {
@@ -45,6 +82,9 @@ function App() {
 
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
+
+  const [themeMode, setThemeMode] = useState('light');
+  const theme = React.useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
 
   const BACKEND_URL = "http://192.168.1.97:8000";
 
@@ -180,9 +220,10 @@ function App() {
   });
 
   return (
-    <CssBaseline>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ backgroundColor: "antiquewhite", padding: "2rem", position: 'relative' }}>
+        <Box style={{ backgroundColor: theme.palette.background.default, padding: "2rem", position: 'relative', minHeight: '100vh' }}>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
               {/* Left Panel */}
@@ -278,6 +319,21 @@ function App() {
               <SettingsIcon />
             </Fab>
 
+            {/* Theme Toggle FAB */}
+            <Fab
+              color="default"
+              aria-label="toggle theme"
+              onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
+              style={{
+                position: "fixed",
+                bottom: 150,
+                right: 30,
+                zIndex: 1000,
+              }}
+            >
+              {themeMode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+            </Fab>
+
             {/* Transaction Dialog */}
             <Dialog open={transactionDialogOpen} onClose={() => setTransactionDialogOpen(false)} maxWidth="sm" fullWidth>
               <DialogTitle>{editingId ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
@@ -321,7 +377,7 @@ function App() {
           </Container>
         </Box>
       </LocalizationProvider>
-    </CssBaseline>
+    </ThemeProvider>
   );
 }
 

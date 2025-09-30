@@ -1,4 +1,5 @@
 import React from "react";
+import { useTheme } from "@mui/material/styles";
 import {
   Card,
   CardContent,
@@ -8,12 +9,14 @@ import {
 } from "@mui/material";
 
 function TransactionList({ filteredTransactions, editTransaction, deleteTransaction }) {
+  const theme = useTheme();
+
   if (filteredTransactions.length === 0) {
     return <Typography>No transactions found.</Typography>;
   }
 
   return (
-    <>
+    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
       {filteredTransactions.map((t) => (
         <Card key={t.id} style={{ marginBottom: "1rem" }}>
           <CardContent>
@@ -30,7 +33,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
           </CardActions>
         </Card>
       ))}
-    </>
+    </div>
   );
 }
 
