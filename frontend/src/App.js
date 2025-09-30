@@ -21,6 +21,57 @@ import ControlDateConfig from "./ControlDateConfig";
 import Filters from "./Filters";
 import TransactionList from "./TransactionList";
 
+// ------------------ Calendar Component ------------------
+const Calendar = ({ transactions, year, month }) => {
+  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+  const getStartDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
+
+  const daysInMonth = getDaysInMonth(year, month);
+  const startDay = getStartDayOfMonth(year, month);
+
+  // Map transactions by day
+  const transactionMap = {};
+  transactions.forEach((t) => {
+    const date = new Date(t.date);
+    if (date.getMonth() === month && date.getFullYear() === year) {
+      if (!transactionMap[date.getDate()]) transactionMap[date.getDate()] = [];
+      transactionMap[date.getDate()].push(t.amount);
+    }
+  });
+
+  const calendarDays = [];
+
+  for (let i = 0; i < startDay; i++) {
+    calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const amounts = transactionMap[day] || [];
+    calendarDays.push(
+      <div key={day} className="calendar-day">
+        <div className="day-number">{day.toString().padStart(2, "0")}</div>
+        {amounts.map((amt, idx) => (
+          <div key={idx} className={`amount ${amt < 0 ? "negative" : "positive"}`}>
+            {amt.toFixed(2)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="calendar-container">
+      <div className="calendar-header">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+          <div key={d} className="calendar-weekday">{d}</div>
+        ))}
+      </div>
+      <div className="calendar-grid">{calendarDays}</div>
+    </div>
+  );
+};
+
+// ------------------ Main App ------------------
 function App() {
   const [transactions, setTransactions] = useState([]);
   const [description, setDescription] = useState("");
@@ -40,7 +91,6 @@ function App() {
   const [configMonth, setConfigMonth] = useState("");
   const [configControlDate, setConfigControlDate] = useState("");
 
-  // Dialog states
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
 
@@ -58,7 +108,7 @@ function App() {
         const data = await res.json();
         const dt = data.control_date ? new Date(data.control_date) : null;
         setConfigYear(dt ? dt.getFullYear() : "");
-        setConfigMonth(dt ? String(dt.getMonth() + 1).padStart(2, "0") : "");
+        setConfigMonth(dt ? dt.getMonth() : ""); // zero-based month
         setConfigControlDate(data.control_date);
         setControlDate(dt);
         setFilterDateFrom(dt);
@@ -70,7 +120,7 @@ function App() {
 
   const updateControlDateConfig = async () => {
     try {
-      const payload = { year: parseInt(configYear), month: parseInt(configMonth) };
+      const payload = { year: parseInt(configYear), month: parseInt(configMonth) + 1 }; // API expects 1-based month
       const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +132,7 @@ function App() {
         setControlDate(new Date(data.control_date));
         setFilterDateFrom(new Date(data.control_date));
         alert(`Control date updated to ${data.control_date}`);
-        setControlDateDialogOpen(false); // close dialog
+        setControlDateDialogOpen(false);
       }
     } catch (err) {
       console.error("Failed to update control date config:", err);
@@ -101,7 +151,6 @@ function App() {
 
   const addOrUpdateTransaction = async () => {
     if (!description || !amount) return;
-
     const payload = {
       description,
       amount: parseFloat(amount),
@@ -110,7 +159,6 @@ function App() {
       category,
       account,
     };
-
     try {
       if (editingId) {
         await fetch(`${BACKEND_URL}/transactions/${editingId}`, {
@@ -126,14 +174,13 @@ function App() {
           body: JSON.stringify(payload),
         });
       }
-
       setDescription("");
       setAmount("");
       setDate(null);
       setCategory("Comida");
       setAccount("Corrente");
       fetchTransactions();
-      setTransactionDialogOpen(false); // close dialog
+      setTransactionDialogOpen(false);
     } catch (err) {
       console.error("Failed to add/update transaction:", err);
     }
@@ -156,7 +203,7 @@ function App() {
     setControlDate(t.control_date ? new Date(t.control_date) : null);
     setCategory(t.category || "Comida");
     setAccount(t.account || "Corrente");
-    setTransactionDialogOpen(true); // open dialog for editing
+    setTransactionDialogOpen(true);
   };
 
   const categories = [
@@ -192,7 +239,17 @@ function App() {
                   💰 My Account Summary
                 </Typography>
                 {controlDate && (
-                  <AccountSummary transactions={transactions} controlDate={controlDate} />
+                  <>
+                    <AccountSummary transactions={transactions} controlDate={controlDate} />
+                    <Typography variant="h6" gutterBottom style={{ marginTop: "2rem" }}>
+                      📅 Transactions Calendar
+                    </Typography>
+                    <Calendar
+                      transactions={filteredTransactions}
+                      year={controlDate.getFullYear()}
+                      month={controlDate.getMonth()}
+                    />
+                  </>
                 )}
               </Grid>
 
