@@ -31,10 +31,8 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       data: [value],
       backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
       stack: 'total',
-      borderWidth: 1,
-      borderColor: labelColor,
     };
-  }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total', borderColor: labelColor }];
+  }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total' }];
 
   // Calculate min/max for x axis as the sum of all negative and positive values
   let min = 0, max = 0;
