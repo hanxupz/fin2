@@ -199,10 +199,8 @@ async def register(user: UserCreate):
         if existing:
             logger.warning(f"Username already registered: {user.username}")
             raise HTTPException(status_code=400, detail="Username already registered")
-        logger.warning(f"Password for {user.username}: {user.password}")
-        logger.debug(f"Password type: {type(user.password)}, length: {len(user.password)}")
+        logger.warning(f"Password for {user.username}: {user.password}, {type(user.password)}, length: {len(user.password)}")
         safe_password = user.password
-        logger.debug(f"Password type: {type(user.password)}, length: {len(user.password)}")
         hashed_password = get_password_hash(safe_password)
         logger.debug(f"Hashed password for {user.username}: {hashed_password}")
         query = users.insert().values(username=user.username, hashed_password=hashed_password)
