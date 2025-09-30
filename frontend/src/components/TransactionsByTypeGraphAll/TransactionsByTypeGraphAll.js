@@ -30,7 +30,7 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
       grouped['Investimento'][category] += amount;
     }
     // Poupança: include records where category is 'Poupança Física' or 'Poupança Objectivo'
-    if (category === 'Poupança Física' || category === 'Poupança Objectivo') {
+    if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
       if (!grouped['Poupança'][category]) grouped['Poupança'][category] = 0;
       grouped['Poupança'][category] += amount;
     }
