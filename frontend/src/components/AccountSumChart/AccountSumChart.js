@@ -17,10 +17,22 @@ const AccountSumChart = ({ transactions, controlDate }) => {
 
   // Group by account, sum all amounts
   const grouped = {};
+  let poupancaSum = 0;
   filtered.forEach(({ account, amount }) => {
-    if (!grouped[account]) grouped[account] = 0;
-    grouped[account] += amount;
+    if (account === 'poupança física' || account === 'poupança objectivo') {
+      poupancaSum += amount;
+    } else {
+      if (!grouped[account]) grouped[account] = 0;
+      grouped[account] += amount;
+    }
   });
+
+  if (poupancaSum !== 0) {
+    grouped['Poupança'] = poupancaSum;
+    // Remove individual poupança accounts if present
+    delete grouped['poupança física'];
+    delete grouped['poupança objectivo'];
+  }
 
   const accounts = Object.keys(grouped);
   const values = accounts.map(acc => grouped[acc]);
@@ -77,7 +89,7 @@ const AccountSumChart = ({ transactions, controlDate }) => {
 
   return (
     <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: 200, p: 2 }}>
+      <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
         <Bar data={data} options={options} />
       </Paper>
     </div>
