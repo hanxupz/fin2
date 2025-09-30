@@ -1,8 +1,9 @@
 import React from "react";
-import { Paper, Typography } from "@mui/material";
+import { Paper, Typography, useTheme } from "@mui/material";
 import "./Calendar.css"; // For styling
 
 const Calendar = ({ transactions, year, month }) => {
+  const theme = useTheme();
   const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
   const getStartDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
 
@@ -24,7 +25,7 @@ const Calendar = ({ transactions, year, month }) => {
 
   // Empty days before the first day of month
   for (let i = 0; i < startDay; i++) {
-    calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty other-month"></div>);
+    calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
   }
 
   // Days of the current month
@@ -62,7 +63,7 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-    <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
+    <Paper style={{ padding: "1rem", marginBottom: "1rem", background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8 }}>
       <Typography variant="h6" gutterBottom>
         📅 Transactions Calendar
       </Typography>
@@ -78,4 +79,4 @@ const Calendar = ({ transactions, year, month }) => {
   );
 };
 
-export default Calendar;
+export { Calendar as default };

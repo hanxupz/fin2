@@ -110,3 +110,39 @@ header h1 {
 .filters button:hover {
   background-color: #2980b9;
 }
+
+/* Animated gradient background for light mode */
+.animated-bg-light {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(270deg, #f5f7fa, #c3cfe2, #f5f7fa, #e2e2e2);
+  background-size: 600% 600%;
+  animation: gradientLight 10s ease-in-out infinite;
+}
+
+@keyframes gradientLight {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated gradient background for dark mode */
+.animated-bg-dark {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(270deg, #232526, #414345, #232526, #1a1a1a);
+  background-size: 600% 600%;
+  animation: gradientDark 10s ease-in-out infinite;
+}
+
+@keyframes gradientDark {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

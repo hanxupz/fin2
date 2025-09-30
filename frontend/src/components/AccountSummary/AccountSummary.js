@@ -1,7 +1,9 @@
 import React from "react";
-import { Card, CardContent, Typography, Grid } from "@mui/material";
+import { Card, CardContent, Typography, Grid, useTheme } from "@mui/material";
 
 const AccountSummary = ({ transactions, controlDate }) => {
+  const theme = useTheme();
+
   const filteredTransactions = transactions.filter(
     (t) =>
       t.control_date &&
@@ -32,18 +34,20 @@ const AccountSummary = ({ transactions, controlDate }) => {
   });
 
   return (
-    <Grid container spacing={2} style={{ marginBottom: "1rem" }}>
-      {accounts.map((acc) => (
-        <Grid item xs={12} md={3} key={acc}>
-          <Card>
-            <CardContent>
-              <Typography variant="subtitle1">{acc}</Typography>
-              <Typography variant="h6">{totals[acc].toFixed(2)}€</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
+      <Grid container spacing={2} style={{ marginBottom: "1rem" }}>
+        {accounts.map((acc) => (
+          <Grid item xs={12} md={3} key={acc}>
+            <Card>
+              <CardContent>
+                <Typography variant="subtitle1">{acc}</Typography>
+                <Typography variant="h6">{totals[acc].toFixed(2)}€</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
   );
 };
 

@@ -12,16 +12,86 @@ import {
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import './App.css';
 
-import AccountSummary from "./AccountSummary";
-import TransactionForm from "./TransactionForm";
-import ControlDateConfig from "./ControlDateConfig";
-import Filters from "./Filters";
-import TransactionList from "./TransactionList";
-import Calendar from "./Calendar";
-import ExpensesByTypeGraph from "./ExpensesByTypeGraph";
+import AccountSummary from "./components/AccountSummary/AccountSummary";
+import TransactionForm from "./components/TransactionForm/TransactionForm";
+import ControlDateConfig from "./components/ControlDateConfig/ControlDateConfig";
+import Filters from "./components/Filters/Filters";
+import TransactionList from "./components/TransactionList/TransactionList";
+import Calendar from "./components/Calendar/Calendar";
+import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
+
+// Color palettes
+const getDesignTokens = (mode) => ({
+  palette: {
+    mode,
+    ...(mode === 'light'
+      ? {
+          // palette values for light mode
+          primary: { main: '#1976d2' },
+          secondary: { main: '#9c27b0' },
+          background: {
+            default: '#f5f5f5',
+            paper: '#fff',
+          },
+          text: {
+            primary: '#222',
+            secondary: '#555',
+          },
+        }
+      : {
+          // palette values for dark mode using provided CSS variable colors
+          primary: { main: '#76c370' }, // var(--clr-primary-a0)
+          secondary: { main: '#47d5a6' }, // var(--clr-success-a10)
+          background: {
+            default: '#121212', // var(--clr-surface-a0)
+            paper: '#282828',   // var(--clr-surface-a10)
+          },
+          text: {
+            primary: '#ffffff', // var(--clr-light-a0)
+            secondary: '#b5deaf', // var(--clr-primary-a40)
+          },
+          success: { main: '#22946e' }, // var(--clr-success-a0)
+          warning: { main: '#a87a2a' }, // var(--clr-warning-a0)
+          error: { main: '#9c2121' },   // var(--clr-danger-a0)
+          info: { main: '#21498a' },    // var(--clr-info-a0)
+        }),
+  },
+});
+
+// Generate a color for each category (theme-aware)
+function getCategoryColors(categories, mode) {
+  // Use a set of visually distinct colors
+  const lightColors = [
+    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+    '#bcbd22', '#17becf', '#aec7e8', '#ffbb78',
+    '#98df8a', '#ff9896', '#c5b0d5', '#c49c94',
+    '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
+    '#393b79', '#637939', '#8c6d31', '#843c39'
+  ];
+
+  const darkColors = [
+    '#79b4f9', '#ffb87f', '#64c264', '#ff6e6e',
+    '#c3a3e8', '#b08c7a', '#f4aad7', '#bfbfbf',
+    '#e0e07f', '#55d6e0', '#c5ddf9', '#ffcfa3',
+    '#b8e1b0', '#ffa3a3', '#d6c1e8', '#d1b8ad',
+    '#f7c4e0', '#e0e0e0', '#f0f0a3', '#a3e0e8',
+    '#7f7fbf', '#8ca37f', '#b5986d', '#bf7c78'
+  ];
+  const palette = mode === 'dark' ? darkColors : lightColors;
+  const colorMap = {};
+  categories.forEach((cat, idx) => {
+    colorMap[cat] = palette[idx % palette.length];
+  });
+  return colorMap;
+}
 
 // ------------------ Main App ------------------
 function App() {
@@ -45,6 +115,9 @@ function App() {
 
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
+
+  const [themeMode, setThemeMode] = useState('dark');
+  const theme = React.useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
 
   const BACKEND_URL = "http://192.168.1.97:8000";
 
@@ -171,6 +244,9 @@ function App() {
     "Cartão Refeição", "Nexo", "Crédito", "Dívida", "Investimento"
   ];
 
+  // Generate category color map for current theme
+  const categoryColors = React.useMemo(() => getCategoryColors(categories, themeMode), [categories, themeMode]);
+
   const filteredTransactions = transactions.filter((t) => {
     const matchesCategory = filterCategory ? t.category === filterCategory : true;
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
@@ -180,56 +256,80 @@ function App() {
   });
 
   return (
-    <CssBaseline>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {/* Animated background for current theme */}
+      {themeMode === 'dark' ? (
+        <div className="animated-bg-dark" aria-hidden="true" />
+      ) : (
+        <div className="animated-bg-light" aria-hidden="true" />
+      )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ backgroundColor: "antiquewhite", padding: "2rem", position: 'relative' }}>
+        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1 }} data-theme={themeMode}>
           <Container maxWidth="lg">
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               {/* Left Panel */}
               <Grid item xs={12} md={8}>
-                <Typography variant="h4" gutterBottom align="center">
-                  💰 My Account Summary
-                </Typography>
-                {controlDate && (
-                  <>
-                    <AccountSummary transactions={transactions} controlDate={controlDate} />
-                    {/* Expenses by Type Graph for current control date */}
-                    <ExpensesByTypeGraph
-                      expenses={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
-                    />
-                    <Calendar
-                      transactions={filteredTransactions}
-                      year={controlDate.getFullYear()}
-                      month={controlDate.getMonth()}
-                    />
-                  </>
-                )}
+                <Grid container direction="column" spacing={3}>
+                  <Grid item>
+                    <Typography variant="h4" gutterBottom align="center">
+                      💰 My Account Summary
+                    </Typography>
+                  </Grid>
+                  {controlDate && (
+                    <>
+                      <Grid item>
+                        <AccountSummary transactions={transactions} controlDate={controlDate} />
+                      </Grid>
+                      <Grid item>
+                        <Calendar
+                          transactions={filteredTransactions}
+                          year={controlDate.getFullYear()}
+                          month={controlDate.getMonth()}
+                        />
+                      </Grid>
+                      <Grid item>
+                        {/* Expenses by Type Graph for current control date */}
+                        <TransactionsByTypeGraph
+                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                          categoryColors={categoryColors}
+                        />
+                      </Grid>
+                    </>
+                  )}
+                </Grid>
               </Grid>
 
               {/* Right Panel */}
               <Grid item xs={12} md={4}>
-                <Typography variant="h4" gutterBottom>
-                  💰 My Transactions
-                </Typography>
-
-                <Filters
-                  filterCategory={filterCategory}
-                  setFilterCategory={setFilterCategory}
-                  filterAccount={filterAccount}
-                  setFilterAccount={setFilterAccount}
-                  filterDateFrom={filterDateFrom}
-                  setFilterDateFrom={setFilterDateFrom}
-                  filterDateTo={filterDateTo}
-                  setFilterDateTo={setFilterDateTo}
-                  categories={categories}
-                  accounts={accounts}
-                />
-
-                <TransactionList
-                  filteredTransactions={filteredTransactions}
-                  editTransaction={editTransaction}
-                  deleteTransaction={deleteTransaction}
-                />
+                <Grid container direction="column" spacing={3}>
+                  <Grid item>
+                    <Typography variant="h4" gutterBottom>
+                      💰 My Transactions
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Filters
+                      filterCategory={filterCategory}
+                      setFilterCategory={setFilterCategory}
+                      filterAccount={filterAccount}
+                      setFilterAccount={setFilterAccount}
+                      filterDateFrom={filterDateFrom}
+                      setFilterDateFrom={setFilterDateFrom}
+                      filterDateTo={filterDateTo}
+                      setFilterDateTo={setFilterDateTo}
+                      categories={categories}
+                      accounts={accounts}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TransactionList
+                      filteredTransactions={filteredTransactions}
+                      editTransaction={editTransaction}
+                      deleteTransaction={deleteTransaction}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
 
@@ -260,6 +360,21 @@ function App() {
               }}
             >
               <SettingsIcon />
+            </Fab>
+
+            {/* Theme Toggle FAB */}
+            <Fab
+              color="default"
+              aria-label="toggle theme"
+              onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
+              style={{
+                position: "fixed",
+                bottom: 150,
+                right: 30,
+                zIndex: 1000,
+              }}
+            >
+              {themeMode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
             </Fab>
 
             {/* Transaction Dialog */}
@@ -305,7 +420,7 @@ function App() {
           </Container>
         </Box>
       </LocalizationProvider>
-    </CssBaseline>
+    </ThemeProvider>
   );
 }
 
