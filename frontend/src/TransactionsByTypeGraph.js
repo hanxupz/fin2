@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const TransactionsByTypeGraph = ({ transactions }) => {
+const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   // Filter for 'Corrente' account only
   const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
@@ -20,15 +20,12 @@ const TransactionsByTypeGraph = ({ transactions }) => {
   const categories = Object.keys(grouped);
 
   // If no categories, show a dummy dataset to avoid chartjs errors
-  const datasets = categories.length > 0 ? categories.map((cat, idx) => {
+  const datasets = categories.length > 0 ? categories.map((cat) => {
     const value = grouped[cat];
-    const isPositive = value >= 0;
     return {
       label: cat,
       data: [value],
-      backgroundColor: isPositive
-        ? `hsl(${(idx * 360) / categories.length}, 70%, 60%)`
-        : `hsl(${(idx * 360) / categories.length}, 80%, 40%)`,
+      backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
       stack: 'total',
       borderWidth: 1,
     };

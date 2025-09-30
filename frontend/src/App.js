@@ -60,6 +60,27 @@ const getDesignTokens = (mode) => ({
   },
 });
 
+// Generate a color for each category (theme-aware)
+function getCategoryColors(categories, mode) {
+  // Use a set of visually distinct colors
+  const lightColors = [
+    '#1976d2', '#388e3c', '#fbc02d', '#d32f2f', '#7b1fa2', '#0288d1', '#c2185b', '#ffa000', '#388e3c', '#f57c00',
+    '#455a64', '#8bc34a', '#f06292', '#00bcd4', '#ff5722', '#607d8b', '#bdbdbd', '#e040fb', '#43a047', '#ffb300',
+    '#5d4037', '#cddc39', '#009688', '#e65100'
+  ];
+  const darkColors = [
+    '#90caf9', '#a5d6a7', '#fff59d', '#ef9a9a', '#ce93d8', '#80deea', '#f48fb1', '#ffe082', '#a5d6a7', '#ffab91',
+    '#b0bec5', '#dcedc8', '#f8bbd0', '#4dd0e1', '#ff8a65', '#78909c', '#e0e0e0', '#ea80fc', '#66bb6a', '#ffd54f',
+    '#bcaaa4', '#f0f4c3', '#80cbc4', '#ffcc80'
+  ];
+  const palette = mode === 'dark' ? darkColors : lightColors;
+  const colorMap = {};
+  categories.forEach((cat, idx) => {
+    colorMap[cat] = palette[idx % palette.length];
+  });
+  return colorMap;
+}
+
 // ------------------ Main App ------------------
 function App() {
   const [transactions, setTransactions] = useState([]);
@@ -211,6 +232,9 @@ function App() {
     "Cartão Refeição", "Nexo", "Crédito", "Dívida", "Investimento"
   ];
 
+  // Generate category color map for current theme
+  const categoryColors = React.useMemo(() => getCategoryColors(categories, themeMode), [categories, themeMode]);
+
   const filteredTransactions = transactions.filter((t) => {
     const matchesCategory = filterCategory ? t.category === filterCategory : true;
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
@@ -243,6 +267,7 @@ function App() {
                         {/* Expenses by Type Graph for current control date */}
                         <TransactionsByTypeGraph
                           transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                          categoryColors={categoryColors}
                         />
                       </Grid>
                       <Grid item>
@@ -250,6 +275,7 @@ function App() {
                           transactions={filteredTransactions}
                           year={controlDate.getFullYear()}
                           month={controlDate.getMonth()}
+                          categoryColors={categoryColors}
                         />
                       </Grid>
                     </>
