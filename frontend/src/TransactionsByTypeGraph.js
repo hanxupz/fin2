@@ -5,23 +5,37 @@ import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from '
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 
-const ExpensesByTypeGraph = ({ transactions }) => {
-  // Group transactions by category for the current control date
-  const grouped = transactions.reduce((acc, transaction) => {
-    const { category, amount } = transaction;
-    acc[category] = (acc[category] || 0) + amount;
-    return acc;
-  }, {});
+
+const TransactionsByTypeGraph = ({ transactions }) => {
+  // Filter for 'Corrente' account only
+  const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
+
+  // Group by category and type, where type is determined by amount sign
+  const grouped = {};
+  correnteTransactions.forEach(({ category, amount }) => {
+    if (!grouped[category]) grouped[category] = { income: 0, expense: 0 };
+    if (amount > 0) grouped[category].income += amount;
+    else grouped[category].expense += Math.abs(amount);
+  });
+
+  const categories = Object.keys(grouped);
+  const incomeData = categories.map(cat => grouped[cat].income);
+  const expenseData = categories.map(cat => grouped[cat].expense);
 
   const data = {
-    labels: Object.keys(grouped),
+    labels: categories,
     datasets: [
       {
-        label: 'Transactions by Category',
-        data: Object.values(grouped),
-        backgroundColor: 'rgba(75,192,192,0.6)',
-        borderColor: 'rgba(75,192,192,1)',
-        borderWidth: 1,
+        label: 'Receitas (Corrente)',
+        data: incomeData,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        stack: 'Stack 0',
+      },
+      {
+        label: 'Despesas (Corrente)',
+        data: expenseData,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        stack: 'Stack 0',
       },
     ],
   };
@@ -30,11 +44,15 @@ const ExpensesByTypeGraph = ({ transactions }) => {
     responsive: true,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: 'Transactions by Category' },
+      title: { display: true, text: 'Receitas e Despesas por Categoria (Conta Corrente)' },
+    },
+    scales: {
+      x: { stacked: true },
+      y: { stacked: true },
     },
   };
 
   return <Bar data={data} options={options} />;
 };
 
-export default ExpensesByTypeGraph;
+export default TransactionsByTypeGraph;
