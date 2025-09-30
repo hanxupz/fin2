@@ -201,6 +201,7 @@ async def register(user: UserCreate):
             raise HTTPException(status_code=400, detail="Username already registered")
         # Truncate password to 72 characters for bcrypt
         safe_password = user.password[:72]
+        logger.debug(f"Password type: {type(safe_password)}, length: {len(safe_password)}")
         hashed_password = get_password_hash(safe_password)
         logger.debug(f"Hashed password for {user.username}: {hashed_password}")
         query = users.insert().values(username=user.username, hashed_password=hashed_password)
