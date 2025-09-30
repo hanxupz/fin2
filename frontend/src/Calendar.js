@@ -61,14 +61,16 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-    <div className="calendar-container">
-      <div className="calendar-header">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="calendar-weekday">{d}</div>
-        ))}
+    <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
+      <div className="calendar-container">
+        <div className="calendar-header">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            <div key={d} className="calendar-weekday">{d}</div>
+          ))}
+        </div>
+        <div className="calendar-grid">{calendarDays}</div>
       </div>
-      <div className="calendar-grid">{calendarDays}</div>
-    </div>
+    </Paper>
   );
 };
 
