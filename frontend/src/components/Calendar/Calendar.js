@@ -63,7 +63,7 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-     <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
+     <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
       <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
         <Typography variant="h6" gutterBottom>
           📅 Transactions Calendar
