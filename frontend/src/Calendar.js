@@ -9,13 +9,13 @@ const Calendar = ({ transactions, year, month }) => {
   const daysInMonth = getDaysInMonth(year, month);
   const startDay = getStartDayOfMonth(year, month);
 
-  // Map transactions by day
+  // Map transactions by day and sum amounts
   const transactionMap = {};
   transactions.forEach((t) => {
     const date = new Date(t.date);
     if (date.getMonth() === month && date.getFullYear() === year) {
-      if (!transactionMap[date.getDate()]) transactionMap[date.getDate()] = [];
-      transactionMap[date.getDate()].push(t.amount);
+      if (!transactionMap[date.getDate()]) transactionMap[date.getDate()] = 0;
+      transactionMap[date.getDate()] += t.amount;
     }
   });
 
@@ -28,7 +28,7 @@ const Calendar = ({ transactions, year, month }) => {
 
   // Days of the current month
   for (let day = 1; day <= daysInMonth; day++) {
-    const amounts = transactionMap[day] || [];
+    const totalAmount = transactionMap[day] || 0;
     const dayDate = new Date(year, month, day);
 
     let dayClass = "calendar-day";
@@ -51,11 +51,11 @@ const Calendar = ({ transactions, year, month }) => {
     calendarDays.push(
       <div key={day} className={dayClass}>
         <div className="day-number">{day.toString().padStart(2, "0")}</div>
-        {amounts.map((amt, idx) => (
-          <div key={idx} className={`amount ${amt < 0 ? "negative" : "positive"}`}>
-            {amt.toFixed(2)}
+        {totalAmount !== 0 && (
+          <div className={`amount ${totalAmount < 0 ? "negative" : "positive"}`}>
+            {totalAmount.toFixed(2)}
           </div>
-        ))}
+        )}
       </div>
     );
   }
