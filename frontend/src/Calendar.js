@@ -63,7 +63,7 @@ const Calendar = ({ transactions, year, month }) => {
 
   return (
     <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
-      <Typography variant="h6" gutterBottom style={{ marginTop: "2rem" }}>
+      <Typography variant="h6" gutterBottom>
         📅 Transactions Calendar
       </Typography>
       <div className="calendar-container">
