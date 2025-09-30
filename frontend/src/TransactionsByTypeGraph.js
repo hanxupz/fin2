@@ -5,6 +5,13 @@ import Paper from '@mui/material/Paper';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
+const isDarkMode = () => {
+  if (typeof document !== 'undefined') {
+    return document.body.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'dark';
+  }
+  return false;
+};
+
 const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   // Filter for 'Corrente' account only
   const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
@@ -51,18 +58,27 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     datasets,
   };
 
+  const dark = isDarkMode();
+  const labelColor = dark ? '#fff' : '#222';
   const options = {
     indexAxis: 'y', // horizontal bar
     responsive: true,
     plugins: {
-      legend: { position: 'top' },
-      title: { display: true, text: 'Total por Categoria (Conta Corrente)' },
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Total por Categoria (Conta Corrente)',
+        color: labelColor,
+      },
       tooltip: {
         callbacks: {
           label: function(context) {
             return `${context.dataset.label}: ${context.parsed.x}`;
           }
-        }
+        },
+        titleColor: labelColor,
+        bodyColor: labelColor,
+        backgroundColor: dark ? '#222' : '#fff',
       }
     },
     scales: {
@@ -71,9 +87,15 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         beginAtZero: true,
         min,
         max,
-        title: { display: true, text: 'Valor' },
+        title: { display: true, text: 'Valor', color: labelColor },
+        ticks: { color: labelColor },
+        grid: { color: dark ? 'rgba(255,255,255,0.1)' : undefined },
       },
-      y: { stacked: true },
+      y: {
+        stacked: true,
+        ticks: { color: labelColor },
+        grid: { color: dark ? 'rgba(255,255,255,0.1)' : undefined },
+      },
     },
     maintainAspectRatio: false,
   };
