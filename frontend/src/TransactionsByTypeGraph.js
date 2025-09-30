@@ -19,25 +19,26 @@ const TransactionsByTypeGraph = ({ transactions }) => {
   });
 
   const categories = Object.keys(grouped);
-  const incomeData = categories.map(cat => grouped[cat].income);
-  const expenseData = categories.map(cat => grouped[cat].expense);
+
+  // Each stack is a category, so we need a single bar with each stack segment representing a category
+  const incomeStack = categories.map(cat => grouped[cat].income);
+  const expenseStack = categories.map(cat => grouped[cat].expense);
 
   const data = {
-    labels: categories,
-    datasets: [
-      {
-        label: 'Receitas (Corrente)',
-        data: incomeData,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        stack: 'Stack 0',
-      },
-      {
-        label: 'Despesas (Corrente)',
-        data: expenseData,
-        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        stack: 'Stack 0',
-      },
-    ],
+    labels: ['Conta Corrente'],
+    datasets: categories.map((cat, idx) => ({
+      label: `Receita: ${cat}`,
+      data: [grouped[cat].income],
+      backgroundColor: `hsl(${(idx * 360) / categories.length}, 60%, 60%)`,
+      stack: 'income',
+    })).concat(
+      categories.map((cat, idx) => ({
+        label: `Despesa: ${cat}`,
+        data: [grouped[cat].expense],
+        backgroundColor: `hsl(${(idx * 360) / categories.length}, 80%, 70%)`,
+        stack: 'expense',
+      }))
+    ),
   };
 
   const options = {
