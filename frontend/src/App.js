@@ -68,14 +68,21 @@ const getDesignTokens = (mode) => ({
 function getCategoryColors(categories, mode) {
   // Use a set of visually distinct colors
   const lightColors = [
-    '#1976d2', '#388e3c', '#fbc02d', '#d32f2f', '#7b1fa2', '#0288d1', '#c2185b', '#ffa000', '#388e3c', '#f57c00',
-    '#455a64', '#8bc34a', '#f06292', '#00bcd4', '#ff5722', '#607d8b', '#bdbdbd', '#e040fb', '#43a047', '#ffb300',
-    '#5d4037', '#cddc39', '#009688', '#e65100'
+    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+    '#bcbd22', '#17becf', '#aec7e8', '#ffbb78',
+    '#98df8a', '#ff9896', '#c5b0d5', '#c49c94',
+    '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
+    '#393b79', '#637939', '#8c6d31', '#843c39'
   ];
+
   const darkColors = [
-    '#90caf9', '#a5d6a7', '#fff59d', '#ef9a9a', '#ce93d8', '#80deea', '#f48fb1', '#ffe082', '#a5d6a7', '#ffab91',
-    '#b0bec5', '#dcedc8', '#f8bbd0', '#4dd0e1', '#ff8a65', '#78909c', '#e0e0e0', '#ea80fc', '#66bb6a', '#ffd54f',
-    '#bcaaa4', '#f0f4c3', '#80cbc4', '#ffcc80'
+      '#79b4f9', '#ffb87f', '#64c264', '#ff6e6e',
+      '#c3a3e8', '#b08c7a', '#f4aad7', '#bfbfbf',
+      '#e0e07f', '#55d6e0', '#c5ddf9', '#ffcfa3',
+      '#b8e1b0', '#ffa3a3', '#d6c1e8', '#d1b8ad',
+      '#f7c4e0', '#e0e0e0', '#f0f0a3', '#a3e0e8',
+      '#7f7fbf', '#8ca37f', '#b5986d', '#bf7c78'
   ];
   const palette = mode === 'dark' ? darkColors : lightColors;
   const colorMap = {};
