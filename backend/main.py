@@ -13,29 +13,28 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import os
 
 # -------------------------------
+# Database setup
 # -------------------------------
-# Logging setup
-# -------------------------------
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+DATABASE_URL = "postgresql://user:password@db:5432/transactions"
+database = databases.Database(DATABASE_URL)
+metadata = sqlalchemy.MetaData()
 
-# -------------------------------
-# FastAPI setup
-app = FastAPI()
-
-# CORS settings
-origins = [
-    "http://localhost:3000",
-    "http://192.168.1.97:3000",  # Replace with your host IP
-]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # allow all origins for debugging
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+# Users table
+users = sqlalchemy.Table(
+    "users",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("username", sqlalchemy.String, unique=True, index=True),
+    sqlalchemy.Column("hashed_password", sqlalchemy.String),
 )
-logger.info(f"CORS middleware configured. Allowed origins: {origins}")
+
+transactions = sqlalchemy.Table(
+    "transactions",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("description", sqlalchemy.String),
+    sqlalchemy.Column("amount", sqlalchemy.Float),
+    sqlalchemy.Column("date", sqlalchemy.Date),
     sqlalchemy.Column("control_date", sqlalchemy.Date),
     sqlalchemy.Column("category", sqlalchemy.String),   # plain string
     sqlalchemy.Column("account", sqlalchemy.String),    # plain string
