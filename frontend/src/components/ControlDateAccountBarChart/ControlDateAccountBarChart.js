@@ -37,7 +37,7 @@ const ControlDateAccountBarChart = ({ data }) => {
     return { min: Math.min(...values), max: Math.max(...values), sum };
   });
   const globalMin = Math.min(...minMaxPerDate.map(m => m.min));
-  const globalMax = Math.max(...minMaxPerDate.map(m => m.max));
+  const globalMax = Math.max(...minMaxPerDate.map(m => m.sum));
 
   // Color palette from theme
   const palette = [
