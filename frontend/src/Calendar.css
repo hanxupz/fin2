@@ -30,16 +30,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-radius: 5px;
 }
 
+/* Empty cells (padding before month start) */
 .calendar-day.empty {
   border: none;
 }
 
-.day-number {
-  font-weight: bold;
+/* Days not in current month */
+.other-month {
+  background-color: #f0f0f0;
+  color: #aaa;
 }
 
+/* Weekdays */
+.weekday {
+  background-color: #fffbe6;
+}
+
+/* Weekends */
+.weekend {
+  background-color: #ffe6e6;
+}
+
+/* Today */
+.today {
+  border: 2px solid #2196f3;
+  background-color: #bbdefb !important;
+}
+
+/* Day number */
+.day-number {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+/* Amounts */
 .amount.negative {
   color: red;
 }
