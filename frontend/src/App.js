@@ -192,9 +192,6 @@ function App() {
                 {controlDate && (
                   <>
                     <AccountSummary transactions={transactions} controlDate={controlDate} />
-                    <Typography variant="h6" gutterBottom style={{ marginTop: "2rem" }}>
-                      📅 Transactions Calendar
-                    </Typography>
                     <Calendar
                       transactions={filteredTransactions}
                       year={controlDate.getFullYear()}

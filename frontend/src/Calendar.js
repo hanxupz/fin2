@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import "./Calendar.css"; // For styling
 
 const Calendar = ({ transactions, year, month }) => {
@@ -63,6 +63,9 @@ const Calendar = ({ transactions, year, month }) => {
 
   return (
     <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
+      <Typography variant="h6" gutterBottom style={{ marginTop: "2rem" }}>
+        📅 Transactions Calendar
+      </Typography>
       <div className="calendar-container">
         <div className="calendar-header">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
