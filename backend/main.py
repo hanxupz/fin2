@@ -122,6 +122,10 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    # Ensure password is a string and truncate if too long
+    if not isinstance(password, str):
+        password = str(password)
+    password = password[:72]
     return pwd_context.hash(password)
 
 async def get_user(username: str):
