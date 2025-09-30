@@ -2,22 +2,24 @@ import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
-  Paper,
+  Box,
+  CssBaseline,
   Typography,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Card,
-  CardContent,
-  CardActions,
+  Fab,
+  Dialog,
+  DialogTitle,
+  DialogContent
 } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import AccountSummary from "./AccountSummary";
+import TransactionForm from "./TransactionForm";
+import ControlDateConfig from "./ControlDateConfig";
+import Filters from "./Filters";
+import TransactionList from "./TransactionList";
 
 function App() {
   const [transactions, setTransactions] = useState([]);
@@ -37,6 +39,10 @@ function App() {
   const [configYear, setConfigYear] = useState("");
   const [configMonth, setConfigMonth] = useState("");
   const [configControlDate, setConfigControlDate] = useState("");
+
+  // Dialog states
+  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
+  const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
 
   const BACKEND_URL = "http://192.168.1.97:8000";
 
@@ -73,9 +79,10 @@ function App() {
       if (res.ok) {
         const data = await res.json();
         setConfigControlDate(data.control_date);
-        setControlDate(data.control_date);
-        setFilterDateFrom(data.control_date);
+        setControlDate(new Date(data.control_date));
+        setFilterDateFrom(new Date(data.control_date));
         alert(`Control date updated to ${data.control_date}`);
+        setControlDateDialogOpen(false); // close dialog
       }
     } catch (err) {
       console.error("Failed to update control date config:", err);
@@ -98,10 +105,10 @@ function App() {
     const payload = {
       description,
       amount: parseFloat(amount),
-      date: date ? date.toISOString().split('T')[0] : null,
-      control_date: controlDate ? controlDate.toISOString().split('T')[0] : null,
+      date: date ? date.toISOString().split("T")[0] : null,
+      control_date: controlDate ? controlDate.toISOString().split("T")[0] : null,
       category,
-      account
+      account,
     };
 
     try {
@@ -126,6 +133,7 @@ function App() {
       setCategory("Comida");
       setAccount("Corrente");
       fetchTransactions();
+      setTransactionDialogOpen(false); // close dialog
     } catch (err) {
       console.error("Failed to add/update transaction:", err);
     }
@@ -148,7 +156,21 @@ function App() {
     setControlDate(t.control_date ? new Date(t.control_date) : null);
     setCategory(t.category || "Comida");
     setAccount(t.account || "Corrente");
+    setTransactionDialogOpen(true); // open dialog for editing
   };
+
+  const categories = [
+    "Comida", "Carro", "Tabaco", "Ajuste", "Salário", "Futebol",
+    "Cartão Crédito", "Telemóvel", "Jogo", "Transferência", "Saúde",
+    "Desktop", "Subscrições", "Tabaco Extra", "Noite",
+    "Jogos PC/Switch/Play", "Cerveja", "Roupa", "Poupança", "Casa",
+    "Shareworks", "Educação", "Outro", "Férias"
+  ];
+
+  const accounts = [
+    "Corrente", "Poupança Física", "Poupança Objectivo", "Shareworks", "Etoro",
+    "Cartão Refeição", "Nexo", "Crédito", "Dívida", "Investimento"
+  ];
 
   const filteredTransactions = transactions.filter((t) => {
     const matchesCategory = filterCategory ? t.category === filterCategory : true;
@@ -158,195 +180,122 @@ function App() {
     return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo;
   });
 
-  const categories = ["Comida","Carro","Tabaco","Ajuste","Salário","Futebol","Cartão Crédito","Telemóvel","Jogo","Transferência","Saúde","Desktop","Subscrições","Tabaco Extra","Noite","Jogos PC/Switch/Play","Cerveja","Roupa","Poupança","Casa","Shareworks","Educação","Outro","Férias"];
-  const accounts = ["Corrente","Poupança Física","Poupança Objectivo","Shareworks","Etoro","Cartão Refeição","Nexo","Crédito","Dívida","Investimento"];
-
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Container maxWidth="lg" style={{ padding: "2rem 0" }}>
-        <Grid container spacing={3}>
-          {/* Left Panel */}
-          <Grid item xs={12} md={4}>
-            <Paper style={{ padding: "1rem", marginBottom: "2rem" }}>
-              <Typography variant="h6" gutterBottom>
-                Add / Edit Transaction
-              </Typography>
-              <TextField
-                fullWidth
-                label="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                label="Amount"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                margin="normal"
-              />
-              <DatePicker
-                label="Date"
-                value={date}
-                onChange={(newValue) => setDate(newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-              />
-              <DatePicker
-                label="Control Date"
-                value={controlDate}
-                onChange={(newValue) => setControlDate(newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-              />
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Category</InputLabel>
-                <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-                  {categories.map((c) => (
-                    <MenuItem key={c} value={c}>{c}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Account</InputLabel>
-                <Select value={account} onChange={(e) => setAccount(e.target.value)}>
-                  {accounts.map((a) => (
-                    <MenuItem key={a} value={a}>{a}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                style={{ marginTop: "1rem" }}
-                onClick={addOrUpdateTransaction}
-              >
-                {editingId ? "Update" : "Add"} Transaction
-              </Button>
-            </Paper>
-
-            <Paper style={{ padding: "1rem" }}>
-              <Typography variant="h6" gutterBottom>
-                Control Date Configuration
-              </Typography>
-              <TextField
-                fullWidth
-                type="number"
-                label="Year"
-                value={configYear}
-                onChange={(e) => setConfigYear(e.target.value)}
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                type="number"
-                label="Month"
-                value={configMonth}
-                onChange={(e) => setConfigMonth(e.target.value)}
-                margin="normal"
-              />
-              <Button
-                variant="contained"
-                color="secondary"
-                fullWidth
-                style={{ marginTop: "1rem" }}
-                onClick={updateControlDateConfig}
-              >
-                Save Control Date
-              </Button>
-              {configControlDate && (
-                <Typography style={{ marginTop: "1rem" }}>
-                  Current Control Date: {configControlDate}
+    <CssBaseline>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Box style={{ backgroundColor: "antiquewhite", padding: "2rem", position: 'relative' }}>
+          <Container maxWidth="lg">
+            <Grid container spacing={3}>
+              {/* Left Panel */}
+              <Grid item xs={12} md={8}>
+                <Typography variant="h4" gutterBottom align="center">
+                  💰 My Account Summary
                 </Typography>
-              )}
-            </Paper>
-          </Grid>
+                {controlDate && (
+                  <AccountSummary transactions={transactions} controlDate={controlDate} />
+                )}
+              </Grid>
 
-          {/* Right Panel */}
-          <Grid item xs={12} md={8}>
-            <Typography variant="h4" gutterBottom>
-              💰 My Transactions
-            </Typography>
+              {/* Right Panel */}
+              <Grid item xs={12} md={4}>
+                <Typography variant="h4" gutterBottom>
+                  💰 My Transactions
+                </Typography>
 
-            <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
-              <Typography variant="h6" gutterBottom>
-                Filters
-              </Typography>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Category</InputLabel>
-                <Select
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                >
-                  <MenuItem value="">All Categories</MenuItem>
-                  {categories.map((c) => (
-                    <MenuItem key={c} value={c}>{c}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Account</InputLabel>
-                <Select
-                  value={filterAccount}
-                  onChange={(e) => setFilterAccount(e.target.value)}
-                >
-                  <MenuItem value="">All Accounts</MenuItem>
-                  {accounts.map((a) => (
-                    <MenuItem key={a} value={a}>{a}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <DatePicker
-                label="From Date"
-                value={filterDateFrom}
-                onChange={(newValue) => setFilterDateFrom(newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-              />
-              <DatePicker
-                label="To Date"
-                value={filterDateTo}
-                onChange={(newValue) => setFilterDateTo(newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-              />
-              <Button
-                variant="outlined"
-                fullWidth
-                style={{ marginTop: "1rem" }}
-                onClick={() => {
-                  setFilterCategory("");
-                  setFilterAccount("");
-                  setFilterDateFrom(null);
-                  setFilterDateTo(null);
-                }}
-              >
-                Reset Filters
-              </Button>
-            </Paper>
+                <Filters
+                  filterCategory={filterCategory}
+                  setFilterCategory={setFilterCategory}
+                  filterAccount={filterAccount}
+                  setFilterAccount={setFilterAccount}
+                  filterDateFrom={filterDateFrom}
+                  setFilterDateFrom={setFilterDateFrom}
+                  filterDateTo={filterDateTo}
+                  setFilterDateTo={setFilterDateTo}
+                  categories={categories}
+                  accounts={accounts}
+                />
 
-            {filteredTransactions.length === 0 ? (
-              <Typography>No transactions found.</Typography>
-            ) : (
-              filteredTransactions.map((t) => (
-                <Card key={t.id} style={{ marginBottom: "1rem" }}>
-                  <CardContent>
-                    <Typography variant="subtitle1">
-                      {t.description} {t.amount.toFixed(2)}€
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Date: {t.date || "-"} | Category: {t.category || "-"} | Account: {t.account || "-"}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" onClick={() => editTransaction(t)}>Edit</Button>
-                    <Button size="small" color="error" onClick={() => deleteTransaction(t.id)}>Delete</Button>
-                  </CardActions>
-                </Card>
-              ))
-            )}
-          </Grid>
-        </Grid>
-      </Container>
-    </LocalizationProvider>
+                <TransactionList
+                  filteredTransactions={filteredTransactions}
+                  editTransaction={editTransaction}
+                  deleteTransaction={deleteTransaction}
+                />
+              </Grid>
+            </Grid>
+
+            {/* FABs */}
+            <Fab
+              color="primary"
+              aria-label="add"
+              onClick={() => setTransactionDialogOpen(true)}
+              style={{
+                position: "fixed",
+                bottom: 90,
+                right: 30,
+                zIndex: 1000,
+              }}
+            >
+              <AddIcon />
+            </Fab>
+
+            <Fab
+              color="secondary"
+              aria-label="settings"
+              onClick={() => setControlDateDialogOpen(true)}
+              style={{
+                position: "fixed",
+                bottom: 30,
+                right: 30,
+                zIndex: 1000,
+              }}
+            >
+              <SettingsIcon />
+            </Fab>
+
+            {/* Transaction Dialog */}
+            <Dialog open={transactionDialogOpen} onClose={() => setTransactionDialogOpen(false)} maxWidth="sm" fullWidth>
+              <DialogTitle>{editingId ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
+              <DialogContent>
+                <TransactionForm
+                  description={description}
+                  setDescription={setDescription}
+                  amount={amount}
+                  setAmount={setAmount}
+                  date={date}
+                  setDate={setDate}
+                  controlDate={controlDate}
+                  setControlDate={setControlDate}
+                  category={category}
+                  setCategory={setCategory}
+                  account={account}
+                  setAccount={setAccount}
+                  addOrUpdateTransaction={addOrUpdateTransaction}
+                  editingId={editingId}
+                  categories={categories}
+                  accounts={accounts}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Control Date Dialog */}
+            <Dialog open={controlDateDialogOpen} onClose={() => setControlDateDialogOpen(false)} maxWidth="sm" fullWidth>
+              <DialogTitle>Update Control Date</DialogTitle>
+              <DialogContent>
+                <ControlDateConfig
+                  configYear={configYear}
+                  setConfigYear={setConfigYear}
+                  configMonth={configMonth}
+                  setConfigMonth={setConfigMonth}
+                  configControlDate={configControlDate}
+                  updateControlDateConfig={updateControlDateConfig}
+                />
+              </DialogContent>
+            </Dialog>
+
+          </Container>
+        </Box>
+      </LocalizationProvider>
+    </CssBaseline>
   );
 }
 

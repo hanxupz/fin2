@@ -127,7 +127,7 @@ async def create_transaction(transaction: Transaction, request: Request):
 
 @app.get("/transactions/", response_model=List[Transaction])
 async def read_transactions():
-    query = transactions.select()
+    query = transactions.select().order_by(transactions.c.control_date.desc(), transactions.c.date.desc())
     results = await database.fetch_all(query)
     logger.info(f"Fetched {len(results)} transactions from DB")  # Debug log
     return results
