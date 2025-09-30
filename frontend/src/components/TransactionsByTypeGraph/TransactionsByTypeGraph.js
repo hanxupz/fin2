@@ -2,18 +2,13 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const isDarkMode = () => {
-  if (typeof document !== 'undefined') {
-    return document.body.getAttribute('data-theme') === 'dark' || document.documentElement.getAttribute('data-theme') === 'dark';
-  }
-  return false;
-};
-
 const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   // Filter for 'Corrente' account only
+  const theme = useTheme();
   const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
 
@@ -26,6 +21,8 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
 
   const categories = Object.keys(grouped);
 
+  const labelColor = theme.palette.text.primary;
+
   // If no categories, show a dummy dataset to avoid chartjs errors
   const datasets = categories.length > 0 ? categories.map((cat) => {
     const value = grouped[cat];
@@ -34,7 +31,6 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       data: [value],
       backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
       stack: 'total',
-      borderWidth: 1,
     };
   }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total' }];
 
@@ -58,8 +54,6 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     datasets,
   };
 
-  const dark = isDarkMode();
-  const labelColor = dark ? '#fff' : '#222';
   const options = {
     indexAxis: 'y', // horizontal bar
     responsive: true,
@@ -78,7 +72,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         },
         titleColor: labelColor,
         bodyColor: labelColor,
-        backgroundColor: dark ? '#222' : '#fff',
+        backgroundColor: theme.palette.background.paper,
       }
     },
     scales: {
@@ -89,21 +83,23 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         max,
         title: { display: true, text: 'Valor', color: labelColor },
         ticks: { color: labelColor },
-        grid: { color: dark ? 'rgba(255,255,255,0.1)' : undefined },
+        grid: { color: labelColor },
       },
       y: {
         stacked: true,
         ticks: { color: labelColor },
-        grid: { color: dark ? 'rgba(255,255,255,0.1)' : undefined },
+        grid: { color: labelColor },
       },
     },
     maintainAspectRatio: false,
   };
 
   return (
-    <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
-      <Bar data={data} options={options} />
-    </Paper>
+    <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
+      <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
+        <Bar data={data} options={options} />
+      </Paper>
+    </div>
   );
 };
 

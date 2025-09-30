@@ -51,31 +51,33 @@ const Calendar = ({ transactions, year, month }) => {
     }
 
     calendarDays.push(
-      <div key={day} className={dayClass}>
-        <div className="day-number">{day.toString().padStart(2, "0")}</div>
-        {totalAmount !== 0 && (
-          <div className={`amount ${totalAmount < 0 ? "negative" : "positive"}`}>
-            {totalAmount.toFixed(2)}
+          <div key={day} className={dayClass}>
+            <div className="day-number">{day.toString().padStart(2, "0")}</div>
+            {totalAmount !== 0 && (
+              <div className="amount">
+                {totalAmount.toFixed(2)}
+              </div>
+            )}
           </div>
-        )}
-      </div>
     );
   }
 
   return (
-    <Paper style={{ padding: "1rem", marginBottom: "1rem", background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8 }}>
-      <Typography variant="h6" gutterBottom>
-        📅 Transactions Calendar
-      </Typography>
-      <div className="calendar-container">
-        <div className="calendar-header">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-            <div key={d} className="calendar-weekday">{d}</div>
-          ))}
+     <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
+      <Paper elevation={3} sx={{ width: '100%', height: '100%', p: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          📅 Transactions Calendar
+        </Typography>
+        <div className="calendar-container">
+          <div className="calendar-header">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+              <div key={d} className="calendar-weekday">{d}</div>
+            ))}
+          </div>
+          <div className="calendar-grid">{calendarDays}</div>
         </div>
-        <div className="calendar-grid">{calendarDays}</div>
-      </div>
-    </Paper>
+      </Paper>
+    </div>
   );
 };
 

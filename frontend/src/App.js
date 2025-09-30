@@ -27,64 +27,82 @@ import TransactionList from "./components/TransactionList/TransactionList";
 import Calendar from "./components/Calendar/Calendar";
 import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
 
-// Color palettes
 const getDesignTokens = (mode) => ({
   palette: {
     mode,
     ...(mode === 'light'
       ? {
-          // palette values for light mode
-          primary: { main: '#1976d2' },
-          secondary: { main: '#9c27b0' },
+          primary: { main: '#a5d6a7' }, // pastel green
+          secondary: { main: '#ce93d8' }, // pastel purple
           background: {
-            default: '#f5f5f5',
-            paper: '#fff',
+            default: '#fafafa',
+            paper: '#ffffff',
           },
           text: {
-            primary: '#222',
-            secondary: '#555',
+            primary: '#333',
+            secondary: '#666',
+          },
+          calendar: {
+            weekdayBg: '#ffffff',
+            weekdayText: '#6d9dc5',     // pastel blue
+            weekendBg: '#fff0f5',       // light pastel pink
+            weekendText: '#d081a3',     // dusty rose
+            todayBg: '#e3f2fd',         // pale blue
+            todayBorder: '#90caf9',     // pastel cyan-blue
+            otherMonthBg: '#f5f5f5',
+            otherMonthText: '#b0b0b0',  // soft gray
+            amountNegative: '#ef9a9a',  // pastel red
+            amountPositive: '#81c784',  // pastel green
           },
         }
       : {
-          // palette values for dark mode using provided CSS variable colors
-          primary: { main: '#76c370' }, // var(--clr-primary-a0)
-          secondary: { main: '#47d5a6' }, // var(--clr-success-a10)
+          primary: { main: '#80cbc4' }, // pastel teal
+          secondary: { main: '#f48fb1' }, // pastel pink
           background: {
-            default: '#121212', // var(--clr-surface-a0)
-            paper: '#282828',   // var(--clr-surface-a10)
+            default: '#1c1c1c',
+            paper: '#2a2a2a',
           },
           text: {
-            primary: '#ffffff', // var(--clr-light-a0)
-            secondary: '#b5deaf', // var(--clr-primary-a40)
+            primary: '#f5f5f5',
+            secondary: '#cfcfcf',
           },
-          success: { main: '#22946e' }, // var(--clr-success-a0)
-          warning: { main: '#a87a2a' }, // var(--clr-warning-a0)
-          error: { main: '#9c2121' },   // var(--clr-danger-a0)
-          info: { main: '#21498a' },    // var(--clr-info-a0)
+          success: { main: '#aed581' },
+          warning: { main: '#ffcc80' },
+          error: { main: '#e57373' },
+          info: { main: '#64b5f6' },
+          calendar: {
+            weekdayBg: '#2a2a2a',
+            weekdayText: '#9fa8da',     // pastel indigo
+            weekendBg: '#3a2a3a',       // muted plum
+            weekendText: '#f48fb1',     // pastel pink
+            todayBg: '#283593',         // deep muted indigo
+            todayBorder: '#7986cb',     // pastel lavender-blue
+            otherMonthBg: '#333333',
+            otherMonthText: '#9e9e9e',  // soft gray
+            amountNegative: '#ef9a9a',  // pastel red
+            amountPositive: '#a5d6a7',  // pastel green
+          },
         }),
   },
 });
 
 // Generate a color for each category (theme-aware)
 function getCategoryColors(categories, mode) {
-  // Use a set of visually distinct colors
+  // Pastel palettes
   const lightColors = [
-    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
-    '#bcbd22', '#17becf', '#aec7e8', '#ffbb78',
-    '#98df8a', '#ff9896', '#c5b0d5', '#c49c94',
-    '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
-    '#393b79', '#637939', '#8c6d31', '#843c39'
+    '#aed581', '#81d4fa', '#ffcc80', '#ce93d8',
+    '#80cbc4', '#f48fb1', '#d1c4e9', '#c5e1a5',
+    '#b39ddb', '#ffab91', '#ffe082', '#9fa8da',
+    '#b2dfdb', '#f8bbd0', '#cfd8dc', '#e6ee9c',
   ];
 
   const darkColors = [
-    '#79b4f9', '#ffb87f', '#64c264', '#ff6e6e',
-    '#c3a3e8', '#b08c7a', '#f4aad7', '#bfbfbf',
-    '#e0e07f', '#55d6e0', '#c5ddf9', '#ffcfa3',
-    '#b8e1b0', '#ffa3a3', '#d6c1e8', '#d1b8ad',
-    '#f7c4e0', '#e0e0e0', '#f0f0a3', '#a3e0e8',
-    '#7f7fbf', '#8ca37f', '#b5986d', '#bf7c78'
+    '#8bc34a', '#4dd0e1', '#ffb74d', '#ba68c8',
+    '#4db6ac', '#f06292', '#9575cd', '#aed581',
+    '#7986cb', '#ff8a65', '#ffd54f', '#64b5f6',
+    '#80cbc4', '#e57373', '#90a4ae', '#dce775',
   ];
+
   const palette = mode === 'dark' ? darkColors : lightColors;
   const colorMap = {};
   categories.forEach((cat, idx) => {
@@ -92,6 +110,8 @@ function getCategoryColors(categories, mode) {
   });
   return colorMap;
 }
+
+
 
 // ------------------ Main App ------------------
 function App() {
@@ -255,6 +275,19 @@ function App() {
     return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo;
   });
 
+  // Inject calendar palette colors as CSS variables for Calendar.css
+  const calendarVars = theme.palette.calendar;
+  const calendarCssVars = {
+    '--calendar-weekday-bg': calendarVars.weekdayBg,
+    '--calendar-weekday-text': calendarVars.weekdayText,
+    '--calendar-weekend-bg': calendarVars.weekendBg,
+    '--calendar-weekend-text': calendarVars.weekendText,
+    '--calendar-today-bg': calendarVars.todayBg,
+    '--calendar-today-border': calendarVars.todayBorder,
+    '--calendar-other-month-bg': calendarVars.otherMonthBg,
+    '--calendar-other-month-text': calendarVars.otherMonthText,
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -265,7 +298,7 @@ function App() {
         <div className="animated-bg-light" aria-hidden="true" />
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1 }} data-theme={themeMode}>
+        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1, ...calendarCssVars }} data-theme={themeMode}>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
               {/* Left Panel */}

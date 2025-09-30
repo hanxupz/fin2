@@ -47,15 +47,18 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
     <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
       {filteredTransactions.map((t) => (
         <Card key={t.id} style={{ marginBottom: "1rem" }}>
-          <CardContent>
+          <CardContent style={{ paddingBottom: 8, paddingTop: 8 }}>
             <Typography variant="subtitle1">
-              {t.description} {t.amount.toFixed(2)}€
+              <span style={{ fontSize: '2rem', verticalAlign: 'middle' }}>{categoryEmojis[t.category] || t.category || "-"}</span>
+              <span style={{ color: t.amount >= 0 ? theme.palette.success.main : theme.palette.error.main, fontWeight: 'bold', marginLeft: 8 }}>
+                {t.amount.toFixed(2)}€
+              </span>
             </Typography>
-            <Typography variant="body2" style={{ color: '#fff' }}>
-              {(t.date || "-")} | {(categoryEmojis[t.category] || t.category || "-")} | {(t.account || "-")}
+            <Typography variant="body2" style={{ color: theme.palette.text.primary }}>
+              {(t.date || "-")} | {t.description} | {(t.account || "-")}
             </Typography>
           </CardContent>
-          <CardActions>
+          <CardActions style={{ paddingTop: 0 }}>
             <Button size="small" onClick={() => editTransaction(t)}>Edit</Button>
             <Button size="small" color="error" onClick={() => deleteTransaction(t.id)}>Delete</Button>
           </CardActions>
