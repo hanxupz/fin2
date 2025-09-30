@@ -4,3 +4,4 @@ databases[postgresql]
 sqlalchemy
 psycopg2-binary
 passlib[bcrypt]
+python-jose
