@@ -162,7 +162,7 @@ function App() {
   const [themeMode, setThemeMode] = useState('dark');
   const theme = React.useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
 
-  const BACKEND_URL = "http://localhost:8000";
+  const BACKEND_URL = "http://192.168.1.97:8000";
 
   useEffect(() => {
     if (token) {

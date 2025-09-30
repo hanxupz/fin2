@@ -9,7 +9,7 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:8000/token', {
+      const res = await fetch('http://192.168.1.97:8000/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ username, password }),
