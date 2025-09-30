@@ -337,7 +337,7 @@ function App() {
                         />
                       </Grid>
                         <Grid item>
-                          <AccountSumChart transactions={transactions} />
+                          <AccountSumChart transactions={transactions} controlDate={controlDate} />
                         </Grid>
                     </>
                   )}

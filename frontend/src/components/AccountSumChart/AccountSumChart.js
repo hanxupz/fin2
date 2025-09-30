@@ -6,12 +6,18 @@ import { useTheme } from '@mui/material/styles';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const AccountSumChart = ({ transactions }) => {
+const AccountSumChart = ({ transactions, controlDate }) => {
   const theme = useTheme();
+
+  // Filter transactions by current control date
+  const dateStr = controlDate?.toISOString().split("T")[0];
+  const filtered = dateStr
+    ? transactions.filter(t => t.control_date === dateStr)
+    : transactions;
 
   // Group by account, sum all amounts
   const grouped = {};
-  transactions.forEach(({ account, amount }) => {
+  filtered.forEach(({ account, amount }) => {
     if (!grouped[account]) grouped[account] = 0;
     grouped[account] += amount;
   });
