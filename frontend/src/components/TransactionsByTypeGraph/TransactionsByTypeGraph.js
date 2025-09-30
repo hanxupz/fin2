@@ -62,6 +62,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
 
   const dark = isDarkMode();
   const labelColor = dark ? '#fff' : '#222';
+  console.log('labelColor:', labelColor);
   const options = {
     indexAxis: 'y', // horizontal bar
     responsive: true,
