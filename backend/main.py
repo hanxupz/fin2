@@ -130,7 +130,14 @@ async def read_transactions():
     query = transactions.select().order_by(transactions.c.control_date.desc(), transactions.c.date.desc())
     results = await database.fetch_all(query)
     logger.info(f"Fetched {len(results)} transactions from DB")  # Debug log
-    return results
+    # Format amount to 2 decimals
+    formatted = []
+    for r in results:
+        r_dict = dict(r)
+        if r_dict.get("amount") is not None:
+            r_dict["amount"] = round(float(r_dict["amount"]), 2)
+        formatted.append(r_dict)
+    return formatted
 
 @app.post("/transactions/bulk/")
 async def create_transactions_bulk(transactions_list: List[Transaction]):
