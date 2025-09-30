@@ -50,7 +50,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   }
 
   const data = {
-    labels: ['Conta Corrente'],
+    labels: ['Corrente'],
     datasets,
   };
 
@@ -61,7 +61,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       legend: { display: false },
       title: {
         display: true,
-        text: 'Total por Categoria (Conta Corrente)',
+        text: 'Total por Categoria (Corrente)',
         color: labelColor,
       },
       tooltip: {
