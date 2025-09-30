@@ -14,12 +14,26 @@ const accountLabels = {
 
 const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
   const theme = useTheme();
-  // Group transactions by account and category
-  const grouped = {};
+  // Group transactions by account and category, with special logic for Poupança
+  const grouped = {
+    'Corrente': {},
+    'Poupança': {},
+    'Investimento': {},
+  };
   transactions.forEach(({ account, category, amount }) => {
-    if (!grouped[account]) grouped[account] = {};
-    if (!grouped[account][category]) grouped[account][category] = 0;
-    grouped[account][category] += amount;
+    // Corrente and Investimento: use account field
+    if (account === 'Corrente') {
+      if (!grouped['Corrente'][category]) grouped['Corrente'][category] = 0;
+      grouped['Corrente'][category] += amount;
+    } else if (account === 'Investimento') {
+      if (!grouped['Investimento'][category]) grouped['Investimento'][category] = 0;
+      grouped['Investimento'][category] += amount;
+    }
+    // Poupança: include records where category is 'Poupança Física' or 'Poupança Objectivo'
+    if (category === 'Poupança Física' || category === 'Poupança Objectivo') {
+      if (!grouped['Poupança'][category]) grouped['Poupança'][category] = 0;
+      grouped['Poupança'][category] += amount;
+    }
   });
 
   // Only show Corrente, Poupança, Investimento
