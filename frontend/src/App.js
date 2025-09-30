@@ -27,61 +27,60 @@ import TransactionList from "./components/TransactionList/TransactionList";
 import Calendar from "./components/Calendar/Calendar";
 import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
 
-// Color palettes
 const getDesignTokens = (mode) => ({
   palette: {
     mode,
     ...(mode === 'light'
       ? {
-          primary: { main: '#00e676' }, // neon lime
-          secondary: { main: '#d500f9' }, // neon purple
+          primary: { main: '#a5d6a7' }, // pastel green
+          secondary: { main: '#ce93d8' }, // pastel purple
           background: {
             default: '#fafafa',
             paper: '#ffffff',
           },
           text: {
-            primary: '#111',
-            secondary: '#444',
+            primary: '#333',
+            secondary: '#666',
           },
           calendar: {
-            weekdayBg: '#fdfdfd',
-            weekdayText: '#00c853',     // neon green
-            weekendBg: '#fff7ff',
-            weekendText: '#ff00cc',     // neon pink
-            todayBg: '#e0f7fa',
-            todayBorder: '#00e5ff',     // neon cyan
-            otherMonthBg: '#f4f4f4',
-            otherMonthText: '#ff6d00',  // neon orange
-            amountNegative: '#ff1744',  // neon red
-            amountPositive: '#39ff14',  // neon green
+            weekdayBg: '#ffffff',
+            weekdayText: '#6d9dc5',     // pastel blue
+            weekendBg: '#fff0f5',       // light pastel pink
+            weekendText: '#d081a3',     // dusty rose
+            todayBg: '#e3f2fd',         // pale blue
+            todayBorder: '#90caf9',     // pastel cyan-blue
+            otherMonthBg: '#f5f5f5',
+            otherMonthText: '#b0b0b0',  // soft gray
+            amountNegative: '#ef9a9a',  // pastel red
+            amountPositive: '#81c784',  // pastel green
           },
         }
       : {
-          primary: { main: '#39ff14' }, // neon green
-          secondary: { main: '#00e5ff' }, // neon cyan
+          primary: { main: '#80cbc4' }, // pastel teal
+          secondary: { main: '#f48fb1' }, // pastel pink
           background: {
-            default: '#0d0d0d',
-            paper: '#1a1a1a',
+            default: '#1c1c1c',
+            paper: '#2a2a2a',
           },
           text: {
-            primary: '#ffffff',
-            secondary: '#b0ffb0',
+            primary: '#f5f5f5',
+            secondary: '#cfcfcf',
           },
-          success: { main: '#00ffcc' },
-          warning: { main: '#ffea00' },
-          error: { main: '#ff073a' },
-          info: { main: '#00bfff' },
+          success: { main: '#aed581' },
+          warning: { main: '#ffcc80' },
+          error: { main: '#e57373' },
+          info: { main: '#64b5f6' },
           calendar: {
-            weekdayBg: '#0d0d0d',
-            weekdayText: '#39ff14',     // neon green
-            weekendBg: '#1a0033',
-            weekendText: '#ff00ff',     // neon magenta
-            todayBg: '#001a33',
-            todayBorder: '#00e5ff',     // neon cyan
-            otherMonthBg: '#1c1c1c',
-            otherMonthText: '#ffea00',  // neon yellow
-            amountNegative: '#ff073a',  // neon red
-            amountPositive: '#00ffcc',  // neon aqua
+            weekdayBg: '#2a2a2a',
+            weekdayText: '#9fa8da',     // pastel indigo
+            weekendBg: '#3a2a3a',       // muted plum
+            weekendText: '#f48fb1',     // pastel pink
+            todayBg: '#283593',         // deep muted indigo
+            todayBorder: '#7986cb',     // pastel lavender-blue
+            otherMonthBg: '#333333',
+            otherMonthText: '#9e9e9e',  // soft gray
+            amountNegative: '#ef9a9a',  // pastel red
+            amountPositive: '#a5d6a7',  // pastel green
           },
         }),
   },
@@ -89,19 +88,19 @@ const getDesignTokens = (mode) => ({
 
 // Generate a color for each category (theme-aware)
 function getCategoryColors(categories, mode) {
-  // Vibrant neon palettes
+  // Pastel palettes
   const lightColors = [
-    '#00e676', '#ff1744', '#2979ff', '#ffea00',
-    '#d500f9', '#00e5ff', '#ff6d00', '#00bfa5',
-    '#ff4081', '#76ff03', '#651fff', '#f50057',
-    '#64dd17', '#00b8d4', '#ff9100', '#c51162',
+    '#aed581', '#81d4fa', '#ffcc80', '#ce93d8',
+    '#80cbc4', '#f48fb1', '#d1c4e9', '#c5e1a5',
+    '#b39ddb', '#ffab91', '#ffe082', '#9fa8da',
+    '#b2dfdb', '#f8bbd0', '#cfd8dc', '#e6ee9c',
   ];
 
   const darkColors = [
-    '#39ff14', '#ff073a', '#00bfff', '#ffea00',
-    '#ff00ff', '#00ffcc', '#ff6ec7', '#76ff03',
-    '#ff1493', '#00e5ff', '#ffd700', '#ff4500',
-    '#7df9ff', '#adff2f', '#ff69b4', '#ff8c00',
+    '#8bc34a', '#4dd0e1', '#ffb74d', '#ba68c8',
+    '#4db6ac', '#f06292', '#9575cd', '#aed581',
+    '#7986cb', '#ff8a65', '#ffd54f', '#64b5f6',
+    '#80cbc4', '#e57373', '#90a4ae', '#dce775',
   ];
 
   const palette = mode === 'dark' ? darkColors : lightColors;
@@ -111,6 +110,7 @@ function getCategoryColors(categories, mode) {
   });
   return colorMap;
 }
+
 
 
 // ------------------ Main App ------------------
