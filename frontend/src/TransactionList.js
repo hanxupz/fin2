@@ -8,6 +8,34 @@ import {
   Button
 } from "@mui/material";
 
+// Map categories to emojis
+const categoryEmojis = {
+  "Comida": "🍔",
+  "Carro": "🚗",
+  "Tabaco": "🚬",
+  "Ajuste": "🛠️",
+  "Salário": "💵",
+  "Futebol": "⚽",
+  "Cartão Crédito": "💳",
+  "Telemóvel": "📱",
+  "Jogo": "🎲",
+  "Transferência": "🔄",
+  "Saúde": "🩺",
+  "Desktop": "🖥️",
+  "Subscrições": "📦",
+  "Tabaco Extra": "🚬",
+  "Noite": "🌙",
+  "Jogos PC/Switch/Play": "🎮",
+  "Cerveja": "🍺",
+  "Roupa": "👕",
+  "Poupança": "💰",
+  "Casa": "🏠",
+  "Shareworks": "📈",
+  "Educação": "🎓",
+  "Outro": "❓",
+  "Férias": "🏖️"
+};
+
 function TransactionList({ filteredTransactions, editTransaction, deleteTransaction }) {
   const theme = useTheme();
 
@@ -24,7 +52,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
               {t.description} {t.amount.toFixed(2)}€
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Date: {t.date || "-"} | Category: {t.category || "-"} | Account: {t.account || "-"}
+              Date: {t.date || "-"} | Category: {categoryEmojis[t.category] || t.category || "-"} | Account: {t.account || "-"}
             </Typography>
           </CardContent>
           <CardActions>
