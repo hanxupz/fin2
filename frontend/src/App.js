@@ -45,17 +45,21 @@ const getDesignTokens = (mode) => ({
           },
         }
       : {
-          // palette values for dark mode
-          primary: { main: '#90caf9' },
-          secondary: { main: '#ce93d8' },
+          // palette values for dark mode using provided CSS variable colors
+          primary: { main: '#76c370' }, // var(--clr-primary-a0)
+          secondary: { main: '#47d5a6' }, // var(--clr-success-a10)
           background: {
-            default: '#121212',
-            paper: '#1e1e1e',
+            default: '#121212', // var(--clr-surface-a0)
+            paper: '#282828',   // var(--clr-surface-a10)
           },
           text: {
-            primary: '#fff',
-            secondary: '#aaa',
+            primary: '#ffffff', // var(--clr-light-a0)
+            secondary: '#b5deaf', // var(--clr-primary-a40)
           },
+          success: { main: '#22946e' }, // var(--clr-success-a0)
+          warning: { main: '#a87a2a' }, // var(--clr-warning-a0)
+          error: { main: '#9c2121' },   // var(--clr-danger-a0)
+          info: { main: '#21498a' },    // var(--clr-info-a0)
         }),
   },
 });
@@ -104,7 +108,7 @@ function App() {
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
 
-  const [themeMode, setThemeMode] = useState('light');
+  const [themeMode, setThemeMode] = useState('dark');
   const theme = React.useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
 
   const BACKEND_URL = "http://192.168.1.97:8000";
