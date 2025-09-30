@@ -61,7 +61,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   };
 
   const dark = isDarkMode();
-  const labelColor = dark ? '#fff' : '#222';
+  const labelColor = theme.palette.text.primary;
   console.log('labelColor:', labelColor);
   const options = {
     indexAxis: 'y', // horizontal bar
