@@ -21,6 +21,7 @@ import ControlDateConfig from "./ControlDateConfig";
 import Filters from "./Filters";
 import TransactionList from "./TransactionList";
 import Calendar from "./Calendar";
+import ExpensesByTypeGraph from "./ExpensesByTypeGraph";
 
 // ------------------ Main App ------------------
 function App() {
@@ -192,6 +193,10 @@ function App() {
                 {controlDate && (
                   <>
                     <AccountSummary transactions={transactions} controlDate={controlDate} />
+                    {/* Expenses by Type Graph for current control date */}
+                    <ExpensesByTypeGraph
+                      expenses={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                    />
                     <Calendar
                       transactions={filteredTransactions}
                       year={controlDate.getFullYear()}

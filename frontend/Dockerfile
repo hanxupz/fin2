@@ -6,8 +6,9 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
-# Install MUI packages
-RUN npm install @mui/material@5 @mui/x-date-pickers@6 @emotion/react @emotion/styled @date-io/date-fns@2 date-fns@2  @mui/icons-material@5
+
+# Install MUI and charting packages
+RUN npm install @mui/material@5 @mui/x-date-pickers@6 @emotion/react @emotion/styled @date-io/date-fns@2 date-fns@2 @mui/icons-material@5 react-chartjs-2 chart.js
 
 # Copy all source files including public folder
 COPY . .
