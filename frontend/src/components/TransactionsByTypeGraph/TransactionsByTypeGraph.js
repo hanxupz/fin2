@@ -66,7 +66,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     indexAxis: 'y', // horizontal bar
     responsive: true,
     plugins: {
-      legend: { display: false },
+      legend: { display: false, labels: { color: labelColor }  },
       title: {
         display: true,
         text: 'Total por Categoria (Conta Corrente)',
