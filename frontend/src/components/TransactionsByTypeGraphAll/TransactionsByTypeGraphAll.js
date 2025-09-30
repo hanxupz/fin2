@@ -7,7 +7,7 @@ import { useTheme } from '@mui/material/styles';
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const accountLabels = {
-  'Corrente': 'Conta Corrente',
+  'Corrente': 'Corrente',
   'Poupança': 'Poupança',
   'Investimento': 'Investimento',
 };
