@@ -25,7 +25,7 @@ const Calendar = ({ transactions, year, month }) => {
 
   // Empty days before the first day of month
   for (let i = 0; i < startDay; i++) {
-    calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty other-month"></div>);
+    calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
   }
 
   // Days of the current month

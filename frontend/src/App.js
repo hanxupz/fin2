@@ -264,17 +264,17 @@ function App() {
                         <AccountSummary transactions={transactions} controlDate={controlDate} />
                       </Grid>
                       <Grid item>
-                        {/* Expenses by Type Graph for current control date */}
-                        <TransactionsByTypeGraph
-                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
-                          categoryColors={categoryColors}
-                        />
-                      </Grid>
-                      <Grid item>
                         <Calendar
                           transactions={filteredTransactions}
                           year={controlDate.getFullYear()}
                           month={controlDate.getMonth()}
+                        />
+                      </Grid>
+                      <Grid item>
+                        {/* Expenses by Type Graph for current control date */}
+                        <TransactionsByTypeGraph
+                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                          categoryColors={categoryColors}
                         />
                       </Grid>
                     </>
