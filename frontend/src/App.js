@@ -26,6 +26,7 @@ import Filters from "./components/Filters/Filters";
 import TransactionList from "./components/TransactionList/TransactionList";
 import Calendar from "./components/Calendar/Calendar";
 import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/TransactionsByTypeGraph";
+import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/TransactionsByTypeGraphAll";
 
 const getDesignTokens = (mode) => ({
   palette: {
@@ -324,6 +325,12 @@ function App() {
                       <Grid item>
                         {/* Expenses by Type Graph for current control date */}
                         <TransactionsByTypeGraph
+                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                          categoryColors={categoryColors}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <TransactionsByTypeGraphAll
                           transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
                           categoryColors={categoryColors}
                         />
