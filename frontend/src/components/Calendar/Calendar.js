@@ -54,7 +54,10 @@ const Calendar = ({ transactions, year, month }) => {
           <div key={day} className={dayClass}>
             <div className="day-number">{day.toString().padStart(2, "0")}</div>
             {totalAmount !== 0 && (
-              <div className="amount">
+              <div
+                className="amount"
+                style={{ color: totalAmount > 0 ? theme.palette.success.main : (totalAmount < 0 ? theme.palette.error.main : undefined) }}
+              >
                 {totalAmount.toFixed(2)}
               </div>
             )}
