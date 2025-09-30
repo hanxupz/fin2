@@ -6,6 +6,11 @@ from datetime import date as dtdate
 import databases
 import sqlalchemy
 import logging
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+import os
 
 # -------------------------------
 # Database setup
@@ -13,6 +18,15 @@ import logging
 DATABASE_URL = "postgresql://user:password@db:5432/transactions"
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
+
+# Users table
+users = sqlalchemy.Table(
+    "users",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("username", sqlalchemy.String, unique=True, index=True),
+    sqlalchemy.Column("hashed_password", sqlalchemy.String),
+)
 
 transactions = sqlalchemy.Table(
     "transactions",
@@ -28,6 +42,16 @@ transactions = sqlalchemy.Table(
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 metadata.create_all(engine)
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# JWT config
+SECRET_KEY = os.environ.get("JWT_SECRET", "supersecretkey")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 # -------------------------------
 # FastAPI setup
@@ -56,6 +80,17 @@ logger = logging.getLogger(__name__)
 # -------------------------------
 # Pydantic Model
 # -------------------------------
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
+class User(BaseModel):
+    id: int
+    username: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 class Transaction(BaseModel):
     id: Optional[int] = None
     description: str
@@ -83,6 +118,52 @@ class ControlDateSetting(BaseModel):
 
 control_date_config: Optional[ControlDateSetting] = None
 
+# Utility functions
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+async def get_user(username: str):
+    query = users.select().where(users.c.username == username)
+    user = await database.fetch_one(query)
+    return user
+
+async def authenticate_user(username: str, password: str):
+    user = await get_user(username)
+    if not user:
+        return False
+    if not verify_password(password, user["hashed_password"]):
+        return False
+    return user
+
+def create_access_token(data: dict):
+    from datetime import datetime, timedelta
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    user = await get_user(username)
+    if user is None:
+        raise credentials_exception
+    return user
+
 # -------------------------------
 # Lifecycle
 # -------------------------------
@@ -98,6 +179,26 @@ async def shutdown():
 # Routes
 # -------------------------------
 
+# Registration endpoint
+@app.post("/register", response_model=User)
+async def register(user: UserCreate):
+    existing = await get_user(user.username)
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    hashed_password = get_password_hash(user.password)
+    query = users.insert().values(username=user.username, hashed_password=hashed_password)
+    user_id = await database.execute(query)
+    return {"id": user_id, "username": user.username}
+
+# Login endpoint (token)
+@app.post("/token", response_model=Token)
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = await authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+    access_token = create_access_token(data={"sub": user["username"]})
+    return {"access_token": access_token, "token_type": "bearer"}
+
 @app.post("/config/control_date/")
 async def set_control_date(config: ControlDateSetting):
     global control_date_config
@@ -111,7 +212,7 @@ async def get_control_date():
     return {"control_date": control_date_config.control_date}
 
 @app.post("/transactions/")
-async def create_transaction(transaction: Transaction, request: Request):
+async def create_transaction(transaction: Transaction, request: Request, current_user: dict = Depends(get_current_user)):
     logger.info(f"Received payload: {transaction.dict()}")  # Debug log
 
     query = transactions.insert().values(
@@ -126,14 +227,14 @@ async def create_transaction(transaction: Transaction, request: Request):
     return {**transaction.dict(), "id": last_record_id}
 
 @app.get("/transactions/", response_model=List[Transaction])
-async def read_transactions():
+async def read_transactions(current_user: dict = Depends(get_current_user)):
     query = transactions.select().order_by(transactions.c.control_date.desc(), transactions.c.date.desc())
     results = await database.fetch_all(query)
     logger.info(f"Fetched {len(results)} transactions from DB")  # Debug log
     return results
 
 @app.post("/transactions/bulk/")
-async def create_transactions_bulk(transactions_list: List[Transaction]):
+async def create_transactions_bulk(transactions_list: List[Transaction], current_user: dict = Depends(get_current_user)):
     if not transactions_list:
         raise HTTPException(status_code=400, detail="No transactions provided")
     
@@ -156,7 +257,7 @@ async def create_transactions_bulk(transactions_list: List[Transaction]):
     return {"inserted_count": len(values)}
 
 @app.delete("/transactions/{transaction_id}")
-async def delete_transaction(transaction_id: int):
+async def delete_transaction(transaction_id: int, current_user: dict = Depends(get_current_user)):
     # Check if the transaction exists
     query = transactions.select().where(transactions.c.id == transaction_id)
     transaction = await database.fetch_one(query)
@@ -169,7 +270,7 @@ async def delete_transaction(transaction_id: int):
     return {"message": f"Transaction with id {transaction_id} deleted successfully"}
 
 @app.put("/transactions/{transaction_id}")
-async def update_transaction(transaction_id: int, transaction: Transaction):
+async def update_transaction(transaction_id: int, transaction: Transaction, current_user: dict = Depends(get_current_user)):
     # Check if the transaction exists
     query = transactions.select().where(transactions.c.id == transaction_id)
     existing_transaction = await database.fetch_one(query)
