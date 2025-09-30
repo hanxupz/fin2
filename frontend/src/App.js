@@ -44,17 +44,17 @@ const getDesignTokens = (mode) => ({
             secondary: '#555',
           },
           calendar: {
-            weekdayBg: '#fffbe6',
-            weekdayText: '#222',
-            weekendBg: '#ffe6e6',
-            weekendText: '#b71c1c',
-            todayBg: '#bbdefb',
-            todayBorder: '#2196f3',
-            otherMonthBg: '#f0f0f0',
-            otherMonthText: '#aaa',
-            amountNegative: 'red',
-            amountPositive: 'green',
-          },
+            weekdayBg: '#fdfdfd',       // almost white for clean light mode
+            weekdayText: '#00c853',     // neon green text
+            weekendBg: '#fff7ff',       // faint pink background for weekends
+            weekendText: '#d500f9',     // neon purple text
+            todayBg: '#e0f7fa',         // light aqua background
+            todayBorder: '#00e5ff',     // neon cyan border
+            otherMonthBg: '#f4f4f4',    // soft gray for other months
+            otherMonthText: '#ff6d00',  // neon orange text
+            amountNegative: '#ff1744',  // neon red
+            amountPositive: '#00e676',  // neon lime
+          }
         }
       : {
           primary: { main: '#76c370' },
@@ -72,17 +72,17 @@ const getDesignTokens = (mode) => ({
           error: { main: '#9c2121' },
           info: { main: '#21498a' },
           calendar: {
-            weekdayBg: '#232323',
-            weekdayText: '#eee',
-            weekendBg: '#2d1a1a',
-            weekendText: '#ff8a80',
-            todayBg: '#1976d2',
-            todayBorder: '#90caf9',
-            otherMonthBg: '#f0f0f0',
-            otherMonthText: '#aaa',
-            amountNegative: 'red',
-            amountPositive: 'green',
-          },
+            weekdayBg: '#0d0d0d',       // near black background for contrast
+            weekdayText: '#39ff14',     // neon green text
+            weekendBg: '#1a0033',       // deep purple background
+            weekendText: '#ff00ff',     // neon magenta text
+            todayBg: '#001a33',         // dark navy backdrop
+            todayBorder: '#00e5ff',     // neon cyan border
+            otherMonthBg: '#1c1c1c',    // dark gray for other months
+            otherMonthText: '#ffea00',  // neon yellow text
+            amountNegative: '#ff073a',  // neon red
+            amountPositive: '#00ffcc',  // neon aqua
+          }
         }),
   },
 });
