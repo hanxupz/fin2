@@ -66,7 +66,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     indexAxis: 'y', // horizontal bar
     responsive: true,
     plugins: {
-      legend: { display: false, labels: { color: labelColor }  },
+      legend: { display: false },
       title: {
         display: true,
         text: 'Total por Categoria (Conta Corrente)',
@@ -91,12 +91,12 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         max,
         title: { display: true, text: 'Valor', color: labelColor },
         ticks: { color: labelColor },
-        grid: { color: dark ? 'rgba(255,255,255,0.1)' : undefined },
+  grid: { color: dark ? 'rgba(255,255,255,0.2)' : undefined },
       },
       y: {
         stacked: true,
         ticks: { color: labelColor },
-        grid: { color: dark ? 'rgba(255,255,255,0.1)' : undefined },
+  grid: { color: dark ? 'rgba(255,255,255,0.2)' : undefined },
       },
     },
     maintainAspectRatio: false,
