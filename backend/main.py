@@ -76,6 +76,11 @@ app.add_middleware(
 # -------------------------------
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+try:
+    import bcrypt
+    logger.info(f"bcrypt version: {getattr(bcrypt, '__version__', 'unknown')}")
+except Exception as e:
+    logger.warning(f"Could not determine bcrypt version: {e}")
 logger.info(f"CORS middleware configured. Allowed origins: {origins}")
 
 # -------------------------------
