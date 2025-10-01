@@ -69,6 +69,7 @@ app = FastAPI()
 
 # CORS settings
 origins = [
+    "http://finance.theonet.uk",
     "http://localhost:3000",
     "http://192.168.1.97:3000",  # Replace with your host IP
 ]
