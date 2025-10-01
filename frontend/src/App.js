@@ -186,8 +186,6 @@ function App() {
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
-  const BACKEND_URL = "https://finance-backend.theonet.uk";
-
   useEffect(() => {
     // Validate token on app load
     if (token) {
@@ -204,7 +202,7 @@ function App() {
 
   const fetchControlDateConfig = async () => {
     try {
-      const res = await fetch(`${REACT_APP_BACKEND_URL}/config/control_date/`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/config/control_date/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -231,7 +229,7 @@ function App() {
   const updateControlDateConfig = async () => {
     try {
       const payload = { year: parseInt(configYear), month: parseInt(configMonth) + 1 };
-      const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/config/control_date/`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
@@ -251,7 +249,7 @@ function App() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/transactions/`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -284,14 +282,14 @@ function App() {
     };
     try {
       if (editingId) {
-        await fetch(`${BACKEND_URL}/transactions/${editingId}`, {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
         setEditingId(null);
       } else {
-        await fetch(`${BACKEND_URL}/transactions/`, {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions/`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
@@ -311,7 +309,7 @@ function App() {
 
   const deleteTransaction = async (id) => {
     try {
-      await fetch(`${BACKEND_URL}/transactions/${id}`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
