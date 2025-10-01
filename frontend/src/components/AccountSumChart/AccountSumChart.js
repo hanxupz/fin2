@@ -77,11 +77,11 @@ const AccountSumChart = ({ transactions, controlDate }) => {
         beginAtZero: true,
         title: { display: true, text: 'Sum', color: labelColor },
         ticks: { color: labelColor },
-        grid: { color: labelColor },
+        grid: { color: theme.palette.divider }, 
       },
       y: {
         ticks: { color: labelColor },
-        grid: { color: labelColor },
+        grid: { color: theme.palette.divider },
       },
     },
     maintainAspectRatio: false,

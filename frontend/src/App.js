@@ -8,7 +8,9 @@ import {
   Fab,
   Dialog,
   DialogTitle,
-  DialogContent
+  DialogContent,
+  useMediaQuery,
+  useTheme as useMuiTheme
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -116,8 +118,6 @@ function getCategoryColors(categories, mode) {
   return colorMap;
 }
 
-
-
 // Helper to format data for ControlDateAccountBarChart
 function getControlDateAccountBarData(transactions) {
   // Group by control_date, then sum by account
@@ -133,6 +133,27 @@ function getControlDateAccountBarData(transactions) {
     ...accounts
   }));
 }
+
+// Token validation helper function
+const isTokenValid = (token) => {
+  if (!token) return false;
+  
+  try {
+    // Decode JWT payload (basic validation)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    
+    // Check if token is expired
+    if (payload.exp && payload.exp < currentTime) {
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Invalid token format:', error);
+    return false;
+  }
+};
 
 // ------------------ Main App ------------------
 function App() {
@@ -161,13 +182,24 @@ function App() {
 
   const [themeMode, setThemeMode] = useState('dark');
   const theme = React.useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
+  
+  // Mobile detection
+  const muiTheme = useMuiTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
-  const BACKEND_URL = "http://192.168.1.97:8000";
+  const BACKEND_URL = "https://finance-backend.theonet.uk";
 
   useEffect(() => {
+    // Validate token on app load
     if (token) {
-      fetchTransactions();
-      fetchControlDateConfig();
+      if (isTokenValid(token)) {
+        fetchTransactions();
+        fetchControlDateConfig();
+      } else {
+        // Token is invalid or expired, logout
+        console.log('Token is invalid or expired, logging out...');
+        handleLogout();
+      }
     }
   }, [token]);
 
@@ -176,6 +208,13 @@ function App() {
       const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      if (res.status === 401) {
+        // Token is invalid/expired, logout user
+        handleLogout();
+        return;
+      }
+      
       if (res.ok) {
         const data = await res.json();
         const dt = data.control_date ? new Date(data.control_date) : null;
@@ -216,6 +255,17 @@ function App() {
       const res = await fetch(`${BACKEND_URL}/transactions/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      if (res.status === 401) {
+        // Token is invalid/expired, logout user
+        handleLogout();
+        return;
+      }
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const data = await res.json();
       setTransactions(data);
     } catch (err) {
@@ -299,7 +349,7 @@ function App() {
   // Generate category color map for current theme
   const categoryColors = React.useMemo(() => getCategoryColors(categories, themeMode), [categories, themeMode]);
 
-  const filteredTransactions = transactions.filter((t) => {
+  const filteredTransactions = (transactions || []).filter((t) => {
     const matchesCategory = filterCategory ? t.category === filterCategory : true;
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
     const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
@@ -348,6 +398,19 @@ function App() {
     );
   }
 
+  // Mobile FAB positioning
+  const fabStyle = {
+    position: "fixed",
+    zIndex: 1000,
+    ...(isMobile ? {
+      // Mobile: Stack vertically on the right
+      right: 16,
+    } : {
+      // Desktop: Original positioning
+      right: 30,
+    })
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -358,122 +421,226 @@ function App() {
         <div className="animated-bg-light" aria-hidden="true" />
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1, ...calendarCssVars }} data-theme={themeMode}>
-          <button onClick={handleLogout} style={{position:'absolute',top:10,right:10,zIndex:2000}}>Logout</button>
-          <Container maxWidth="lg">
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={8}>
-                <Grid container direction="column" spacing={3}>
-                  <Grid item>
-                    <Typography variant="h4" gutterBottom align="center">
-                      💰 My Account Summary
-                    </Typography>
+        <Box style={{ 
+          padding: isMobile ? "1rem" : "2rem", 
+          position: 'relative', 
+          minHeight: '100vh', 
+          zIndex: 1, 
+          ...calendarCssVars 
+        }} data-theme={themeMode}>
+          <button 
+            onClick={handleLogout} 
+            style={{
+              position:'absolute',
+              top: isMobile ? 10 : 10,
+              right: isMobile ? 10 : 10,
+              zIndex:2000,
+              padding: isMobile ? '8px 12px' : '10px 15px',
+              fontSize: isMobile ? '0.8rem' : '1rem'
+            }}
+          >
+            Logout
+          </button>
+          
+          <Container maxWidth="xl" disableGutters={isMobile}>
+            {isMobile ? (
+              // Mobile Layout: Single column, stacked vertically
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant={isMobile ? "h5" : "h4"} gutterBottom align="center">
+                    💰 My Account Summary
+                  </Typography>
+                </Grid>
+                
+                {controlDate && (
+                  <>
+                    <Grid item xs={12}>
+                      <AccountSummary transactions={transactions} controlDate={controlDate} />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <Calendar
+                        transactions={filteredTransactions}
+                        year={controlDate.getFullYear()}
+                        month={controlDate.getMonth()}
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <Typography variant="h6" gutterBottom>
+                        💰 My Transactions
+                      </Typography>
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <Filters
+                        filterCategory={filterCategory}
+                        setFilterCategory={setFilterCategory}
+                        filterAccount={filterAccount}
+                        setFilterAccount={setFilterAccount}
+                        filterDateFrom={filterDateFrom}
+                        setFilterDateFrom={setFilterDateFrom}
+                        filterDateTo={filterDateTo}
+                        setFilterDateTo={setFilterDateTo}
+                        categories={categories}
+                        accounts={accounts}
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TransactionList
+                        filteredTransactions={filteredTransactions}
+                        editTransaction={editTransaction}
+                        deleteTransaction={deleteTransaction}
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TransactionsByTypeGraph
+                        transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                        categoryColors={categoryColors}
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TransactionsByTypeGraphAll
+                        transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                        categoryColors={categoryColors}
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <AccountSumChart transactions={transactions} controlDate={controlDate} />
+                    </Grid>
+                    
+                    <Grid item xs={12} style={{ marginBottom: '100px' }}>
+                      <ControlDateAccountBarChart data={getControlDateAccountBarData(transactions)} />
+                    </Grid>
+                  </>
+                )}
+              </Grid>
+            ) : (
+              // Desktop Layout: Original two-column layout
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={8}>
+                  <Grid container direction="column" spacing={3}>
+                    <Grid item>
+                      <Typography variant="h4" gutterBottom align="center">
+                        💰 My Account Summary
+                      </Typography>
+                    </Grid>
+                    {controlDate && (
+                      <>
+                        <Grid item>
+                          <AccountSummary transactions={transactions} controlDate={controlDate} />
+                        </Grid>
+                        <Grid item>
+                          <Calendar
+                            transactions={filteredTransactions}
+                            year={controlDate.getFullYear()}
+                            month={controlDate.getMonth()}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <TransactionsByTypeGraph
+                            transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                            categoryColors={categoryColors}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <TransactionsByTypeGraphAll
+                            transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
+                            categoryColors={categoryColors}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <AccountSumChart transactions={transactions} controlDate={controlDate} />
+                        </Grid>
+                        <Grid item>
+                          <ControlDateAccountBarChart data={getControlDateAccountBarData(transactions)} />
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
-                  {controlDate && (
-                    <>
-                      <Grid item>
-                        <AccountSummary transactions={transactions} controlDate={controlDate} />
-                      </Grid>
-                      <Grid item>
-                        <Calendar
-                          transactions={filteredTransactions}
-                          year={controlDate.getFullYear()}
-                          month={controlDate.getMonth()}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <TransactionsByTypeGraph
-                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
-                          categoryColors={categoryColors}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <TransactionsByTypeGraphAll
-                          transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
-                          categoryColors={categoryColors}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <AccountSumChart transactions={transactions} controlDate={controlDate} />
-                      </Grid>
-                      <Grid item>
-                        <ControlDateAccountBarChart data={getControlDateAccountBarData(transactions)} />
-                      </Grid>
-                    </>
-                  )}
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Grid container direction="column" spacing={3}>
+                    <Grid item>
+                      <Typography variant="h4" gutterBottom>
+                        💰 My Transactions
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Filters
+                        filterCategory={filterCategory}
+                        setFilterCategory={setFilterCategory}
+                        filterAccount={filterAccount}
+                        setFilterAccount={setFilterAccount}
+                        filterDateFrom={filterDateFrom}
+                        setFilterDateFrom={setFilterDateFrom}
+                        filterDateTo={filterDateTo}
+                        setFilterDateTo={setFilterDateTo}
+                        categories={categories}
+                        accounts={accounts}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TransactionList
+                        filteredTransactions={filteredTransactions}
+                        editTransaction={editTransaction}
+                        deleteTransaction={deleteTransaction}
+                      />
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} md={4}>
-                <Grid container direction="column" spacing={3}>
-                  <Grid item>
-                    <Typography variant="h4" gutterBottom>
-                      💰 My Transactions
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Filters
-                      filterCategory={filterCategory}
-                      setFilterCategory={setFilterCategory}
-                      filterAccount={filterAccount}
-                      setFilterAccount={setFilterAccount}
-                      filterDateFrom={filterDateFrom}
-                      setFilterDateFrom={setFilterDateFrom}
-                      filterDateTo={filterDateTo}
-                      setFilterDateTo={setFilterDateTo}
-                      categories={categories}
-                      accounts={accounts}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <TransactionList
-                      filteredTransactions={filteredTransactions}
-                      editTransaction={editTransaction}
-                      deleteTransaction={deleteTransaction}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+            )}
+            
+            {/* Floating Action Buttons */}
             <Fab
               color="primary"
               aria-label="add"
               onClick={() => setTransactionDialogOpen(true)}
               style={{
-                position: "fixed",
-                bottom: 90,
-                right: 30,
-                zIndex: 1000,
+                ...fabStyle,
+                bottom: isMobile ? 20 : 90,
               }}
             >
               <AddIcon />
             </Fab>
+            
             <Fab
               color="secondary"
               aria-label="settings"
               onClick={() => setControlDateDialogOpen(true)}
               style={{
-                position: "fixed",
-                bottom: 30,
-                right: 30,
-                zIndex: 1000,
+                ...fabStyle,
+                bottom: isMobile ? 80 : 30,
               }}
             >
               <SettingsIcon />
             </Fab>
+            
             <Fab
               color="default"
               aria-label="toggle theme"
               onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
               style={{
-                position: "fixed",
-                bottom: 150,
-                right: 30,
-                zIndex: 1000,
+                ...fabStyle,
+                bottom: isMobile ? 140 : 150,
               }}
             >
               {themeMode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
             </Fab>
-            <Dialog open={transactionDialogOpen} onClose={() => setTransactionDialogOpen(false)} maxWidth="sm" fullWidth>
+            
+            {/* Dialogs */}
+            <Dialog 
+              open={transactionDialogOpen} 
+              onClose={() => setTransactionDialogOpen(false)} 
+              maxWidth="sm" 
+              fullWidth
+              fullScreen={isMobile}
+            >
               <DialogTitle>{editingId ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
               <DialogContent>
                 <TransactionForm
@@ -496,7 +663,14 @@ function App() {
                 />
               </DialogContent>
             </Dialog>
-            <Dialog open={controlDateDialogOpen} onClose={() => setControlDateDialogOpen(false)} maxWidth="sm" fullWidth>
+            
+            <Dialog 
+              open={controlDateDialogOpen} 
+              onClose={() => setControlDateDialogOpen(false)} 
+              maxWidth="sm" 
+              fullWidth
+              fullScreen={isMobile}
+            >
               <DialogTitle>Update Control Date</DialogTitle>
               <DialogContent>
                 <ControlDateConfig
