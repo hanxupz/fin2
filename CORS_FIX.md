@@ -1,12 +1,23 @@
-# Backend Deployment Fix for CORS Issue
+# Backend Deployment Fix for PostgreSQL and CORS Issues
+
+## Root Cause
+The error `sqlalchemy.exc.NoSuchModuleError: Can't load plugin: sqlalchemy.dialects:postgres` indicates that:
+1. The PostgreSQL driver isn't properly installed
+2. The database URL format needs to be corrected
+3. The refactored backend structure needs proper deployment
 
 ## Quick Fix Steps
 
-### 1. Rebuild the backend container:
+### 1. Run the automated fix script:
 ```bash
-cd backend
+chmod +x fix_deployment.sh
+./fix_deployment.sh
+```
+
+### OR manually rebuild the backend:
+```bash
 docker-compose down
-docker-compose build --no-cache backend
+docker-compose build --no-cache backend  
 docker-compose up -d
 ```
 

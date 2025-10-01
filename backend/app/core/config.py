@@ -3,7 +3,7 @@ from typing import List
 
 class Settings:
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@db:5432/transactions")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+psycopg2://user:password@db:5432/transactions")
     
     # JWT
     JWT_SECRET: str = os.getenv("JWT_SECRET", "supersecretkey")
