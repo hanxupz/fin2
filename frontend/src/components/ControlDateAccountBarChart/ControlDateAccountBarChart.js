@@ -92,11 +92,9 @@ const ControlDateAccountBarChart = ({ data }) => {
   };
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
-        <Paper elevation={3} sx={{ width: '100%', height: 600, p: 2 }}>
-            <Bar data={chartData} options={options} />
-        </Paper>
-    </div>
+    <Paper elevation={3} sx={{ width: '100%', height: 600, p: 2 }}>
+      <Bar data={chartData} options={options} />
+    </Paper>
   );
 };
 

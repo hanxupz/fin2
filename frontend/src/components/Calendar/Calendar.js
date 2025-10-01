@@ -66,21 +66,19 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-     <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: '100%', p: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          📅 Transactions Calendar
-        </Typography>
-        <div className="calendar-container">
-          <div className="calendar-header">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-              <div key={d} className="calendar-weekday">{d}</div>
-            ))}
-          </div>
-          <div className="calendar-grid">{calendarDays}</div>
+    <Paper elevation={3} sx={{ width: '100%', height: '100%', p: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        📅 Transactions Calendar
+      </Typography>
+      <div className="calendar-container">
+        <div className="calendar-header">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            <div key={d} className="calendar-weekday">{d}</div>
+          ))}
         </div>
-      </Paper>
-    </div>
+        <div className="calendar-grid">{calendarDays}</div>
+      </div>
+    </Paper>
   );
 };
 

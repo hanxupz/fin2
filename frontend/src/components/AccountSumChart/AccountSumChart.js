@@ -82,11 +82,9 @@ const AccountSumChart = ({ transactions, controlDate }) => {
   };
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
-        <Bar data={data} options={options} />
-      </Paper>
-    </div>
+    <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
+      <Bar data={data} options={options} />
+    </Paper>
   );
 };
 

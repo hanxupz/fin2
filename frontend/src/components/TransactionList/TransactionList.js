@@ -44,7 +44,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   }
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
+    <div>
       {filteredTransactions.map((t) => (
         <Card key={t.id} style={{ marginBottom: "1rem" }}>
           <CardContent style={{ paddingBottom: 8, paddingTop: 8 }}>
