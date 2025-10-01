@@ -24,6 +24,10 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("username", sqlalchemy.String, unique=True, index=True),
     sqlalchemy.Column("hashed_password", sqlalchemy.String),
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.Datetime, nullable=False),
 )
 
 control_dates = sqlalchemy.Table(
@@ -34,6 +38,10 @@ control_dates = sqlalchemy.Table(
     sqlalchemy.Column("year", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("month", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("control_date", sqlalchemy.Date, nullable=False),
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.Datetime, nullable=False),
 )
 
 transactions = sqlalchemy.Table(
@@ -47,6 +55,10 @@ transactions = sqlalchemy.Table(
     sqlalchemy.Column("category", sqlalchemy.String),   # plain string
     sqlalchemy.Column("account", sqlalchemy.String),    # plain string
     sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.Datetime, nullable=False),
 )
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -219,13 +231,23 @@ async def register(user: UserCreate):
         safe_password = user.password
         hashed_password = get_password_hash(safe_password)
         logger.debug(f"Hashed password for {user.username}: {hashed_password}")
-        query = users.insert().values(username=user.username, hashed_password=hashed_password)
+        
+        current_time = datetime.utcnow()
+        query = users.insert().values(
+            username=user.username, 
+            hashed_password=hashed_password,
+            create_by=-1,  # System user for new registrations
+            create_date=current_time,
+            update_by=-1,
+            update_date=current_time
+        )
         user_id = await database.execute(query)
         logger.info(f"User registered successfully: id={user_id}, username={user.username}")
         return {"id": user_id, "username": user.username}
     except Exception as e:
         logger.error(f"Error during registration for {user.username}: {e}")
         raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
+
 
 # Login endpoint (token)
 @app.post("/token", response_model=Token)
@@ -239,13 +261,17 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @app.post("/config/control_date/")
 async def set_control_date(config: ControlDateSetting, current_user: dict = Depends(get_current_user)):
     # Upsert control date for user
+    current_time = datetime.utcnow()
     query = control_dates.select().where(control_dates.c.user_id == current_user["id"])
     existing = await database.fetch_one(query)
+    
     if existing:
         update_query = control_dates.update().where(control_dates.c.user_id == current_user["id"]).values(
             year=config.year,
             month=config.month,
-            control_date=config.control_date
+            control_date=config.control_date,
+            update_by=current_user["id"],
+            update_date=current_time
         )
         await database.execute(update_query)
     else:
@@ -253,10 +279,15 @@ async def set_control_date(config: ControlDateSetting, current_user: dict = Depe
             user_id=current_user["id"],
             year=config.year,
             month=config.month,
-            control_date=config.control_date
+            control_date=config.control_date,
+            create_by=current_user["id"],
+            create_date=current_time,
+            update_by=current_user["id"],
+            update_date=current_time
         )
         await database.execute(insert_query)
     return {"control_date": config.control_date}
+
 
 @app.get("/config/control_date/")
 async def get_control_date(current_user: dict = Depends(get_current_user)):
@@ -274,6 +305,7 @@ async def get_control_date(current_user: dict = Depends(get_current_user)):
 async def create_transaction(transaction: Transaction, request: Request, current_user: dict = Depends(get_current_user)):
     logger.info(f"Received payload: {transaction.dict()}")  # Debug log
 
+    current_time = datetime.utcnow()
     query = transactions.insert().values(
         description=transaction.description,
         amount=transaction.amount,
@@ -281,10 +313,15 @@ async def create_transaction(transaction: Transaction, request: Request, current
         control_date=transaction.control_date,
         category=transaction.category,
         account=transaction.account,
-        user_id=current_user["id"]
+        user_id=current_user["id"],
+        create_by=current_user["id"],
+        create_date=current_time,
+        update_by=current_user["id"],
+        update_date=current_time
     )
     last_record_id = await database.execute(query)
     return {**transaction.dict(), "id": last_record_id}
+
 
 @app.get("/transactions/", response_model=List[Transaction])
 async def read_transactions(current_user: dict = Depends(get_current_user)):
@@ -298,6 +335,7 @@ async def create_transactions_bulk(transactions_list: List[Transaction], current
     if not transactions_list:
         raise HTTPException(status_code=400, detail="No transactions provided")
     
+    current_time = datetime.utcnow()
     query = transactions.insert()
     values = [
         {
@@ -307,7 +345,11 @@ async def create_transactions_bulk(transactions_list: List[Transaction], current
             "control_date": t.control_date,
             "category": t.category,
             "account": t.account,
-            "user_id": current_user["id"]
+            "user_id": current_user["id"],
+            "create_by": current_user["id"],
+            "create_date": current_time,
+            "update_by": current_user["id"],
+            "update_date": current_time
         }
         for t in transactions_list
     ]
@@ -345,6 +387,11 @@ async def update_transaction(transaction_id: int, transaction: Transaction, curr
 
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
+
+    # Add audit fields
+    current_time = datetime.utcnow()
+    update_data["update_by"] = current_user["id"]
+    update_data["update_date"] = current_time
 
     # Update the transaction
     update_query = transactions.update().where(transactions.c.id == transaction_id).values(**update_data)
