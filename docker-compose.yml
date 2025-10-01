@@ -20,6 +20,8 @@ services:
     container_name: transactions_backend
     environment:
       DATABASE_URL: postgres://user:password@db:5432/transactions
+      DEBUG: "true"
+      JWT_SECRET: "supersecretkey"
     ports:
       - "8000:8000"
     depends_on:

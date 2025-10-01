@@ -16,13 +16,24 @@ app = FastAPI(
     debug=settings.DEBUG
 )
 
-# Configure CORS
+# Configure CORS with enhanced settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"] if settings.DEBUG else settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
+    allow_headers=[
+        "*",
+        "Authorization",
+        "Content-Type",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers"
+    ],
+    expose_headers=["*"],
+    max_age=86400,  # 24 hours
 )
 
 # Include routers
@@ -44,7 +55,10 @@ async def startup():
         await connect_db()
         logger.info("Database connection established.")
         
-        logger.info(f"CORS middleware configured. Allowed origins: {settings.CORS_ORIGINS}")
+        # Log CORS configuration
+        cors_origins = ["*"] if settings.DEBUG else settings.CORS_ORIGINS
+        logger.info(f"CORS middleware configured. Debug mode: {settings.DEBUG}")
+        logger.info(f"Allowed origins: {cors_origins}")
         logger.info("Application startup complete.")
         
     except Exception as e:
@@ -63,3 +77,9 @@ async def shutdown():
 async def health_check():
     """Basic health check endpoint."""
     return {"status": "healthy", "app": settings.APP_NAME}
+
+# Explicit OPTIONS handler for CORS preflight
+@app.options("/{path:path}")
+async def options_handler():
+    """Handle CORS preflight requests."""
+    return {"message": "OK"}

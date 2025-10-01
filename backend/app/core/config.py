@@ -10,12 +10,13 @@ class Settings:
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
-    # CORS
+    # CORS - Production-ready configuration
     CORS_ORIGINS: List[str] = [
         "https://finance.theonet.uk",
-        "https://finance-backend.theonet.uk",
+        "https://finance-backend.theonet.uk", 
         "http://192.168.1.97:3000",
         "http://localhost:3000",
+        "http://localhost:3001",
     ]
     
     # App
