@@ -257,7 +257,7 @@ const AppContent = () => {
                   />
                 </div>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                <div style={{ display: 'grid', marginTop: '2rem', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                   <TransactionsByTypeGraphAll
                     transactions={filteredTransactions}
                     categoryColors={categoryColors}
