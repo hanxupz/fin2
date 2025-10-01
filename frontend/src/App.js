@@ -205,7 +205,7 @@ function App() {
 
   const fetchControlDateConfig = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
+      const res = await fetch(`${REACT_APP_BACKEND_URL}/config/control_date/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -384,15 +384,12 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box style={{ padding: "2rem", minHeight: '100vh' }}>
+        <Box style={{ padding: "1rem", height: '100vh', width: '100vh' }}>
           {showRegister ? (
             <Register onRegister={() => setShowRegister(false)} />
           ) : (
             <Login onLogin={handleLogin} />
           )}
-          <button onClick={() => setShowRegister(s => !s)} style={{marginTop:20}}>
-            {showRegister ? 'Back to Login' : 'Register' }
-          </button>
         </Box>
       </ThemeProvider>
     );
