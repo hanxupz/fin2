@@ -34,12 +34,16 @@ const Login = ({ onLogin }) => {
         }
       } else {
         // Login
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/token`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({ username, password }),
+          body: formData,
         });
 
         const data = await response.json();
