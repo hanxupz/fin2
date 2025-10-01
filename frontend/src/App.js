@@ -29,6 +29,8 @@ import TransactionsByTypeGraph from "./components/TransactionsByTypeGraph/Transa
 import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/TransactionsByTypeGraphAll";
 import AccountSumChart from "./components/AccountSumChart/AccountSumChart";
 import ControlDateAccountBarChart from "./components/ControlDateAccountBarChart/ControlDateAccountBarChart";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 const getDesignTokens = (mode) => ({
   palette: {
@@ -134,6 +136,8 @@ function getControlDateAccountBarData(transactions) {
 
 // ------------------ Main App ------------------
 function App() {
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [showRegister, setShowRegister] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -161,13 +165,17 @@ function App() {
   const BACKEND_URL = "http://192.168.1.97:8000";
 
   useEffect(() => {
-    fetchTransactions();
-    fetchControlDateConfig();
-  }, []);
+    if (token) {
+      fetchTransactions();
+      fetchControlDateConfig();
+    }
+  }, [token]);
 
   const fetchControlDateConfig = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/config/control_date/`);
+      const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.ok) {
         const data = await res.json();
         const dt = data.control_date ? new Date(data.control_date) : null;
@@ -184,10 +192,10 @@ function App() {
 
   const updateControlDateConfig = async () => {
     try {
-      const payload = { year: parseInt(configYear), month: parseInt(configMonth) + 1 }; // API expects 1-based month
+      const payload = { year: parseInt(configYear), month: parseInt(configMonth) + 1 };
       const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
       if (res.ok) {
@@ -205,7 +213,9 @@ function App() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/transactions/`);
+      const res = await fetch(`${BACKEND_URL}/transactions/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       setTransactions(data);
     } catch (err) {
@@ -227,14 +237,14 @@ function App() {
       if (editingId) {
         await fetch(`${BACKEND_URL}/transactions/${editingId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
         setEditingId(null);
       } else {
         await fetch(`${BACKEND_URL}/transactions/`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
       }
@@ -252,7 +262,10 @@ function App() {
 
   const deleteTransaction = async (id) => {
     try {
-      await fetch(`${BACKEND_URL}/transactions/${id}`, { method: "DELETE" });
+      await fetch(`${BACKEND_URL}/transactions/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       fetchTransactions();
     } catch (err) {
       console.error("Failed to delete transaction:", err);
@@ -307,6 +320,34 @@ function App() {
     '--calendar-other-month-text': calendarVars.otherMonthText,
   };
 
+  // Auth logic
+  const handleLogin = (jwt) => {
+    setToken(jwt);
+    localStorage.setItem('token', jwt);
+  };
+  const handleLogout = () => {
+    setToken('');
+    localStorage.removeItem('token');
+  };
+
+  if (!token) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box style={{ padding: "2rem", minHeight: '100vh' }}>
+          {showRegister ? (
+            <Register onRegister={() => setShowRegister(false)} />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
+          <button onClick={() => setShowRegister(s => !s)} style={{marginTop:20}}>
+            {showRegister ? 'Back to Login' : 'Register' }
+          </button>
+        </Box>
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -318,9 +359,9 @@ function App() {
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box style={{ padding: "2rem", position: 'relative', minHeight: '100vh', zIndex: 1, ...calendarCssVars }} data-theme={themeMode}>
+          <button onClick={handleLogout} style={{position:'absolute',top:10,right:10,zIndex:2000}}>Logout</button>
           <Container maxWidth="lg">
             <Grid container spacing={2}>
-              {/* Left Panel */}
               <Grid item xs={12} md={8}>
                 <Grid container direction="column" spacing={3}>
                   <Grid item>
@@ -341,7 +382,6 @@ function App() {
                         />
                       </Grid>
                       <Grid item>
-                        {/* Expenses by Type Graph for current control date */}
                         <TransactionsByTypeGraph
                           transactions={transactions.filter(t => t.control_date === controlDate.toISOString().split("T")[0])}
                           categoryColors={categoryColors}
@@ -353,18 +393,16 @@ function App() {
                           categoryColors={categoryColors}
                         />
                       </Grid>
-                        <Grid item>
-                          <AccountSumChart transactions={transactions} controlDate={controlDate} />
-                        </Grid>
-                        <Grid item>
-                          <ControlDateAccountBarChart data={getControlDateAccountBarData(transactions)} />
-                        </Grid>
+                      <Grid item>
+                        <AccountSumChart transactions={transactions} controlDate={controlDate} />
+                      </Grid>
+                      <Grid item>
+                        <ControlDateAccountBarChart data={getControlDateAccountBarData(transactions)} />
+                      </Grid>
                     </>
                   )}
                 </Grid>
               </Grid>
-
-              {/* Right Panel */}
               <Grid item xs={12} md={4}>
                 <Grid container direction="column" spacing={3}>
                   <Grid item>
@@ -396,8 +434,6 @@ function App() {
                 </Grid>
               </Grid>
             </Grid>
-
-            {/* FABs */}
             <Fab
               color="primary"
               aria-label="add"
@@ -411,7 +447,6 @@ function App() {
             >
               <AddIcon />
             </Fab>
-
             <Fab
               color="secondary"
               aria-label="settings"
@@ -425,8 +460,6 @@ function App() {
             >
               <SettingsIcon />
             </Fab>
-
-            {/* Theme Toggle FAB */}
             <Fab
               color="default"
               aria-label="toggle theme"
@@ -440,8 +473,6 @@ function App() {
             >
               {themeMode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
             </Fab>
-
-            {/* Transaction Dialog */}
             <Dialog open={transactionDialogOpen} onClose={() => setTransactionDialogOpen(false)} maxWidth="sm" fullWidth>
               <DialogTitle>{editingId ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
               <DialogContent>
@@ -465,8 +496,6 @@ function App() {
                 />
               </DialogContent>
             </Dialog>
-
-            {/* Control Date Dialog */}
             <Dialog open={controlDateDialogOpen} onClose={() => setControlDateDialogOpen(false)} maxWidth="sm" fullWidth>
               <DialogTitle>Update Control Date</DialogTitle>
               <DialogContent>
@@ -480,7 +509,6 @@ function App() {
                 />
               </DialogContent>
             </Dialog>
-
           </Container>
         </Box>
       </LocalizationProvider>

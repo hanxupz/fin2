@@ -3,3 +3,7 @@ uvicorn
 databases[postgresql]
 sqlalchemy
 psycopg2-binary
+passlib[bcrypt]
+python-jose
+python-multipart
+bcrypt==4.3.0
