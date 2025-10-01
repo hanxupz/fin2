@@ -6,6 +6,7 @@ import {
   Grid, 
   useTheme, 
   Paper,
+  Box,
   Avatar,
   alpha 
 } from "@mui/material";
