@@ -34,7 +34,7 @@ const Login = ({ onLogin }) => {
         }
       } else {
         // Login
-        const formData = new FormData();
+        const formData = new URLSearchParams();
         formData.append('username', username);
         formData.append('password', password);
 
