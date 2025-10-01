@@ -13,17 +13,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import os
 
 # -------------------------------
-# Database setup
-control_dates = sqlalchemy.Table(
-    "control_dates",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("year", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("month", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("control_date", sqlalchemy.Date, nullable=False),
-)
-# -------------------------------
 DATABASE_URL = "postgresql://user:password@db:5432/transactions"
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
@@ -35,6 +24,16 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("username", sqlalchemy.String, unique=True, index=True),
     sqlalchemy.Column("hashed_password", sqlalchemy.String),
+)
+
+control_dates = sqlalchemy.Table(
+    "control_dates",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("year", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("month", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("control_date", sqlalchemy.Date, nullable=False),
 )
 
 transactions = sqlalchemy.Table(
