@@ -116,8 +116,6 @@ function getCategoryColors(categories, mode) {
   return colorMap;
 }
 
-
-
 // Helper to format data for ControlDateAccountBarChart
 function getControlDateAccountBarData(transactions) {
   // Group by control_date, then sum by account
@@ -133,6 +131,27 @@ function getControlDateAccountBarData(transactions) {
     ...accounts
   }));
 }
+
+// Token validation helper function
+const isTokenValid = (token) => {
+  if (!token) return false;
+  
+  try {
+    // Decode JWT payload (basic validation)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    
+    // Check if token is expired
+    if (payload.exp && payload.exp < currentTime) {
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Invalid token format:', error);
+    return false;
+  }
+};
 
 // ------------------ Main App ------------------
 function App() {
@@ -165,9 +184,16 @@ function App() {
   const BACKEND_URL = "http://192.168.1.97:8000";
 
   useEffect(() => {
+    // Validate token on app load
     if (token) {
-      fetchTransactions();
-      fetchControlDateConfig();
+      if (isTokenValid(token)) {
+        fetchTransactions();
+        fetchControlDateConfig();
+      } else {
+        // Token is invalid or expired, logout
+        console.log('Token is invalid or expired, logging out...');
+        handleLogout();
+      }
     }
   }, [token]);
 
@@ -176,6 +202,13 @@ function App() {
       const res = await fetch(`${BACKEND_URL}/config/control_date/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      if (res.status === 401) {
+        // Token is invalid/expired, logout user
+        handleLogout();
+        return;
+      }
+      
       if (res.ok) {
         const data = await res.json();
         const dt = data.control_date ? new Date(data.control_date) : null;
@@ -216,6 +249,17 @@ function App() {
       const res = await fetch(`${BACKEND_URL}/transactions/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      if (res.status === 401) {
+        // Token is invalid/expired, logout user
+        handleLogout();
+        return;
+      }
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const data = await res.json();
       setTransactions(data);
     } catch (err) {
