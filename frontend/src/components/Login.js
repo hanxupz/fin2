@@ -16,7 +16,7 @@ const Login = ({ onLogin }) => {
     try {
       if (isRegistering) {
         // Registration
-        const response = await fetch('/register', {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const Login = ({ onLogin }) => {
         formData.append('username', username);
         formData.append('password', password);
 
-        const response = await fetch('/token', {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/token`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
