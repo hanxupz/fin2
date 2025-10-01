@@ -9,16 +9,10 @@ Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 const AccountSumChart = ({ transactions, controlDate }) => {
   const theme = useTheme();
 
-  // Filter transactions by current control date
-  const dateStr = controlDate?.toISOString().split("T")[0];
-  const filtered = dateStr
-    ? transactions.filter(t => t.control_date === dateStr)
-    : transactions;
-
-  // Group by account, sum all amounts
+  // Group by account, sum all amounts (transactions are already filtered by control_date in App.js)
   const grouped = {};
   let poupancaSum = 0;
-  filtered.forEach(({ account, amount }) => {
+  transactions.forEach(({ account, amount }) => {
     if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
       poupancaSum += amount;
     } else {

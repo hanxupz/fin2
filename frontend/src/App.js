@@ -168,7 +168,8 @@ const AppContent = () => {
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
     const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
     const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
-    return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo;
+    const matchesControlDate = configControlDate ? t.control_date === configControlDate : true;
+    return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo && matchesControlDate;
   });
 
   // Generate category colors for current theme
@@ -282,7 +283,10 @@ const AppContent = () => {
                     </Grid>
                     
                     <Grid item xs={12}>
-                      <AccountSumChart transactions={filteredTransactions} />
+                      <AccountSumChart 
+                        transactions={filteredTransactions} 
+                        controlDate={configControlDate ? new Date(configControlDate) : null} 
+                      />
                     </Grid>
                   </>
                 )}
@@ -362,7 +366,10 @@ const AppContent = () => {
                             </Grid>
                             
                             <Grid item xs={12} md={6}>
-                              <AccountSumChart transactions={filteredTransactions} />
+                              <AccountSumChart 
+                                transactions={filteredTransactions} 
+                                controlDate={configControlDate ? new Date(configControlDate) : null} 
+                              />
                             </Grid>
                           </Grid>
                         </Grid>
