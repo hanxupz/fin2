@@ -69,13 +69,14 @@ app = FastAPI()
 
 # CORS settings
 origins = [
-    "http://finance.theonet.uk",
-    "http://localhost:3000",
+    "https://finance.theonet.uk",
+    "https://finance-backend.theonet.uk",
+    "http://192.168.1.97:3000",
     "http://192.168.1.97:3000",  # Replace with your host IP
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
