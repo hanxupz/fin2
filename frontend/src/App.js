@@ -299,7 +299,7 @@ function App() {
   // Generate category color map for current theme
   const categoryColors = React.useMemo(() => getCategoryColors(categories, themeMode), [categories, themeMode]);
 
-  const filteredTransactions = transactions.filter((t) => {
+  const filteredTransactions = (transactions || []).filter((t) => {
     const matchesCategory = filterCategory ? t.category === filterCategory : true;
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
     const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
