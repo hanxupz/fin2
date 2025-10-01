@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';
+import apiService from '../services/api';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -16,47 +17,16 @@ const Login = ({ onLogin }) => {
     try {
       if (isRegistering) {
         // Registration
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username, password }),
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-          setError('Registration successful! Please login.');
-          setIsRegistering(false);
-        } else {
-          setError(data.detail || 'Registration failed');
-        }
+        await apiService.register(username, password);
+        setError('Registration successful! Please login.');
+        setIsRegistering(false);
       } else {
         // Login
-        const formData = new URLSearchParams();
-        formData.append('username', username);
-        formData.append('password', password);
-
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: formData,
-        });
-
-        const data = await response.json();
-        
-        if (response.ok) {
-          localStorage.setItem('token', data.access_token);
-          onLogin(data.access_token);
-        } else {
-          setError(data.detail || 'Authentication failed');
-        }
+        const data = await apiService.login(username, password);
+        onLogin(data.access_token);
       }
     } catch (err) {
-      setError('Network error: ' + err.message);
+      setError(err.message || 'Authentication failed');
     } finally {
       setLoading(false);
     }
