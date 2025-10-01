@@ -226,41 +226,7 @@ const AppContent = () => {
       
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
-          {/* Header */}
-          <header className="app-header">
-            <h1 className="app-title">Financial Poetry</h1>
-            <p className="app-subtitle">
-              Transform your financial data into meaningful insights through elegant visualization and intuitive design.
-            </p>
-          </header>
-          
           <main className="main-content">
-            
-            {/* Workflow Steps - Pixel Poetry inspired */}
-            <div className="workflow-steps">
-              <div className="workflow-step">
-                <div className="step-number">1</div>
-                <h3 className="step-title">Track Your Story</h3>
-                <p className="step-description">
-                  Record your financial transactions and discover the narrative within your spending patterns.
-                </p>
-              </div>
-              <div className="workflow-step">
-                <div className="step-number">2</div>
-                <h3 className="step-title">Visualize Your Journey</h3>
-                <p className="step-description">
-                  Transform raw data into beautiful insights through charts, calendars, and summaries.
-                </p>
-              </div>
-              <div className="workflow-step">
-                <div className="step-number">3</div>
-                <h3 className="step-title">Shape Your Future</h3>
-                <p className="step-description">
-                  Use elegant analysis to make informed decisions and craft your financial poetry.
-                </p>
-              </div>
-            </div>
-            
             {/* Account Summary Section */}
             {configControlDate && (
               <section className="content-section">
@@ -276,12 +242,15 @@ const AppContent = () => {
                 <h2 className="section-title">Financial Insights</h2>
                 <p className="section-subtitle">Visual representation of your spending patterns and trends</p>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+                <div style={{ marginTop: '2rem' }}>
                   <Calendar
                     transactions={filteredTransactions}
                     year={new Date(configControlDate).getFullYear()}
                     month={new Date(configControlDate).getMonth()}
                   />
+                </div>
+
+                <div style={{ marginTop: '2rem' }}>
                   <TransactionsByTypeGraph
                     transactions={filteredTransactions}
                     categoryColors={categoryColors}
