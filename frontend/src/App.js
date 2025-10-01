@@ -10,7 +10,8 @@ import {
   DialogTitle,
   DialogContent,
   useMediaQuery,
-  useTheme as useMuiTheme
+  useTheme as useMuiTheme,
+  Paper
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -21,6 +22,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import './App.css';
 import { fabSx } from './theme/primitives';
+import { sectionContainerSx } from './theme/primitives';
 
 // Refactored imports
 import { AppProvider, useAppContext } from './context/AppContext';
@@ -43,6 +45,7 @@ import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/
 import AccountSumChart from "./components/AccountSumChart/AccountSumChart";
 import ControlDateAccountBarChart from "./components/ControlDateAccountBarChart/ControlDateAccountBarChart";
 import Login from "./components/Login";
+import { Box as MuiBox } from '@mui/material';
 
 const AppContent = () => {
   const { state: appState, actions: appActions } = useAppContext();
@@ -228,38 +231,35 @@ const AppContent = () => {
       
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
-          <main className="main-content">
+          <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pb: 6 }}>
             {/* Account Summary Section */}
             {configControlDate && (
-              <section className="content-section">
-                <h2 className="section-title">Account Overview</h2>
-                <p className="section-subtitle">Your financial snapshot for the current control period</p>
+              <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                <Typography variant="h5" fontWeight={600}>Account Overview</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your financial snapshot for the current control period</Typography>
                 <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
-              </section>
+              </Box>
             )}
             
             {/* Charts and Visualizations */}
             {configControlDate && (
-              <section className="content-section">
-                <h2 className="section-title">Financial Insights</h2>
-                <p className="section-subtitle">Visual representation of your spending patterns and trends</p>
-                
-                <div style={{ marginTop: '2rem' }}>
+              <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
+                <Box sx={{ mt: 4 }}>
                   <Calendar
                     transactions={filteredTransactions}
                     year={new Date(configControlDate).getFullYear()}
                     month={new Date(configControlDate).getMonth()}
                   />
-                </div>
-
-                <div style={{ marginTop: '2rem' }}>
+                </Box>
+                <Box sx={{ mt: 4 }}>
                   <TransactionsByTypeGraph
                     transactions={filteredTransactions}
                     categoryColors={categoryColors}
                   />
-                </div>
-                
-                <div style={{ display: 'grid', marginTop: '2rem', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                </Box>
+                <Box sx={{ display: 'grid', mt: 4, gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                   <TransactionsByTypeGraphAll
                     transactions={filteredTransactions}
                     categoryColors={categoryColors}
@@ -268,20 +268,19 @@ const AppContent = () => {
                     transactions={filteredTransactions} 
                     controlDate={configControlDate ? new Date(configControlDate) : null} 
                   />
-                </div>
-                
+                </Box>
                 {getControlDateAccountBarData(allTransactionsFiltered) && (
-                  <div style={{ marginTop: '2rem' }}>
+                  <Box sx={{ mt: 4 }}>
                     <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
-                  </div>
+                  </Box>
                 )}
-              </section>
+              </Box>
             )}
             
             {/* Filters Section */}
-            <section className="content-section">
-              <h2 className="section-title">Refine Your View</h2>
-              <p className="section-subtitle">Filter transactions by category, account, or date range to focus on what matters</p>
+            <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+              <Typography variant="h5" fontWeight={600}>Refine Your View</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Filter transactions by category, account, or date range to focus on what matters</Typography>
               <Filters
                 filterCategory={filterCategory}
                 setFilterCategory={setFilterCategory}
@@ -294,94 +293,34 @@ const AppContent = () => {
                 categories={CATEGORIES}
                 accounts={ACCOUNTS}
               />
-            </section>
+            </Box>
             
             {/* Transaction List Section */}
-            <section className="content-section">
-              <h2 className="section-title">Transaction History</h2>
-              <p className="section-subtitle">Your complete financial story, transaction by transaction</p>
+            <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+              <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your complete financial story, transaction by transaction</Typography>
               <TransactionList
                 filteredTransactions={filteredTransactions}
                 editTransaction={editTransaction}
                 deleteTransaction={deleteTransaction}
               />
-            </section>
-
-          {/* Transaction Dialog */}
-          <Dialog 
-            open={transactionDialogOpen} 
-            onClose={() => setTransactionDialogOpen(false)}
-            maxWidth="sm" 
-            fullWidth
-          >
-            <DialogTitle>
-              {editingId ? "Edit Transaction" : "Add New Transaction"}
-            </DialogTitle>
-            <DialogContent>
-              <TransactionForm
-                description={description}
-                setDescription={setDescription}
-                amount={amount}
-                setAmount={setAmount}
-                date={date}
-                setDate={setDate}
-                controlDate={controlDate}
-                setControlDate={setControlDate}
-                category={category}
-                setCategory={setCategory}
-                account={account}
-                setAccount={setAccount}
-                categories={CATEGORIES}
-                accounts={ACCOUNTS}
-                onSubmit={submitTransaction}
-                onCancel={() => {
-                  setTransactionDialogOpen(false);
-                  setEditingId(null);
-                }}
-                editingId={editingId}
-              />
-            </DialogContent>
-          </Dialog>
-
-          {/* Control Date Config Dialog */}
-          <Dialog 
-            open={controlDateDialogOpen} 
-            onClose={() => setControlDateDialogOpen(false)}
-            maxWidth="sm" 
-            fullWidth
-          >
-            <DialogTitle>Configure Control Date</DialogTitle>
-            <DialogContent>
-              <ControlDateConfig
-                configYear={configYear}
-                setConfigYear={setConfigYear}
-                configMonth={configMonth}
-                setConfigMonth={setConfigMonth}
-                configControlDate={configControlDate}
-                setConfigControlDate={setConfigControlDate}
-                onSubmit={submitControlDateConfig}
-                onCancel={() => setControlDateDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
-          
-          {/* Floating Action Buttons */}
-          <div className="fab-container" style={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
-              <AddIcon />
-            </Fab>
-            <Fab aria-label="configure control date" onClick={() => setControlDateDialogOpen(true)} sx={fabSx(theme)} size="medium">
-              <SettingsIcon />
-            </Fab>
-            <Fab aria-label="toggle theme" onClick={handleToggleTheme} sx={fabSx(theme)} size="medium">
-              {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
-            </Fab>
-            <Fab aria-label="logout" onClick={handleLogout} size="medium" sx={(t) => ({ ...fabSx(t), background: 'linear-gradient(135deg,#ef4444,#dc2626)' })}>
-              <span style={{ fontSize: '1.2rem' }}>→</span>
-            </Fab>
-          </div>
-          
-          </main>
+            </Box>
+            {/* Floating Action Buttons */}
+            <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
+                <AddIcon />
+              </Fab>
+              <Fab aria-label="configure control date" onClick={() => setControlDateDialogOpen(true)} sx={fabSx(theme)} size="medium">
+                <SettingsIcon />
+              </Fab>
+              <Fab aria-label="toggle theme" onClick={handleToggleTheme} sx={fabSx(theme)} size="medium">
+                {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+              </Fab>
+              <Fab aria-label="logout" onClick={handleLogout} size="medium" sx={(t) => ({ ...fabSx(t), background: t.palette.gradients.danger })}>
+                <span style={{ fontSize: '1.2rem' }}>→</span>
+              </Fab>
+            </Box>
+          </MuiBox>
         </div>
       </LocalizationProvider>
     </ThemeProvider>
