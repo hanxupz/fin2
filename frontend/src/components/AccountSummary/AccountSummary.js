@@ -152,7 +152,7 @@ const AccountSummary = ({ transactions, controlDate }) => {
                         gap: 0.5,
                       }}
                     >
-                      {isPositive ? '+' : ''}{amount.toFixed(2)}€
+                      {amount.toFixed(2)}€
                     </Typography>
                   </CardContent>
                 </Card>
