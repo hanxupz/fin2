@@ -348,7 +348,7 @@ const AppContent = () => {
                         
                         <Grid item>
                           <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={12}>
                               <Calendar
                                 transactions={filteredTransactions}
                                 year={new Date(configControlDate).getFullYear()}
@@ -356,7 +356,7 @@ const AppContent = () => {
                               />
                             </Grid>
                             
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={12}>
                               <TransactionsByTypeGraph
                                 transactions={filteredTransactions}
                                 categoryColors={categoryColors}
