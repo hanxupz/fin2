@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from ..core.database import database
+from ..core.database_clean import database
 from ..models.database_models import transactions_table
 from ..schemas.transaction_schemas import TransactionCreate, TransactionUpdate
 

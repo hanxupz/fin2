@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
-from .core.database import create_tables, connect_db, disconnect_db
+from .core.database_clean import create_tables, connect_db, disconnect_db
 from .routes import auth_router, transactions_router, control_dates_router
 
 # Configure logging

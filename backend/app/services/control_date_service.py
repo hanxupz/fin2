@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from ..core.database import database
+from ..core.database_clean import database
 from ..models.database_models import control_dates_table
 from ..schemas.control_date_schemas import ControlDateSetting
 
