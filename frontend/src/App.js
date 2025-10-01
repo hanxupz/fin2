@@ -162,7 +162,7 @@ const AppContent = () => {
     }
   }, [token]);
 
-  // Filter transactions
+  // Filter transactions (includes control_date filtering for most components)
   const filteredTransactions = (transactions || []).filter((t) => {
     const matchesCategory = filterCategory ? t.category === filterCategory : true;
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
@@ -170,6 +170,15 @@ const AppContent = () => {
     const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
     const matchesControlDate = configControlDate ? t.control_date === configControlDate : true;
     return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo && matchesControlDate;
+  });
+
+  // Filter transactions for ControlDateAccountBarChart (no control_date filtering - needs all historical data)
+  const allTransactionsFiltered = (transactions || []).filter((t) => {
+    const matchesCategory = filterCategory ? t.category === filterCategory : true;
+    const matchesAccount = filterAccount ? t.account === filterAccount : true;
+    const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
+    const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
+    return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo;
   });
 
   // Generate category colors for current theme
@@ -378,7 +387,7 @@ const AppContent = () => {
                           <Typography variant="h5" gutterBottom>
                             Control Date Account Overview
                           </Typography>
-                          <ControlDateAccountBarChart data={getControlDateAccountBarData(filteredTransactions)} />
+                          <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
                         </Grid>
                       </>
                     )}
