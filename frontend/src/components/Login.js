@@ -9,7 +9,7 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://finance-backend.theonet.uk/token', {
+      const res = await fetch('https://finance-backend.theonet.uk/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ username, password }),

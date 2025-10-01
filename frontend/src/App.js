@@ -187,7 +187,7 @@ function App() {
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
-  const BACKEND_URL = "http://finance-backend.theonet.uk";
+  const BACKEND_URL = "https://finance-backend.theonet.uk";
 
   useEffect(() => {
     // Validate token on app load

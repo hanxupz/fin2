@@ -11,7 +11,7 @@ function Register({ onRegister }) {
     setError('');
     setSuccess('');
     try {
-      const res = await fetch('http://finance-backend.theonet.uk/register', {
+      const res = await fetch('https://finance-backend.theonet.uk/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
