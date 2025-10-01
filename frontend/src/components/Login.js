@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import './Login.css';
 
 const Login = ({ onLogin }) => {
@@ -17,29 +16,47 @@ const Login = ({ onLogin }) => {
     try {
       if (isRegistering) {
         // Registration
-        await axios.post('/register', {
-          username,
-          password
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
         });
-        setError('Registration successful! Please login.');
-        setIsRegistering(false);
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          setError('Registration successful! Please login.');
+          setIsRegistering(false);
+        } else {
+          setError(data.detail || 'Registration failed');
+        }
       } else {
         // Login
         const formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
 
-        const response = await axios.post('/token', formData, {
+        const response = await fetch('/token', {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
+          body: formData,
         });
 
-        localStorage.setItem('token', response.data.access_token);
-        onLogin();
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('token', data.access_token);
+          onLogin();
+        } else {
+          setError(data.detail || 'Authentication failed');
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Authentication failed');
+      setError('Network error: ' + err.message);
     } finally {
       setLoading(false);
     }
