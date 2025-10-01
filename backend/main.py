@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, validator
 from typing import List, Optional
-from datetime import date as dtdate
+from datetime import date as dtdate, datetime, timedelta
 import databases
 import sqlalchemy
 import logging
