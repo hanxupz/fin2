@@ -25,9 +25,9 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("username", sqlalchemy.String, unique=True, index=True),
     sqlalchemy.Column("hashed_password", sqlalchemy.String),
     sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("create_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
     sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("update_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
 )
 
 control_dates = sqlalchemy.Table(
@@ -39,9 +39,9 @@ control_dates = sqlalchemy.Table(
     sqlalchemy.Column("month", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("control_date", sqlalchemy.Date, nullable=False),
     sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("create_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
     sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("update_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
 )
 
 transactions = sqlalchemy.Table(
@@ -56,9 +56,9 @@ transactions = sqlalchemy.Table(
     sqlalchemy.Column("account", sqlalchemy.String),    # plain string
     sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("create_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
     sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("update_date", sqlalchemy.Datetime, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
 )
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
