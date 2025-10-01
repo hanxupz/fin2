@@ -6,12 +6,14 @@ function Register({ onRegister }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://192.168.1.97:8000';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
     try {
-      const res = await fetch('http://192.168.1.97:8000/register', {
+      const res = await fetch(`${BACKEND_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

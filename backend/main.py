@@ -72,10 +72,12 @@ origins = [
     "http://finance.theonet.uk",
     "http://localhost:3000",
     "http://192.168.1.97:3000",  # Replace with your host IP
+    "https://finance.theonet.uk",  # HTTPS support
+    "https://*.trycloudflare.com",  # Cloudflare tunnel domains
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allow all origins for flexibility with Cloudflare Tunnels
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
