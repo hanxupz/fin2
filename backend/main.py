@@ -14,6 +14,15 @@ import os
 
 # -------------------------------
 # Database setup
+control_dates = sqlalchemy.Table(
+    "control_dates",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("year", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("month", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("control_date", sqlalchemy.Date, nullable=False),
+)
 # -------------------------------
 DATABASE_URL = "postgresql://user:password@db:5432/transactions"
 database = databases.Database(DATABASE_URL)
@@ -123,7 +132,7 @@ class ControlDateSetting(BaseModel):
             return dtdate(year, month, 1)
         return v
 
-control_date_config: Optional[ControlDateSetting] = None
+control_date_config: Optional[ControlDateSetting] = None  # legacy, not used
 
 # Utility functions
 def verify_password(plain_password, hashed_password):
@@ -227,16 +236,38 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/config/control_date/")
-async def set_control_date(config: ControlDateSetting):
-    global control_date_config
-    control_date_config = config
-    return {"control_date": control_date_config.control_date}
+async def set_control_date(config: ControlDateSetting, current_user: dict = Depends(get_current_user)):
+    # Upsert control date for user
+    query = control_dates.select().where(control_dates.c.user_id == current_user["id"])
+    existing = await database.fetch_one(query)
+    if existing:
+        update_query = control_dates.update().where(control_dates.c.user_id == current_user["id"]).values(
+            year=config.year,
+            month=config.month,
+            control_date=config.control_date
+        )
+        await database.execute(update_query)
+    else:
+        insert_query = control_dates.insert().values(
+            user_id=current_user["id"],
+            year=config.year,
+            month=config.month,
+            control_date=config.control_date
+        )
+        await database.execute(insert_query)
+    return {"control_date": config.control_date}
 
 @app.get("/config/control_date/")
-async def get_control_date():
-    if control_date_config is None:
-        raise HTTPException(status_code=404, detail="Control date not configured")
-    return {"control_date": control_date_config.control_date}
+async def get_control_date(current_user: dict = Depends(get_current_user)):
+    query = control_dates.select().where(control_dates.c.user_id == current_user["id"])
+    result = await database.fetch_one(query)
+    if not result:
+        raise HTTPException(status_code=404, detail="Control date not configured for user")
+    return {
+        "year": result["year"],
+        "month": result["month"],
+        "control_date": result["control_date"]
+    }
 
 @app.post("/transactions/")
 async def create_transaction(transaction: Transaction, request: Request, current_user: dict = Depends(get_current_user)):
