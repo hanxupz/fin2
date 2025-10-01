@@ -5,11 +5,13 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://192.168.1.97:8000';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://192.168.1.97:8000/token', {
+      const res = await fetch(`${BACKEND_URL}/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ username, password }),

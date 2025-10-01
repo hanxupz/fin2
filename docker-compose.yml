@@ -20,6 +20,7 @@ services:
     container_name: transactions_backend
     environment:
       DATABASE_URL: postgres://user:password@db:5432/transactions
+      JWT_SECRET: ${JWT_SECRET:-supersecretkey}
     ports:
       - "8000:8000"
     depends_on:
@@ -30,6 +31,8 @@ services:
   frontend:
     build: ./frontend
     container_name: transactions_frontend
+    environment:
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8000}
     ports:
       - "3000:3000"
     depends_on:
