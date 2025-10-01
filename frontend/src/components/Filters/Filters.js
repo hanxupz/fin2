@@ -8,9 +8,12 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Grid
+  Grid,
+  Box,
+  Stack
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { surfaceBoxSx } from "../../theme/primitives";
 
 function Filters({
   filterCategory, setFilterCategory,
@@ -23,74 +26,70 @@ function Filters({
   const theme = useTheme();
 
   return (
-    <div className="filters">
-      <div className="filters-grid">
-        {/* Category */}
-        <div className="filter-group">
-          <label className="filter-label">Category</label>
-          <select
-            className="filters select"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Account */}
-        <div className="filter-group">
-          <label className="filter-label">Account</label>
-          <select
-            className="filters select"
-            value={filterAccount}
-            onChange={(e) => setFilterAccount(e.target.value)}
-          >
-            <option value="">All Accounts</option>
-            {accounts.map((a) => (
-              <option key={a} value={a}>{a}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* From Date */}
-        <div className="filter-group">
-          <label className="filter-label">From Date</label>
+    <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+        Filters
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth size="small">
+            <InputLabel>Category</InputLabel>
+            <Select
+              label="Category"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              <MenuItem value=""><em>All</em></MenuItem>
+              {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth size="small">
+            <InputLabel>Account</InputLabel>
+            <Select
+              label="Account"
+              value={filterAccount}
+              onChange={(e) => setFilterAccount(e.target.value)}
+            >
+              <MenuItem value=""><em>All</em></MenuItem>
+              {accounts.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
           <DatePicker
+            label="From"
             value={filterDateFrom}
             onChange={setFilterDateFrom}
-            slotProps={{ textField: { className: "filters input" } }}
+            slotProps={{ textField: { size: 'small', fullWidth: true } }}
           />
-        </div>
-
-        {/* To Date */}
-        <div className="filter-group">
-          <label className="filter-label">To Date</label>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
           <DatePicker
+            label="To"
             value={filterDateTo}
             onChange={setFilterDateTo}
-            slotProps={{ textField: { className: "filters input" } }}
+            slotProps={{ textField: { size: 'small', fullWidth: true } }}
           />
-        </div>
-
-        {/* Reset Button */}
-        <div className="filter-group" style={{ gridColumn: 'span 2' }}>
-          <button
-            className="secondary-button"
-            onClick={() => {
-              setFilterCategory("");
-              setFilterAccount("");
-              setFilterDateFrom(null);
-              setFilterDateTo(null);
-            }}
-          >
-            Reset Filters
-          </button>
-        </div>
-      </div>
-    </div>
+        </Grid>
+        <Grid item xs={12}>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setFilterCategory("");
+                setFilterAccount("");
+                setFilterDateFrom(null);
+                setFilterDateTo(null);
+              }}
+            >
+              Reset
+            </Button>
+          </Stack>
+        </Grid>
+      </Grid>
+    </Paper>
   );
 }
 

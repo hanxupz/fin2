@@ -46,6 +46,39 @@ export const getDesignTokens = (mode) => ({
             transactionText: '#f8fafc',
           },
         }),
+    gradients: {
+      primary:
+        mode === 'light'
+          ? 'linear-gradient(135deg,#1a1a1a,#374151)'
+          : 'linear-gradient(135deg,#334155,#0f172a)',
+      danger: 'linear-gradient(135deg,#ef4444,#dc2626)',
+      accent:
+        mode === 'light'
+          ? 'linear-gradient(135deg,#6366f1,#8b5cf6)'
+          : 'linear-gradient(135deg,#818cf8,#6366f1)',
+    },
+    charts: {
+      category:
+        mode === 'dark'
+          ? [
+              '#ffb3ba',
+              '#ffdfba',
+              '#ffffba',
+              '#baffc9',
+              '#bae1ff',
+              '#d4baff',
+              '#ffb3d9',
+            ]
+          : [
+              '#ff6b6b',
+              '#4ecdc4',
+              '#45b7d1',
+              '#96ceb4',
+              '#feca57',
+              '#ff9ff3',
+              '#54a0ff',
+            ],
+    },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',

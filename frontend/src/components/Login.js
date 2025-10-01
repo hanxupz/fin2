@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
-import './Login.css';
 import apiService from '../services/api';
+import {
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Stack,
+  Box,
+  Alert,
+  Link
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { surfaceBoxSx } from '../theme/primitives';
 
 const Login = ({ onLogin }) => {
+  const theme = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
@@ -16,12 +28,10 @@ const Login = ({ onLogin }) => {
 
     try {
       if (isRegistering) {
-        // Registration
         await apiService.register(username, password);
-        setError('Registration successful! Please login.');
+        setError('Registration successful. Please login.');
         setIsRegistering(false);
       } else {
-        // Login
         const data = await apiService.login(username, password);
         onLogin(data.access_token);
       }
@@ -33,83 +43,65 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h2 className="auth-title">
-            {isRegistering ? 'Create Account' : 'Welcome Back'}
-          </h2>
-          <p className="auth-subtitle">
-            {isRegistering 
-              ? 'Sign up to start managing your finances' 
-              : 'Sign in to your account to continue'
-            }
-          </p>
-        </div>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+      <Paper elevation={6} sx={(t) => ({
+        ...surfaceBoxSx(t),
+        p: { xs: 4, sm: 6 },
+        maxWidth: 440,
+        width: '100%',
+        borderRadius: 4,
+        backdropFilter: 'blur(10px)',
+      })}>
+        <Stack spacing={3} component="form" onSubmit={handleSubmit}>
+          <Box>
+            <Typography variant="h4" fontWeight={600} gutterBottom>
+              {isRegistering ? 'Create Account' : 'Welcome Back'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {isRegistering ? 'Sign up to start managing your finances' : 'Sign in to continue'}
+            </Typography>
+          </Box>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="form-input"
-              placeholder="Enter your username"
-            />
-          </div>
+            {error && (
+              <Alert severity={error.includes('successful') ? 'success' : 'error'} variant="outlined">
+                {error}
+              </Alert>
+            )}
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="form-input"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          {error && (
-            <div className={`alert ${error.includes('successful') ? 'alert-success' : 'alert-error'}`}>
-              {error}
-            </div>
-          )}
-
-          <button 
-            type="submit" 
+          <TextField
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            required
+            autoComplete="username"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            required
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
             disabled={loading}
-            className="auth-button"
           >
             {loading ? 'Processing...' : (isRegistering ? 'Create Account' : 'Sign In')}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          <p style={{ textAlign: 'center', margin: '1.5rem 0 0', color: '#64748b' }}>
-            {isRegistering ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button
-              type="button"
-              onClick={() => {
-                setIsRegistering(!isRegistering);
-                setError('');
-              }}
-              className="auth-toggle"
-            >
+          </Button>
+          <Typography variant="body2" textAlign="center">
+            {isRegistering ? 'Already have an account? ' : "Don't have an account? "}
+            <Link component="button" type="button" onClick={() => { setIsRegistering(!isRegistering); setError(''); }}>
               {isRegistering ? 'Sign In' : 'Sign Up'}
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
+            </Link>
+          </Typography>
+        </Stack>
+      </Paper>
+    </Box>
   );
 };
 

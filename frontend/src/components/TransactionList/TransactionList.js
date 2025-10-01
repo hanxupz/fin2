@@ -5,8 +5,12 @@ import {
   CardContent,
   CardActions,
   Typography,
-  Button
+  Button,
+  Grid,
+  Chip,
+  Box
 } from "@mui/material";
+import { amountColor, surfaceBoxSx } from "../../theme/primitives";
 
 // Map categories to emojis
 const categoryEmojis = {
@@ -40,77 +44,46 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   const theme = useTheme();
 
   if (filteredTransactions.length === 0) {
-    return <Typography>No transactions found.</Typography>;
+    return <Typography variant="body2" color="text.secondary">No transactions found.</Typography>;
   }
 
   return (
-    <div>
-      {filteredTransactions.map((t) => (
-        <div key={t.id} className="transaction-card">
-          <div className="transaction-info">
-            <span style={{ fontSize: '1.5rem', marginRight: '0.75rem' }}>
-              {categoryEmojis[t.category] || "💰"}
-            </span>
-            {t.description}
-          </div>
-          
-          <div className="transaction-amount" style={{ 
-            color: t.amount >= 0 ? '#059669' : '#dc2626' 
-          }}>
-            {t.amount >= 0 ? '+' : ''}{t.amount.toFixed(2)}€
-          </div>
-          
-          <div className="transaction-meta">
-            <div className="transaction-meta-item">
-              <span className="transaction-meta-label">Date</span>
-              <span className="transaction-meta-value">{t.date || "-"}</span>
-            </div>
-            <div className="transaction-meta-item">
-              <span className="transaction-meta-label">Category</span>
-              <span className="transaction-meta-value">{t.category || "-"}</span>
-            </div>
-            <div className="transaction-meta-item">
-              <span className="transaction-meta-label">Account</span>
-              <span className="transaction-meta-value">{t.account || "-"}</span>
-            </div>
-            <div className="transaction-meta-item">
-              <span className="transaction-meta-label">Control Date</span>
-              <span className="transaction-meta-value">{t.control_date || "-"}</span>
-            </div>
-          </div>
-          
-          <div style={{ 
-            display: 'flex', 
-            gap: '0.75rem', 
-            marginTop: '1rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid rgba(0,0,0,0.06)'
-          }}>
-            <button 
-              className="secondary-button"
-              onClick={() => editTransaction(t)}
-              style={{ flex: '1', padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-            >
-              Edit
-            </button>
-            <button 
-              className="secondary-button"
-              onClick={() => deleteTransaction(t.id)}
-              style={{ 
-                flex: '1', 
-                padding: '0.5rem 1rem', 
-                fontSize: '0.875rem',
-                background: 'rgba(239, 68, 68, 0.1)',
-                color: '#dc2626',
-                borderColor: 'rgba(239, 68, 68, 0.2)'
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+    <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
+      <Grid container spacing={2}>
+        {filteredTransactions.map((t) => {
+          const color = amountColor(theme, t.amount);
+          return (
+            <Grid item xs={12} key={t.id}>
+              <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                <CardContent sx={{ pb: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="h5" component="span" sx={{ lineHeight: 1 }}>
+                      {categoryEmojis[t.category] || '💰'}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      {t.description}
+                    </Typography>
+                    <Chip size="small" label={t.category || '-'} sx={{ ml: 'auto' }} />
+                  </Box>
+                  <Typography variant="h6" sx={{ color, mt: 1, fontWeight: 700 }}>
+                    {t.amount >= 0 ? '+' : ''}{t.amount.toFixed(2)}€
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1, fontSize: 12, color: 'text.secondary' }}>
+                    <span>Date: {t.date || '-'}</span>
+                    <span>Account: {t.account || '-'}</span>
+                    <span>Control: {t.control_date || '-'}</span>
+                  </Box>
+                </CardContent>
+                <CardActions sx={{ pt: 0, pb: 1.5, px: 2 }}>
+                  <Button size="small" onClick={() => editTransaction(t)}>Edit</Button>
+                  <Button size="small" color="error" onClick={() => deleteTransaction(t.id)}>Delete</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Box>
   );
 }
 

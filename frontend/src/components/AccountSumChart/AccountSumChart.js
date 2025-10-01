@@ -39,7 +39,9 @@ const AccountSumChart = ({ transactions, controlDate }) => {
       {
         label: 'Sum by Account',
         data: values,
-        backgroundColor: '#1976d2',
+        backgroundColor: theme.palette.gradients.accent,
+        borderRadius: 6,
+        borderWidth: 0,
       },
     ],
   };

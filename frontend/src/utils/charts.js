@@ -20,16 +20,5 @@ export const getControlDateAccountBarData = (transactions) => {
   return Object.values(grouped);
 };
 
-// Generate category color map
-export const getCategoryColors = (categories, mode) => {
-  const colors = mode === 'dark' 
-    ? ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#d4baff', '#ffb3d9']
-    : ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
-  
-  const colorMap = {};
-  categories.forEach((category, index) => {
-    colorMap[category] = colors[index % colors.length];
-  });
-  
-  return colorMap;
-};
+// NOTE: getCategoryColors deprecated. Use theme.palette.charts.category and map categories:
+// const palette = theme.palette.charts.category; const map = categories.reduce((m,c,i)=>({...m,[c]:palette[i%palette.length]}),{});

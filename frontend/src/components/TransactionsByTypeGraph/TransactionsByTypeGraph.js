@@ -7,7 +7,6 @@ import { useTheme } from '@mui/material/styles';
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
-  // Filter for 'Corrente' account only
   const theme = useTheme();
   const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
@@ -20,19 +19,16 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   });
 
   const categories = Object.keys(grouped);
-
   const labelColor = theme.palette.text.primary;
+  const palette = categoryColors || categories.reduce((acc, cat, idx) => ({ ...acc, [cat]: theme.palette.charts.category[idx % theme.palette.charts.category.length] }), {});
 
   // If no categories, show a dummy dataset to avoid chartjs errors
-  const datasets = categories.length > 0 ? categories.map((cat) => {
-    const value = grouped[cat];
-    return {
-      label: cat,
-      data: [value],
-      backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
-      stack: 'total',
-    };
-  }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total' }];
+  const datasets = categories.length > 0 ? categories.map((cat) => ({
+    label: cat,
+    data: [grouped[cat]],
+    backgroundColor: palette[cat],
+    stack: 'total',
+  })) : [{ label: 'No Data', data: [0], backgroundColor: theme.palette.divider, stack: 'total' }];
 
   // Calculate min/max for x axis as the sum of all negative and positive values
   let min = 0, max = 0;
@@ -59,17 +55,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     responsive: true,
     plugins: {
       legend: { display: false },
-      title: {
-        display: true,
-        text: 'Total por Categoria (Corrente)',
-        color: labelColor,
-      },
+      title: { display: true, text: 'Total por Categoria (Corrente)', color: labelColor },
       tooltip: {
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.x}`;
-          }
-        },
+        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
@@ -95,7 +83,7 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ width: '100%', height: 200, p: 2 }}>
+    <Paper elevation={3} sx={{ width: '100%', height: 220, p: 2 }}>
       <Bar data={data} options={options} />
     </Paper>
   );

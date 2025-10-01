@@ -39,16 +39,18 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
   // Only show Corrente, Poupança, Investimento
   const accounts = ['Corrente', 'Poupança', 'Investimento'];
   const categories = Array.from(new Set(transactions.map(t => t.category)));
+  const fallbackPalette = theme.palette.charts.category;
+  const paletteMap = categories.reduce((acc, cat, idx) => ({ ...acc, [cat]: (categoryColors && categoryColors[cat]) || fallbackPalette[idx % fallbackPalette.length] }), {});
 
   // Build datasets for each category, with values for each account
   const datasets = categories.length > 0 ? categories.map((cat) => {
     return {
       label: cat,
       data: accounts.map(acc => grouped[acc]?.[cat] || 0),
-      backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
+      backgroundColor: paletteMap[cat],
       stack: 'total',
     };
-  }) : [{ label: 'No Data', data: [0, 0, 0], backgroundColor: '#eee', stack: 'total' }];
+  }) : [{ label: 'No Data', data: [0, 0, 0], backgroundColor: theme.palette.divider, stack: 'total' }];
 
   // Calculate min/max for x axis
   let min = 0, max = 0;

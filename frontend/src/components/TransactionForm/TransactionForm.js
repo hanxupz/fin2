@@ -8,9 +8,11 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Stack
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { surfaceBoxSx } from "../../theme/primitives";
 
 function TransactionForm({
   description, setDescription,
@@ -27,68 +29,61 @@ function TransactionForm({
   const theme = useTheme();
 
   return (
-    <Paper style={{ padding: "1rem", marginBottom: "2rem" }}>
-      <Typography variant="h6" gutterBottom>
-        Add / Edit Transaction
+    <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
+      <Typography variant="h6" gutterBottom fontWeight={600}>
+        {editingId ? 'Edit Transaction' : 'Add / Edit Transaction'}
       </Typography>
-
-      <TextField
-        fullWidth
-        label="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Amount"
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        margin="normal"
-      />
-
-      <DatePicker
-        label="Date"
-        value={date}
-        onChange={setDate}
-        slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
-      />
-
-      <DatePicker
-        label="Control Date"
-        value={controlDate}
-        onChange={setControlDate}
-        slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
-      />
-
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Category</InputLabel>
-        <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
-          {categories.map((c) => (
-            <MenuItem key={c} value={c}>{c}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Account</InputLabel>
-        <Select label="Account" value={account} onChange={(e) => setAccount(e.target.value)}>
-          {accounts.map((a) => (
-            <MenuItem key={a} value={a}>{a}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        style={{ marginTop: "1rem" }}
-        onClick={addOrUpdateTransaction}
-      >
-        {editingId ? "Update" : "Add"} Transaction
-      </Button>
+      <Stack spacing={2}>
+        <TextField
+          fullWidth
+          label="Description"
+            value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          size="small"
+        />
+        <TextField
+          fullWidth
+          label="Amount"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          size="small"
+        />
+        <DatePicker
+          label="Date"
+          value={date}
+          onChange={setDate}
+          slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+        />
+        <DatePicker
+          label="Control Date"
+          value={controlDate}
+          onChange={setControlDate}
+          slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+        />
+        <FormControl fullWidth size="small">
+          <InputLabel>Category</InputLabel>
+          <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
+            {categories.map((c) => (
+              <MenuItem key={c} value={c}>{c}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth size="small">
+          <InputLabel>Account</InputLabel>
+          <Select label="Account" value={account} onChange={(e) => setAccount(e.target.value)}>
+            {accounts.map((a) => (
+              <MenuItem key={a} value={a}>{a}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          onClick={addOrUpdateTransaction}
+        >
+          {editingId ? "Update" : "Add"} Transaction
+        </Button>
+      </Stack>
     </Paper>
   );
 }

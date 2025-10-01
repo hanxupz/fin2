@@ -20,13 +20,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import './App.css';
+import { fabSx } from './theme/primitives';
 
 // Refactored imports
 import { AppProvider, useAppContext } from './context/AppContext';
 import { useAuth } from './hooks/useAuth';
 import { useTransactions } from './hooks/useTransactions';
 import { CATEGORIES, ACCOUNTS, DEFAULT_CATEGORY, DEFAULT_ACCOUNT } from './constants';
-import { getCategoryColors, getControlDateAccountBarData } from './utils/charts';
+import { getControlDateAccountBarData } from './utils/charts';
 import { getDesignTokens } from './utils/theme';
 import apiService from './services/api';
 
@@ -187,9 +188,10 @@ const AppContent = () => {
   });
 
   // Generate category colors for current theme
-  const categoryColors = React.useMemo(() => 
-    getCategoryColors(CATEGORIES, appState.theme), [appState.theme]
-  );
+  const categoryColors = React.useMemo(() => {
+    const palette = theme.palette.charts.category;
+    return CATEGORIES.reduce((acc, cat, idx) => ({ ...acc, [cat]: palette[idx % palette.length] }), {});
+  }, [theme, appState.theme]);
 
   // CSS variables for calendar
   const calendarCssVars = {
@@ -364,36 +366,19 @@ const AppContent = () => {
           </Dialog>
           
           {/* Floating Action Buttons */}
-          <div className="fab-container">
-            <button
-              className="custom-fab"
-              onClick={() => setTransactionDialogOpen(true)}
-              title="Add Transaction"
-            >
+          <div className="fab-container" style={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
               <AddIcon />
-            </button>
-            <button
-              className="custom-fab"
-              onClick={() => setControlDateDialogOpen(true)}
-              title="Configure Date"
-            >
+            </Fab>
+            <Fab aria-label="configure control date" onClick={() => setControlDateDialogOpen(true)} sx={fabSx(theme)} size="medium">
               <SettingsIcon />
-            </button>
-            <button
-              className="custom-fab"
-              onClick={handleToggleTheme}
-              title="Toggle Theme"
-            >
+            </Fab>
+            <Fab aria-label="toggle theme" onClick={handleToggleTheme} sx={fabSx(theme)} size="medium">
               {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
-            </button>
-            <button
-              className="custom-fab"
-              onClick={handleLogout}
-              title="Logout"
-              style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
-            >
+            </Fab>
+            <Fab aria-label="logout" onClick={handleLogout} size="medium" sx={(t) => ({ ...fabSx(t), background: 'linear-gradient(135deg,#ef4444,#dc2626)' })}>
               <span style={{ fontSize: '1.2rem' }}>→</span>
-            </button>
+            </Fab>
           </div>
           
           </main>
