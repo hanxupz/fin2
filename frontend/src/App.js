@@ -383,7 +383,7 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box style={{ padding: "1rem", height: '100vh', width: '100vh' }}>
+        <Box style={{ padding: "1rem", height: '100vh' }}>
             <Login onLogin={handleLogin} />
         </Box>
       </ThemeProvider>
