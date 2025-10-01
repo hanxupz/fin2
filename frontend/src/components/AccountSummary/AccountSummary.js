@@ -5,7 +5,7 @@ import {
   Typography, 
   Grid, 
   useTheme, 
-  Box,
+  Paper,
   Avatar,
   alpha 
 } from "@mui/material";
