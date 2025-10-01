@@ -50,7 +50,7 @@ const Login = ({ onLogin }) => {
         
         if (response.ok) {
           localStorage.setItem('token', data.access_token);
-          onLogin();
+          onLogin(data.access_token);
         } else {
           setError(data.detail || 'Authentication failed');
         }
