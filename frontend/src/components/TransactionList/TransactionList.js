@@ -46,23 +46,69 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   return (
     <div>
       {filteredTransactions.map((t) => (
-        <Card key={t.id} style={{ marginBottom: "1rem" }}>
-          <CardContent style={{ paddingBottom: 8, paddingTop: 8 }}>
-            <Typography variant="subtitle1">
-              <span style={{ fontSize: '2rem', verticalAlign: 'middle' }}>{categoryEmojis[t.category] || t.category || "-"}</span>
-              <span style={{ color: t.amount >= 0 ? theme.palette.success.main : theme.palette.error.main, fontWeight: 'bold', marginLeft: 8 }}>
-                {t.amount.toFixed(2)}€
-              </span>
-            </Typography>
-            <Typography variant="body2" style={{ color: theme.palette.text.primary }}>
-              {(t.date || "-")} | {t.description} | {(t.account || "-")}
-            </Typography>
-          </CardContent>
-          <CardActions style={{ paddingTop: 0 }}>
-            <Button size="small" onClick={() => editTransaction(t)}>Edit</Button>
-            <Button size="small" color="error" onClick={() => deleteTransaction(t.id)}>Delete</Button>
-          </CardActions>
-        </Card>
+        <div key={t.id} className="transaction-card">
+          <div className="transaction-info">
+            <span style={{ fontSize: '1.5rem', marginRight: '0.75rem' }}>
+              {categoryEmojis[t.category] || "💰"}
+            </span>
+            {t.description}
+          </div>
+          
+          <div className="transaction-amount" style={{ 
+            color: t.amount >= 0 ? '#059669' : '#dc2626' 
+          }}>
+            {t.amount >= 0 ? '+' : ''}{t.amount.toFixed(2)}€
+          </div>
+          
+          <div className="transaction-meta">
+            <div className="transaction-meta-item">
+              <span className="transaction-meta-label">Date</span>
+              <span className="transaction-meta-value">{t.date || "-"}</span>
+            </div>
+            <div className="transaction-meta-item">
+              <span className="transaction-meta-label">Category</span>
+              <span className="transaction-meta-value">{t.category || "-"}</span>
+            </div>
+            <div className="transaction-meta-item">
+              <span className="transaction-meta-label">Account</span>
+              <span className="transaction-meta-value">{t.account || "-"}</span>
+            </div>
+            <div className="transaction-meta-item">
+              <span className="transaction-meta-label">Control Date</span>
+              <span className="transaction-meta-value">{t.control_date || "-"}</span>
+            </div>
+          </div>
+          
+          <div style={{ 
+            display: 'flex', 
+            gap: '0.75rem', 
+            marginTop: '1rem',
+            paddingTop: '1rem',
+            borderTop: '1px solid rgba(0,0,0,0.06)'
+          }}>
+            <button 
+              className="secondary-button"
+              onClick={() => editTransaction(t)}
+              style={{ flex: '1', padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+            >
+              Edit
+            </button>
+            <button 
+              className="secondary-button"
+              onClick={() => deleteTransaction(t.id)}
+              style={{ 
+                flex: '1', 
+                padding: '0.5rem 1rem', 
+                fontSize: '0.875rem',
+                background: 'rgba(239, 68, 68, 0.1)',
+                color: '#dc2626',
+                borderColor: 'rgba(239, 68, 68, 0.2)'
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
       ))}
     </div>
   );

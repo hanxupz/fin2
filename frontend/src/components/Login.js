@@ -89,24 +89,20 @@ const Login = ({ onLogin }) => {
             disabled={loading}
             className="auth-button"
           >
-            {loading ? (
-              <span className="loading-spinner"></span>
-            ) : (
-              isRegistering ? 'Create Account' : 'Sign In'
-            )}
+            {loading ? 'Processing...' : (isRegistering ? 'Create Account' : 'Sign In')}
           </button>
         </form>
 
         <div className="auth-footer">
-          <p className="auth-switch-text">
-            {isRegistering ? 'Already have an account?' : "Don't have an account?"}
+          <p style={{ textAlign: 'center', margin: '1.5rem 0 0', color: '#64748b' }}>
+            {isRegistering ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
               type="button"
               onClick={() => {
                 setIsRegistering(!isRegistering);
                 setError('');
               }}
-              className="auth-switch-button"
+              className="auth-toggle"
             >
               {isRegistering ? 'Sign In' : 'Sign Up'}
             </button>

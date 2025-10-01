@@ -23,72 +23,62 @@ function Filters({
   const theme = useTheme();
 
   return (
-    <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
-      <Typography variant="h6" gutterBottom>
-        Filters
-      </Typography>
-
-      <Grid container spacing={2}>
+    <div className="filters">
+      <div className="filters-grid">
         {/* Category */}
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Category</InputLabel>
-            <Select
-              label="Category"
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-            >
-              <MenuItem value="">All Categories</MenuItem>
-              {categories.map((c) => (
-                <MenuItem key={c} value={c}>{c}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+        <div className="filter-group">
+          <label className="filter-label">Category</label>
+          <select
+            className="filters select"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
 
         {/* Account */}
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Account</InputLabel>
-            <Select
-              label="Account"
-              value={filterAccount}
-              onChange={(e) => setFilterAccount(e.target.value)}
-            >
-              <MenuItem value="">All Accounts</MenuItem>
-              {accounts.map((a) => (
-                <MenuItem key={a} value={a}>{a}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+        <div className="filter-group">
+          <label className="filter-label">Account</label>
+          <select
+            className="filters select"
+            value={filterAccount}
+            onChange={(e) => setFilterAccount(e.target.value)}
+          >
+            <option value="">All Accounts</option>
+            {accounts.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
 
         {/* From Date */}
-        <Grid item xs={12} sm={6}>
+        <div className="filter-group">
+          <label className="filter-label">From Date</label>
           <DatePicker
-            label="From Date"
             value={filterDateFrom}
             onChange={setFilterDateFrom}
-            slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
+            slotProps={{ textField: { className: "filters input" } }}
           />
-        </Grid>
+        </div>
 
         {/* To Date */}
-        <Grid item xs={12} sm={6}>
+        <div className="filter-group">
+          <label className="filter-label">To Date</label>
           <DatePicker
-            label="To Date"
             value={filterDateTo}
             onChange={setFilterDateTo}
-            slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
+            slotProps={{ textField: { className: "filters input" } }}
           />
-        </Grid>
+        </div>
 
-        {/* Reset Button full width below */}
-        <Grid item xs={12}>
-          <Button
-            variant="outlined"
-            fullWidth
-            style={{ marginTop: "1rem" }}
+        {/* Reset Button */}
+        <div className="filter-group" style={{ gridColumn: 'span 2' }}>
+          <button
+            className="secondary-button"
             onClick={() => {
               setFilterCategory("");
               setFilterAccount("");
@@ -97,10 +87,10 @@ function Filters({
             }}
           >
             Reset Filters
-          </Button>
-        </Grid>
-      </Grid>
-    </Paper>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

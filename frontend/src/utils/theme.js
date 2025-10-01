@@ -3,47 +3,47 @@ export const getDesignTokens = (mode) => ({
     mode,
     ...(mode === 'light'
       ? {
-          primary: { main: '#a5d6a7' }, // pastel green
-          secondary: { main: '#ce93d8' }, // pastel purple
+          primary: { main: '#1a1a1a' }, // clean black/dark gray
+          secondary: { main: '#64748b' }, // sophisticated blue-gray
           background: {
-            default: '#fafafa',
-            paper: '#ffffff',
+            default: '#fafbfc',
+            paper: 'rgba(255, 255, 255, 0.8)',
           },
           text: {
-            primary: '#333',
-            secondary: '#666',
+            primary: '#1a1a1a',
+            secondary: '#64748b',
           },
           calendar: {
-            weekdayBg: '#ffffff',
-            weekdayText: '#6d9dc5',     // pastel blue
-            dayBg: '#f5f5f5',
-            dayText: '#333',
-            todayBg: '#a5d6a7',         // pastel green
+            weekdayBg: 'rgba(255, 255, 255, 0.9)',
+            weekdayText: '#1a1a1a',
+            dayBg: 'rgba(255, 255, 255, 0.6)',
+            dayText: '#374151',
+            todayBg: '#1a1a1a',
             todayText: '#ffffff',
-            transactionBg: '#e8f5e8',   // light pastel green
-            transactionText: '#2e7d32',
+            transactionBg: 'rgba(26, 26, 26, 0.05)',
+            transactionText: '#1a1a1a',
           },
         }
       : {
-          primary: { main: '#81c784' }, // darker pastel green for dark mode
-          secondary: { main: '#ba68c8' }, // darker pastel purple
+          primary: { main: '#ffffff' }, // clean white for dark mode
+          secondary: { main: '#94a3b8' }, // light blue-gray
           background: {
-            default: '#121212',
-            paper: '#1e1e1e',
+            default: '#0f172a',
+            paper: 'rgba(30, 41, 59, 0.8)',
           },
           text: {
-            primary: '#ffffff',
-            secondary: '#aaaaaa',
+            primary: '#f8fafc',
+            secondary: '#cbd5e1',
           },
           calendar: {
-            weekdayBg: '#2c2c2c',
-            weekdayText: '#81c784',     // pastel green
-            dayBg: '#1e1e1e',
-            dayText: '#ffffff',
-            todayBg: '#81c784',         // pastel green
-            todayText: '#000000',
-            transactionBg: '#2e2e2e',   // darker gray
-            transactionText: '#81c784', // pastel green
+            weekdayBg: 'rgba(30, 41, 59, 0.9)',
+            weekdayText: '#f8fafc',
+            dayBg: 'rgba(15, 23, 42, 0.6)',
+            dayText: '#cbd5e1',
+            todayBg: '#ffffff',
+            todayText: '#0f172a',
+            transactionBg: 'rgba(255, 255, 255, 0.05)',
+            transactionText: '#f8fafc',
           },
         }),
   },

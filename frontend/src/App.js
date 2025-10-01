@@ -155,6 +155,11 @@ const AppContent = () => {
     logout();
   };
 
+  // Handle theme toggle
+  const handleToggleTheme = () => {
+    appActions.setTheme(appState.theme === 'dark' ? 'light' : 'dark');
+  };
+
   // Load config on mount
   useEffect(() => {
     if (token) {
@@ -216,248 +221,120 @@ const AppContent = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {/* Animated background */}
-      {appState.theme === 'dark' ? (
-        <div className="animated-bg-dark" aria-hidden="true" />
-      ) : (
-        <div className="animated-bg-light" aria-hidden="true" />
-      )}
+      {/* Modern background */}
+      <div className="app-background" aria-hidden="true" />
       
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box style={{ 
-          padding: isMobile ? "1rem" : "2rem", 
-          position: 'relative', 
-          minHeight: '100vh', 
-          zIndex: 1, 
-          ...calendarCssVars 
-        }} data-theme={appState.theme}>
+        <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
+          {/* Header */}
+          <header className="app-header">
+            <h1 className="app-title">Financial Poetry</h1>
+            <p className="app-subtitle">
+              Transform your financial data into meaningful insights through elegant visualization and intuitive design.
+            </p>
+          </header>
           
-          {/* Logout button */}
-          <button 
-            onClick={handleLogout} 
-            style={{
-              position:'absolute',
-              top: isMobile ? 10 : 10,
-              right: isMobile ? 10 : 10,
-              zIndex:2000,
-              padding: isMobile ? '8px 12px' : '10px 15px',
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.background.paper,
-              border: 'none',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: isMobile ? '0.8rem' : '1rem'
-            }}
-          >
-            Logout
-          </button>
-          
-          <Container maxWidth="xl" disableGutters={isMobile}>
-            {isMobile ? (
-              // Mobile Layout
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="h5" gutterBottom align="center">
-                    💰 My Account Summary
-                  </Typography>
-                </Grid>
-                
-                {configControlDate && (
-                  <>
-                    <Grid item xs={12}>
-                      <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
-                    </Grid>
-                    
-                    <Grid item xs={12}>
-                      <Calendar
-                        transactions={filteredTransactions}
-                        year={new Date(configControlDate).getFullYear()}
-                        month={new Date(configControlDate).getMonth()}
-                      />
-                    </Grid>
-                    
-                    <Grid item xs={12}>
-                      <TransactionsByTypeGraph
-                        transactions={filteredTransactions}
-                        categoryColors={categoryColors}
-                      />
-                    </Grid>
-                    
-                    <Grid item xs={12}>
-                      <TransactionsByTypeGraphAll
-                        transactions={filteredTransactions}
-                        categoryColors={categoryColors}
-                      />
-                    </Grid>
-                    
-                    <Grid item xs={12}>
-                      <AccountSumChart 
-                        transactions={filteredTransactions} 
-                        controlDate={configControlDate ? new Date(configControlDate) : null} 
-                      />
-                    </Grid>
-                  </>
-                )}
-                
-                <Grid item xs={12}>
-                  <Typography variant="h5" gutterBottom>
-                    💰 My Transactions
-                  </Typography>
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <Filters
-                    filterCategory={filterCategory}
-                    setFilterCategory={setFilterCategory}
-                    filterAccount={filterAccount}
-                    setFilterAccount={setFilterAccount}
-                    filterDateFrom={filterDateFrom}
-                    setFilterDateFrom={setFilterDateFrom}
-                    filterDateTo={filterDateTo}
-                    setFilterDateTo={setFilterDateTo}
-                    categories={CATEGORIES}
-                    accounts={ACCOUNTS}
-                  />
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <TransactionList
-                    filteredTransactions={filteredTransactions}
-                    editTransaction={editTransaction}
-                    deleteTransaction={deleteTransaction}
-                  />
-                </Grid>
-              </Grid>
-            ) : (
-              // Desktop Layout
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={8}>
-                  <Grid container direction="column" spacing={3}>
-                    <Grid item>
-                      <Typography variant="h4" gutterBottom>
-                        💰 My Account Summary
-                      </Typography>
-                    </Grid>
-                    
-                    {configControlDate && (
-                      <>
-                        <Grid item>
-                          <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
-                        </Grid>
-                        
-                        <Grid item>
-                          <Grid container spacing={3}>
-                            <Grid item xs={12} md={12}>
-                              <Calendar
-                                transactions={filteredTransactions}
-                                year={new Date(configControlDate).getFullYear()}
-                                month={new Date(configControlDate).getMonth()}
-                              />
-                            </Grid>
-                            
-                            <Grid item xs={12} md={12}>
-                              <TransactionsByTypeGraph
-                                transactions={filteredTransactions}
-                                categoryColors={categoryColors}
-                              />
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                        
-                        <Grid item>
-                          <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
-                              <TransactionsByTypeGraphAll
-                                transactions={filteredTransactions}
-                                categoryColors={categoryColors}
-                              />
-                            </Grid>
-                            
-                            <Grid item xs={12} md={6}>
-                              <AccountSumChart 
-                                transactions={filteredTransactions} 
-                                controlDate={configControlDate ? new Date(configControlDate) : null} 
-                              />
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                        
-                        <Grid item>
-                          <Typography variant="h5" gutterBottom>
-                            Control Date Account Overview
-                          </Typography>
-                          <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
-                </Grid>
-                
-                <Grid item xs={12} md={4}>
-                  <Grid container direction="column" spacing={3}>
-                    <Grid item>
-                      <Typography variant="h4" gutterBottom>
-                        💰 My Transactions
-                      </Typography>
-                    </Grid>
-                    
-                    <Grid item>
-                      <Filters
-                        filterCategory={filterCategory}
-                        setFilterCategory={setFilterCategory}
-                        filterAccount={filterAccount}
-                        setFilterAccount={setFilterAccount}
-                        filterDateFrom={filterDateFrom}
-                        setFilterDateFrom={setFilterDateFrom}
-                        filterDateTo={filterDateTo}
-                        setFilterDateTo={setFilterDateTo}
-                        categories={CATEGORIES}
-                        accounts={ACCOUNTS}
-                      />
-                    </Grid>
-                    
-                    <Grid item>
-                      <TransactionList
-                        filteredTransactions={filteredTransactions}
-                        editTransaction={editTransaction}
-                        deleteTransaction={deleteTransaction}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
+          <main className="main-content">
+            
+            {/* Workflow Steps - Pixel Poetry inspired */}
+            <div className="workflow-steps">
+              <div className="workflow-step">
+                <div className="step-number">1</div>
+                <h3 className="step-title">Track Your Story</h3>
+                <p className="step-description">
+                  Record your financial transactions and discover the narrative within your spending patterns.
+                </p>
+              </div>
+              <div className="workflow-step">
+                <div className="step-number">2</div>
+                <h3 className="step-title">Visualize Your Journey</h3>
+                <p className="step-description">
+                  Transform raw data into beautiful insights through charts, calendars, and summaries.
+                </p>
+              </div>
+              <div className="workflow-step">
+                <div className="step-number">3</div>
+                <h3 className="step-title">Shape Your Future</h3>
+                <p className="step-description">
+                  Use elegant analysis to make informed decisions and craft your financial poetry.
+                </p>
+              </div>
+            </div>
+            
+            {/* Account Summary Section */}
+            {configControlDate && (
+              <section className="content-section">
+                <h2 className="section-title">Account Overview</h2>
+                <p className="section-subtitle">Your financial snapshot for the current control period</p>
+                <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
+              </section>
             )}
-          </Container>
-
-          {/* Floating Action Buttons */}
-          <Fab
-            color="primary"
-            onClick={() => setTransactionDialogOpen(true)}
-            style={{ ...fabStyle, bottom: isMobile ? 90 : 90 }}
-          >
-            <AddIcon />
-          </Fab>
-
-          <Fab
-            color="secondary"
-            onClick={() => setControlDateDialogOpen(true)}
-            style={{ ...fabStyle, bottom: isMobile ? 150 : 150 }}
-          >
-            <SettingsIcon />
-          </Fab>
-
-          <Fab
-            onClick={() => appActions.setTheme(appState.theme === 'dark' ? 'light' : 'dark')}
-            style={{ 
-              ...fabStyle, 
-              bottom: isMobile ? 210 : 210,
-              backgroundColor: appState.theme === 'dark' ? '#ffeb3b' : '#424242',
-              color: appState.theme === 'dark' ? '#000' : '#fff'
-            }}
-          >
-            {appState.theme === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-          </Fab>
+            
+            {/* Charts and Visualizations */}
+            {configControlDate && (
+              <section className="content-section">
+                <h2 className="section-title">Financial Insights</h2>
+                <p className="section-subtitle">Visual representation of your spending patterns and trends</p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+                  <Calendar
+                    transactions={filteredTransactions}
+                    year={new Date(configControlDate).getFullYear()}
+                    month={new Date(configControlDate).getMonth()}
+                  />
+                  <TransactionsByTypeGraph
+                    transactions={filteredTransactions}
+                    categoryColors={categoryColors}
+                  />
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                  <TransactionsByTypeGraphAll
+                    transactions={filteredTransactions}
+                    categoryColors={categoryColors}
+                  />
+                  <AccountSumChart 
+                    transactions={filteredTransactions} 
+                    controlDate={configControlDate ? new Date(configControlDate) : null} 
+                  />
+                </div>
+                
+                {getControlDateAccountBarData(allTransactionsFiltered) && (
+                  <div style={{ marginTop: '2rem' }}>
+                    <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
+                  </div>
+                )}
+              </section>
+            )}
+            
+            {/* Filters Section */}
+            <section className="content-section">
+              <h2 className="section-title">Refine Your View</h2>
+              <p className="section-subtitle">Filter transactions by category, account, or date range to focus on what matters</p>
+              <Filters
+                filterCategory={filterCategory}
+                setFilterCategory={setFilterCategory}
+                filterAccount={filterAccount}
+                setFilterAccount={setFilterAccount}
+                filterDateFrom={filterDateFrom}
+                setFilterDateFrom={setFilterDateFrom}
+                filterDateTo={filterDateTo}
+                setFilterDateTo={setFilterDateTo}
+                categories={CATEGORIES}
+                accounts={ACCOUNTS}
+              />
+            </section>
+            
+            {/* Transaction List Section */}
+            <section className="content-section">
+              <h2 className="section-title">Transaction History</h2>
+              <p className="section-subtitle">Your complete financial story, transaction by transaction</p>
+              <TransactionList
+                filteredTransactions={filteredTransactions}
+                editTransaction={editTransaction}
+                deleteTransaction={deleteTransaction}
+              />
+            </section>
 
           {/* Transaction Dialog */}
           <Dialog 
@@ -516,7 +393,42 @@ const AppContent = () => {
               />
             </DialogContent>
           </Dialog>
-        </Box>
+          
+          {/* Floating Action Buttons */}
+          <div className="fab-container">
+            <button
+              className="custom-fab"
+              onClick={() => setTransactionDialogOpen(true)}
+              title="Add Transaction"
+            >
+              <AddIcon />
+            </button>
+            <button
+              className="custom-fab"
+              onClick={() => setControlDateDialogOpen(true)}
+              title="Configure Date"
+            >
+              <SettingsIcon />
+            </button>
+            <button
+              className="custom-fab"
+              onClick={handleToggleTheme}
+              title="Toggle Theme"
+            >
+              {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+            </button>
+            <button
+              className="custom-fab"
+              onClick={handleLogout}
+              title="Logout"
+              style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
+            >
+              <span style={{ fontSize: '1.2rem' }}>→</span>
+            </button>
+          </div>
+          
+          </main>
+        </div>
       </LocalizationProvider>
     </ThemeProvider>
   );
