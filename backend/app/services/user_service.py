@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from ..core.database_clean import database
+from ..core.database import database
 from ..core.security import get_password_hash, verify_password
 from ..models.database_models import users_table
 from ..schemas.user_schemas import UserCreate

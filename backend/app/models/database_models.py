@@ -1,5 +1,5 @@
 import sqlalchemy
-from ..core.database_clean import metadata
+from ..core.database import metadata
 
 # Users table
 users_table = sqlalchemy.Table(

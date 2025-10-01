@@ -18,7 +18,7 @@ try:
     
     # Test database module
     print("🔍 Testing database module...")
-    from app.core.database_clean import database, metadata, engine
+    from app.core.database import database, metadata, engine
     print("✅ Database module imported successfully!")
     
     # Test schemas
