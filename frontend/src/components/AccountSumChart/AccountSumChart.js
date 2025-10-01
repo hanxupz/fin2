@@ -81,7 +81,7 @@ const AccountSumChart = ({ transactions, controlDate }) => {
       },
       y: {
         ticks: { color: labelColor },
-        grid: { color: labelColor },
+        grid: { color: theme.palette.divider },
       },
     },
     maintainAspectRatio: false,
