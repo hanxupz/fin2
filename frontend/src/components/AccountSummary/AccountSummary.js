@@ -75,22 +75,6 @@ const AccountSummary = ({ transactions, controlDate }) => {
   return (
     <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
       <Paper elevation={3} sx={{ width: '100%', height: '100%', p: 2 }}>
-        <Typography 
-          variant="h5" 
-          sx={{ 
-            mb: 3, 
-            fontWeight: 600,
-            color: theme.palette.text.primary,
-            textAlign: 'center',
-            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Account Summary
-        </Typography>
-        
         <Grid container spacing={3}>
           {accountConfigs.map((config) => {
             const amount = totals[config.name];
@@ -170,20 +154,6 @@ const AccountSummary = ({ transactions, controlDate }) => {
                     >
                       {isPositive ? '+' : ''}{amount.toFixed(2)}€
                     </Typography>
-                    
-                    {/* Decorative element */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -10,
-                        right: -10,
-                        width: 40,
-                        height: 40,
-                        borderRadius: '50%',
-                        background: alpha('#fff', 0.1),
-                        border: `2px solid ${alpha('#fff', 0.2)}`,
-                      }}
-                    />
                   </CardContent>
                 </Card>
               </Grid>
