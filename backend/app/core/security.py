@@ -4,7 +4,6 @@ from jose import JWTError, jwt
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from .config import settings
-from ..services.user_service import UserService
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -33,6 +32,9 @@ def create_access_token(data: dict) -> str:
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     """Get the current authenticated user."""
+    # Import here to avoid circular import
+    from ..services.user_service import UserService
+    
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",

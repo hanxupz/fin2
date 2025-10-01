@@ -10,8 +10,9 @@ echo "🗑️  Removing old containers and images..."
 docker container prune -f
 docker image rm fin2_backend 2>/dev/null || true
 docker image rm fin2-backend 2>/dev/null || true
+docker system prune -f
 
-echo "🔨 Building backend with PostgreSQL support (syntax error fixed)..."
+echo "🔨 Building backend (circular import fixed)..."
 docker-compose build --no-cache backend
 
 echo "🚀 Starting services..."
