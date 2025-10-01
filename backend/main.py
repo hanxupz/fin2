@@ -38,6 +38,7 @@ transactions = sqlalchemy.Table(
     sqlalchemy.Column("control_date", sqlalchemy.Date),
     sqlalchemy.Column("category", sqlalchemy.String),   # plain string
     sqlalchemy.Column("account", sqlalchemy.String),    # plain string
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
 )
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -248,15 +249,16 @@ async def create_transaction(transaction: Transaction, request: Request, current
         control_date=transaction.control_date,
         category=transaction.category,
         account=transaction.account,
+        user_id=current_user["id"]
     )
     last_record_id = await database.execute(query)
     return {**transaction.dict(), "id": last_record_id}
 
 @app.get("/transactions/", response_model=List[Transaction])
 async def read_transactions(current_user: dict = Depends(get_current_user)):
-    query = transactions.select().order_by(transactions.c.control_date.desc(), transactions.c.date.desc())
+    query = transactions.select().where(transactions.c.user_id == current_user["id"]).order_by(transactions.c.control_date.desc(), transactions.c.date.desc())
     results = await database.fetch_all(query)
-    logger.info(f"Fetched {len(results)} transactions from DB")  # Debug log
+    logger.info(f"Fetched {len(results)} transactions from DB for user {current_user['username']}")  # Debug log
     return results
 
 @app.post("/transactions/bulk/")
@@ -273,6 +275,7 @@ async def create_transactions_bulk(transactions_list: List[Transaction], current
             "control_date": t.control_date,
             "category": t.category,
             "account": t.account,
+            "user_id": current_user["id"]
         }
         for t in transactions_list
     ]
