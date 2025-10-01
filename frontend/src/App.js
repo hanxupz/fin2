@@ -32,7 +32,6 @@ import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/
 import AccountSumChart from "./components/AccountSumChart/AccountSumChart";
 import ControlDateAccountBarChart from "./components/ControlDateAccountBarChart/ControlDateAccountBarChart";
 import Login from "./components/Login";
-import Register from "./components/Register";
 
 const getDesignTokens = (mode) => ({
   palette: {
@@ -385,11 +384,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Box style={{ padding: "1rem", height: '100vh', width: '100vh' }}>
-          {showRegister ? (
-            <Register onRegister={() => setShowRegister(false)} />
-          ) : (
             <Login onLogin={handleLogin} />
-          )}
         </Box>
       </ThemeProvider>
     );
