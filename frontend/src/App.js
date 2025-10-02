@@ -364,98 +364,105 @@ const AppContent = () => {
               />
             </Box>
           )}
-          
-          {/* Charts and Visualizations */}
-          {configControlDate && (
-            <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-              <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
-              <Box sx={{ mt: 4 }}>
-                <Calendar
-                  transactions={filteredTransactions}
-                  year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
-                  month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
-                />
-              </Box>
-              <Box sx={{ mt: 4 }}>
-                <TransactionsByTypeGraph
-                  transactions={filteredTransactions}
-                  categoryColors={categoryColors}
-                />
-              </Box>
-              <Box sx={{ mt: 4 }}>
-                <TransactionsByTypeGraphAll
-                  transactions={filteredTransactions}
-                  categoryColors={categoryColors}
-                />
-              </Box>
-              <Box sx={{ mt: 4 }}>
-                <AccountSumChart 
-                  transactions={filteredTransactions} 
-                  controlDate={configControlDate ? new Date(configControlDate) : null} 
-                />
-              </Box>
-              {getControlDateAccountBarData(allTransactionsFiltered) && (
-                <Box sx={{ mt: 4 }}>
-                  <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
+
+          {/* Main grid: Left (Charts) 2/3, Right (Other panels) 1/3 */}
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={8}>
+              {configControlDate && (
+                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                  <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
+                  <Box sx={{ mt: 4 }}>
+                    <Calendar
+                      transactions={filteredTransactions}
+                      year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
+                      month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
+                    />
+                  </Box>
+                  <Box sx={{ mt: 4 }}>
+                    <TransactionsByTypeGraph
+                      transactions={filteredTransactions}
+                      categoryColors={categoryColors}
+                    />
+                  </Box>
+                  <Box sx={{ mt: 4 }}>
+                    <TransactionsByTypeGraphAll
+                      transactions={filteredTransactions}
+                      categoryColors={categoryColors}
+                    />
+                  </Box>
+                  <Box sx={{ mt: 4 }}>
+                    <AccountSumChart 
+                      transactions={filteredTransactions} 
+                      controlDate={configControlDate ? new Date(configControlDate) : null} 
+                    />
+                  </Box>
+                  {getControlDateAccountBarData(allTransactionsFiltered) && (
+                    <Box sx={{ mt: 4 }}>
+                      <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
+                    </Box>
+                  )}
                 </Box>
               )}
-            </Box>
-          )}
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
+                {/* Credits Section */}
+                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                  <Typography variant="h5" fontWeight={600}>Credits</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
+                  <Box sx={{ mb:2 }}>
+                    <CreditsAccordion
+                      credits={credits}
+                      paymentsByCredit={paymentsByCredit}
+                      onExpandFetchPayments={fetchPayments}
+                      onEditCredit={editCredit}
+                      onDeleteCredit={removeCredit}
+                      onAddPayment={addPayment}
+                      onEditPayment={editPayment}
+                      onDeletePayment={removePayment}
+                    />
+                  </Box>
+                  <Box>
+                    <Fab size="small" color="primary" onClick={openCreateCredit}>
+                      <AddIcon />
+                    </Fab>
+                  </Box>
+                </Box>
 
-          {/* Credits Section */}
-          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-            <Typography variant="h5" fontWeight={600}>Credits</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
-            <Box sx={{ mb:2 }}>
-              <CreditsAccordion
-                credits={credits}
-                paymentsByCredit={paymentsByCredit}
-                onExpandFetchPayments={fetchPayments}
-                onEditCredit={editCredit}
-                onDeleteCredit={removeCredit}
-                onAddPayment={addPayment}
-                onEditPayment={editPayment}
-                onDeletePayment={removePayment}
-              />
-            </Box>
-            <Box>
-              <Fab size="small" color="primary" onClick={openCreateCredit}>
-                <AddIcon />
-              </Fab>
-            </Box>
-          </Box>
-          
-          {/* Filters Section */}
-          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-            <Typography variant="h5" fontWeight={600}>Refine Your View</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Filter transactions by category, account, or date range to focus on what matters</Typography>
-            <Filters
-              filterCategory={filterCategory}
-              setFilterCategory={setFilterCategory}
-              filterAccount={filterAccount}
-              setFilterAccount={setFilterAccount}
-              filterDateFrom={filterDateFrom}
-              setFilterDateFrom={setFilterDateFrom}
-              filterDateTo={filterDateTo}
-              setFilterDateTo={setFilterDateTo}
-              filterControlDate={filterControlDate}
-              setFilterControlDate={setFilterControlDate}
-              categories={CATEGORIES}
-              accounts={ACCOUNTS}
-            />
-          </Box>
-          
-          {/* Transaction List Section */}
-          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-            <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your complete financial story, transaction by transaction</Typography>
-            <TransactionList
-              filteredTransactions={filteredTransactions}
-              editTransaction={editTransaction}
-              deleteTransaction={deleteTransaction}
-            />
-          </Box>
+                {/* Filters Section */}
+                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                  <Typography variant="h5" fontWeight={600}>Refine Your View</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Filter transactions by category, account, or date range</Typography>
+                  <Filters
+                    filterCategory={filterCategory}
+                    setFilterCategory={setFilterCategory}
+                    filterAccount={filterAccount}
+                    setFilterAccount={setFilterAccount}
+                    filterDateFrom={filterDateFrom}
+                    setFilterDateFrom={setFilterDateFrom}
+                    filterDateTo={filterDateTo}
+                    setFilterDateTo={setFilterDateTo}
+                    filterControlDate={filterControlDate}
+                    setFilterControlDate={setFilterControlDate}
+                    categories={CATEGORIES}
+                    accounts={ACCOUNTS}
+                  />
+                </Box>
+
+                {/* Transaction List Section */}
+                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                  <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Complete record of activity</Typography>
+                  <TransactionList
+                    filteredTransactions={filteredTransactions}
+                    editTransaction={editTransaction}
+                    deleteTransaction={deleteTransaction}
+                  />
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
 
           {/* Floating Action Buttons */}
           <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
