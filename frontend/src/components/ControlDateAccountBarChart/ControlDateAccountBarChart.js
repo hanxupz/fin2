@@ -46,7 +46,9 @@ const ControlDateAccountBarChart = ({ data }) => {
     data: sortedData.map(d => d[acc] || 0),
     backgroundColor: paletteBase[idx % paletteBase.length],
     stack: 'accounts',
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)',
+    hoverBorderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
     borderRadius: 2,
   }));
 

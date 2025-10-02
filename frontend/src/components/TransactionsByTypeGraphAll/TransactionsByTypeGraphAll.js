@@ -27,7 +27,9 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
     data: accounts.map(acc => grouped[acc]?.[cat] || 0),
     backgroundColor: paletteMap[cat],
     stack: 'total',
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)',
+    hoverBorderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
     borderRadius: 4,
   })) : [{ label: 'No Data', data: [0,0,0], backgroundColor: theme.palette.divider, stack: 'total', borderWidth: 0 }];
 

@@ -30,7 +30,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     data: [grouped[cat]],
     backgroundColor: palette[cat],
     stack: 'total',
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)',
+    hoverBorderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
     borderRadius: 4,
   })) : [{ label: 'No Data', data: [0], backgroundColor: gridColor, stack: 'total', borderWidth: 0 }];
 
