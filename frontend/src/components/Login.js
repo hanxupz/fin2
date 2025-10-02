@@ -7,14 +7,17 @@ import {
   Typography,
   Stack,
   Box,
+  useMediaQuery,
   Alert,
   Link
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { surfaceBoxSx } from '../theme/primitives';
+import AnimatedBackground from './AnimatedBackground';
 
 const Login = ({ onLogin }) => {
   const theme = useTheme();
+  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
@@ -44,6 +47,8 @@ const Login = ({ onLogin }) => {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+      <AnimatedBackground />
+
       <Paper elevation={6} sx={(t) => ({
         ...surfaceBoxSx(t),
         p: { xs: 4, sm: 6 },

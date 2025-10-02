@@ -45,6 +45,7 @@ import TransactionsByTypeGraphAll from "./components/TransactionsByTypeGraphAll/
 import AccountSumChart from "./components/AccountSumChart/AccountSumChart";
 import ControlDateAccountBarChart from "./components/ControlDateAccountBarChart/ControlDateAccountBarChart";
 import Login from "./components/Login";
+import AnimatedBackground from './components/AnimatedBackground';
 import { Box as MuiBox } from '@mui/material';
 
 const AppContent = () => {
@@ -229,48 +230,7 @@ const AppContent = () => {
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
-          {/* Animated Background Layer */}
-          <Box
-            aria-hidden
-            sx={(t) => {
-              const palette = t.palette;
-              const colors = palette.mode === 'light'
-                ? [palette.primary.light, palette.secondary.light, palette.primary.main]
-                : [palette.primary.dark, palette.secondary.dark || palette.secondary.main, palette.background.default];
-              const gradient = `linear-gradient(120deg, ${colors[0]} 0%, ${colors[1]} 50%, ${colors[2]} 100%)`;
-              return {
-                position: 'fixed',
-                inset: 0,
-                zIndex: -1,
-                overflow: 'hidden',
-                '&:before': {
-                  content: '""',
-                  position: 'absolute',
-                  inset: 0,
-                  background: gradient,
-                  backgroundSize: '320% 320%',
-                  animation: prefersReducedMotion ? 'none' : 'bgShift 38s ease-in-out infinite',
-                  filter: palette.mode === 'dark' ? 'brightness(.85) saturate(.9)' : 'brightness(1) saturate(1.05)',
-                  transition: 'filter .6s ease'
-                },
-                '&:after': {
-                  content: '""',
-                  position: 'absolute',
-                  inset: 0,
-                  background: palette.mode === 'dark'
-                    ? 'radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08), transparent 60%)'
-                    : 'radial-gradient(circle at 70% 60%, rgba(255,255,255,0.35), transparent 65%)',
-                  mixBlendMode: palette.mode === 'dark' ? 'overlay' : 'soft-light',
-                  pointerEvents: 'none'
-                },
-                '@keyframes bgShift': {
-                  '0%': { backgroundPosition: '0% 50%' },
-                  '50%': { backgroundPosition: '100% 50%' },
-                  '100%': { backgroundPosition: '0% 50%' }
-                }
-              };
-            }}
-          />
+          <AnimatedBackground />
           <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pt: { xs: 6, md: 8 }, pb: 6 }}>
             {/* Account Summary Section */}
             {configControlDate && (
