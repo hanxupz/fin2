@@ -8,7 +8,7 @@ export const surfaceBoxSx = (theme) => ({
 });
 
 export const sectionContainerSx = (theme) => ({
-  mb: 4,
+  mb: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: 1.5,
