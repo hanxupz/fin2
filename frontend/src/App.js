@@ -80,6 +80,7 @@ const AppContent = () => {
   const theme = React.useMemo(() => createTheme(getDesignTokens(appState.theme)), [appState.theme]);
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
+  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   // Fetch control date config
   const fetchControlDateConfig = async () => {
@@ -225,9 +226,52 @@ const AppContent = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
-          <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pb: 6 }}>
+          {/* Animated Background Layer */}
+          <Box
+            aria-hidden
+            sx={(t) => {
+              const palette = t.palette;
+              const colors = palette.mode === 'light'
+                ? [palette.primary.light, palette.secondary.light, palette.primary.main]
+                : [palette.primary.dark, palette.secondary.dark || palette.secondary.main, palette.background.default];
+              const gradient = `linear-gradient(120deg, ${colors[0]} 0%, ${colors[1]} 50%, ${colors[2]} 100%)`;
+              return {
+                position: 'fixed',
+                inset: 0,
+                zIndex: -1,
+                overflow: 'hidden',
+                '&:before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  background: gradient,
+                  backgroundSize: '320% 320%',
+                  animation: prefersReducedMotion ? 'none' : 'bgShift 38s ease-in-out infinite',
+                  filter: palette.mode === 'dark' ? 'brightness(.85) saturate(.9)' : 'brightness(1) saturate(1.05)',
+                  transition: 'filter .6s ease'
+                },
+                '&:after': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  background: palette.mode === 'dark'
+                    ? 'radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08), transparent 60%)'
+                    : 'radial-gradient(circle at 70% 60%, rgba(255,255,255,0.35), transparent 65%)',
+                  mixBlendMode: palette.mode === 'dark' ? 'overlay' : 'soft-light',
+                  pointerEvents: 'none'
+                },
+                '@keyframes bgShift': {
+                  '0%': { backgroundPosition: '0% 50%' },
+                  '50%': { backgroundPosition: '100% 50%' },
+                  '100%': { backgroundPosition: '0% 50%' }
+                }
+              };
+            }}
+          />
+          <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pt: { xs: 6, md: 8 }, pb: 6 }}>
             {/* Account Summary Section */}
             {configControlDate && (
               <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
