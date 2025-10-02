@@ -69,7 +69,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
                     {t.amount >= 0 ? '+' : ''}{t.amount.toFixed(2)}€
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1, fontSize: 12, color: 'text.secondary' }}>
-                    <span>{t.date || '-'}</span><span> | {t.account || '-'}</span>
+                    <span>{t.date || '-'}  |  {t.account || '-'}</span>
                   </Box>
                 </CardContent>
                 <CardActions sx={{ pt: 0, pb: 1.5, px: 2 }}>
