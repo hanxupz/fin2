@@ -318,6 +318,54 @@ const AppContent = () => {
               <span style={{ fontSize: '1.2rem' }}>→</span>
             </Fab>
           </Box>
+
+          {/* Transaction Dialog */}
+          <Dialog
+            open={transactionDialogOpen}
+            onClose={() => { setTransactionDialogOpen(false); setEditingId(null); }}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogContent sx={{ pb: 3 }}>
+              <TransactionForm
+                description={description}
+                setDescription={setDescription}
+                amount={amount}
+                setAmount={setAmount}
+                date={date}
+                setDate={setDate}
+                controlDate={controlDate}
+                setControlDate={setControlDate}
+                category={category}
+                setCategory={setCategory}
+                account={account}
+                setAccount={setAccount}
+                addOrUpdateTransaction={submitTransaction}
+                editingId={editingId}
+                categories={CATEGORIES}
+                accounts={ACCOUNTS}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* Control Date Config Dialog */}
+          <Dialog
+            open={controlDateDialogOpen}
+            onClose={() => setControlDateDialogOpen(false)}
+            fullWidth
+            maxWidth="xs"
+          >
+            <DialogContent sx={{ pb: 3 }}>
+              <ControlDateConfig
+                configYear={configYear}
+                setConfigYear={setConfigYear}
+                configMonth={configMonth}
+                setConfigMonth={setConfigMonth}
+                configControlDate={configControlDate}
+                updateControlDateConfig={submitControlDateConfig}
+              />
+            </DialogContent>
+          </Dialog>
         </MuiBox>
       </LocalizationProvider>
     </ThemeProvider>
