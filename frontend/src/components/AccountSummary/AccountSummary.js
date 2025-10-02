@@ -61,8 +61,8 @@ const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCre
 
   const extendedConfigs = [
     ...accountConfigs,
-    { name: 'Remaining Credit', icon: CreditScoreIcon, color: theme.palette.error.main, isRemaining: true },
-    { name: 'Net After Credit', icon: AccountBalanceIcon, color: theme.palette.charts.category[8] || theme.palette.success.main, isNetAfter: true }
+    { name: 'Remaining Credit', icon: CreditScoreIcon, color: theme.palette.charts.category[8], isRemaining: true },
+    { name: 'Net After Credit', icon: AccountBalanceIcon, color: theme.palette.charts.category[10] || theme.palette.success.main, isNetAfter: true }
   ];
 
   return (
