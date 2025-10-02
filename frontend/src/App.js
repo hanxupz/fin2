@@ -48,6 +48,15 @@ import Login from "./components/Login";
 import AnimatedBackground from './components/AnimatedBackground';
 import { Box as MuiBox } from '@mui/material';
 
+// Helper: format a Date as YYYY-MM-DD in LOCAL time (avoids UTC shift when using toISOString)
+const formatLocalDate = (d) => {
+  if (!d) return null;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const AppContent = () => {
   const { state: appState, actions: appActions } = useAppContext();
   const { token, isAuthenticated, login, logout } = useAuth();
@@ -102,8 +111,8 @@ const AppContent = () => {
       const transactionData = {
         description,
         amount: parseFloat(amount),
-        date: date ? date.toISOString().split('T')[0] : null,
-        control_date: controlDate ? controlDate.toISOString().split('T')[0] : null,
+        date: formatLocalDate(date),
+        control_date: formatLocalDate(controlDate),
         category,
         account
       };
@@ -192,7 +201,7 @@ const AppContent = () => {
     const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
     // If user picked an explicit control date filter, override the default configControlDate restriction
     const matchesControlDate = filterControlDate
-      ? (t.control_date === filterControlDate.toISOString().split('T')[0])
+      ? (t.control_date === formatLocalDate(filterControlDate))
       : (configControlDate ? t.control_date === configControlDate : true);
     return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo && matchesControlDate;
   });
