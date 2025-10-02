@@ -122,6 +122,78 @@ class ApiService {
     
     return this.handleResponse(response);
   }
+
+  // Credits endpoints
+  async getCredits(token) {
+    const response = await fetch(`${this.baseURL}/credits/`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
+
+  async createCredit(credit, token) {
+    const response = await fetch(`${this.baseURL}/credits/`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(credit)
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateCredit(id, credit, token) {
+    const response = await fetch(`${this.baseURL}/credits/${id}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(credit)
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteCredit(id, token) {
+    const response = await fetch(`${this.baseURL}/credits/${id}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    if (response.ok) return { success: true };
+    return this.handleResponse(response);
+  }
+
+  // Credit payments
+  async getCreditPayments(creditId, token) {
+    const response = await fetch(`${this.baseURL}/credits/${creditId}/payments`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
+
+  async createCreditPayment(payment, token) {
+    const response = await fetch(`${this.baseURL}/credits/payments`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(payment)
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateCreditPayment(paymentId, payment, token) {
+    const response = await fetch(`${this.baseURL}/credits/payments/${paymentId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(payment)
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteCreditPayment(paymentId, token) {
+    const response = await fetch(`${this.baseURL}/credits/payments/${paymentId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    if (response.ok) return { success: true };
+    return this.handleResponse(response);
+  }
 }
 
 export default new ApiService();

@@ -47,6 +47,10 @@ import ControlDateAccountBarChart from "./components/ControlDateAccountBarChart/
 import Login from "./components/Login";
 import AnimatedBackground from './components/AnimatedBackground';
 import { Box as MuiBox } from '@mui/material';
+import CreditForm from './components/Credits/CreditForm';
+import CreditPaymentForm from './components/Credits/CreditPaymentForm';
+import CreditsAccordion from './components/Credits/CreditsAccordion';
+import { useCredits } from './hooks/useCredits';
 
 // Helper: format a Date as YYYY-MM-DD in LOCAL time (avoids UTC shift when using toISOString)
 const formatLocalDate = (d) => {
@@ -61,6 +65,7 @@ const AppContent = () => {
   const { state: appState, actions: appActions } = useAppContext();
   const { token, isAuthenticated, login, logout } = useAuth();
   const { transactions, createTransaction, updateTransaction, deleteTransaction } = useTransactions(token);
+  const { credits, paymentsByCredit, fetchPayments, createCredit, updateCredit, deleteCredit, createPayment, updatePayment, deletePayment } = useCredits(token);
 
   // Local state
   const [description, setDescription] = useState("");
@@ -86,6 +91,22 @@ const AppContent = () => {
   // Dialog states
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+
+  // Credit form state
+  const [creditName, setCreditName] = useState("");
+  const [creditMonthlyValue, setCreditMonthlyValue] = useState("");
+  const [creditPaymentDay, setCreditPaymentDay] = useState("");
+  const [creditTotalAmount, setCreditTotalAmount] = useState("");
+  const [editingCreditId, setEditingCreditId] = useState(null);
+
+  // Payment form state
+  const [paymentValue, setPaymentValue] = useState("");
+  const [paymentDate, setPaymentDate] = useState(null);
+  const [paymentType, setPaymentType] = useState("scheduled");
+  const [editingPaymentId, setEditingPaymentId] = useState(null);
+  const [activePaymentCreditId, setActivePaymentCreditId] = useState(null);
 
   // Theme and responsive
   const theme = React.useMemo(() => createTheme(getDesignTokens(appState.theme)), [appState.theme]);
@@ -185,6 +206,83 @@ const AppContent = () => {
   const handleToggleTheme = () => {
     appActions.setTheme(appState.theme === 'dark' ? 'light' : 'dark');
   };
+
+  // Credit handlers
+  const openCreateCredit = () => {
+    setEditingCreditId(null);
+    setCreditName("");
+    setCreditMonthlyValue("");
+    setCreditPaymentDay("");
+    setCreditTotalAmount("");
+    setCreditDialogOpen(true);
+  };
+
+  const submitCredit = async () => {
+    const payload = {
+      name: creditName,
+      monthly_value: parseFloat(creditMonthlyValue),
+      payment_day: parseInt(creditPaymentDay, 10),
+      total_amount: creditTotalAmount ? parseFloat(creditTotalAmount) : null
+    };
+    try {
+      if (editingCreditId) {
+        await updateCredit(editingCreditId, payload);
+      } else {
+        await createCredit(payload);
+      }
+      setCreditDialogOpen(false);
+    } catch (e) { console.error(e); }
+  };
+
+  const editCredit = (credit) => {
+    setEditingCreditId(credit.id);
+    setCreditName(credit.name);
+    setCreditMonthlyValue(credit.monthly_value);
+    setCreditPaymentDay(credit.payment_day);
+    setCreditTotalAmount(credit.total_amount || "");
+    setCreditDialogOpen(true);
+  };
+
+  const removeCredit = async (id) => {
+    try { await deleteCredit(id); } catch (e) { console.error(e);} }
+
+  // Payment handlers
+  const addPayment = (credit) => {
+    setActivePaymentCreditId(credit.id);
+    setEditingPaymentId(null);
+    setPaymentValue(credit.monthly_value); // default to monthly value
+    setPaymentDate(new Date());
+    setPaymentType('scheduled');
+    setPaymentDialogOpen(true);
+  };
+
+  const editPayment = (credit, payment) => {
+    setActivePaymentCreditId(credit.id);
+    setEditingPaymentId(payment.id);
+    setPaymentValue(payment.value);
+    setPaymentDate(new Date(payment.date));
+    setPaymentType(payment.type);
+    setPaymentDialogOpen(true);
+  };
+
+  const submitPayment = async () => {
+    const payloadBase = {
+      value: parseFloat(paymentValue),
+      date: paymentDate ? paymentDate.toISOString().split('T')[0] : null,
+      type: paymentType
+    };
+    try {
+      if (editingPaymentId) {
+        await updatePayment(editingPaymentId, payloadBase);
+      } else {
+        await createPayment({ ...payloadBase, credit_id: activePaymentCreditId });
+      }
+      setPaymentDialogOpen(false);
+    } catch (e) { console.error(e); }
+  };
+
+  const removePayment = async (paymentId, creditId) => {
+    try { await deletePayment(paymentId, creditId); } catch (e) { console.error(e);} };
 
   // Load config on mount
   useEffect(() => {
@@ -330,6 +428,29 @@ const AppContent = () => {
               deleteTransaction={deleteTransaction}
             />
           </Box>
+
+          {/* Credits Section */}
+          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+            <Typography variant="h5" fontWeight={600}>Credits</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
+            <Box sx={{ mb:2 }}>
+              <CreditsAccordion
+                credits={credits}
+                paymentsByCredit={paymentsByCredit}
+                onExpandFetchPayments={fetchPayments}
+                onEditCredit={editCredit}
+                onDeleteCredit={removeCredit}
+                onAddPayment={addPayment}
+                onEditPayment={editPayment}
+                onDeletePayment={removePayment}
+              />
+            </Box>
+            <Box>
+              <Fab size="small" color="primary" onClick={openCreateCredit}>
+                <AddIcon />
+              </Fab>
+            </Box>
+          </Box>
           {/* Floating Action Buttons */}
           <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
@@ -390,6 +511,48 @@ const AppContent = () => {
                 setConfigMonth={setConfigMonth}
                 configControlDate={configControlDate}
                 updateControlDateConfig={submitControlDateConfig}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* Credit Dialog */}
+          <Dialog
+            open={creditDialogOpen}
+            onClose={() => setCreditDialogOpen(false)}
+            fullWidth maxWidth="sm"
+          >
+            <DialogContent sx={{ pb:3 }}>
+              <CreditForm
+                name={creditName}
+                setName={setCreditName}
+                monthlyValue={creditMonthlyValue}
+                setMonthlyValue={setCreditMonthlyValue}
+                paymentDay={creditPaymentDay}
+                setPaymentDay={setCreditPaymentDay}
+                totalAmount={creditTotalAmount}
+                setTotalAmount={setCreditTotalAmount}
+                onSubmit={submitCredit}
+                editingId={editingCreditId}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* Credit Payment Dialog */}
+          <Dialog
+            open={paymentDialogOpen}
+            onClose={() => setPaymentDialogOpen(false)}
+            fullWidth maxWidth="xs"
+          >
+            <DialogContent sx={{ pb:3 }}>
+              <CreditPaymentForm
+                value={paymentValue}
+                setValue={setPaymentValue}
+                date={paymentDate}
+                setDate={setPaymentDate}
+                type={paymentType}
+                setType={setPaymentType}
+                onSubmit={submitPayment}
+                editingPaymentId={editingPaymentId}
               />
             </DialogContent>
           </Dialog>
