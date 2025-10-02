@@ -70,7 +70,11 @@ const Calendar = ({ transactions, year, month }) => {
   return (
     <Paper elevation={3} sx={{ width: '100%', p: 2 }}>
       <Typography variant="h6" gutterBottom>📅 Transactions Calendar</Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, mb: 1 }}>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(7, 1fr)', 
+        gap: 1, 
+        mb: 1 }}>
         {weekdayNames.map(d => (
           <Box key={d} sx={{
             textAlign: 'center',
@@ -83,7 +87,10 @@ const Calendar = ({ transactions, year, month }) => {
           }}>{d}</Box>
         ))}
       </Box>
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(7, 1fr)', 
+        gap: 1 }}>
         {cells}
       </Box>
     </Paper>

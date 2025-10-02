@@ -270,8 +270,8 @@ const AppContent = () => {
               <Box sx={{ mt: 4 }}>
                 <Calendar
                   transactions={filteredTransactions}
-                  year={new Date(configControlDate).getFullYear()}
-                  month={new Date(configControlDate).getMonth()}
+                  year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
+                  month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
                 />
               </Box>
               <Box sx={{ mt: 4 }}>
