@@ -14,6 +14,21 @@ export const useCredits = (token) => {
     try {
       const data = await apiService.getCredits(token);
       setCredits(data);
+      // Prefetch payments for credits that have a total_amount defined (likely needed for remaining calc)
+      // Fire and forget; don't block the main credit load resolution
+      Promise.all(
+        data
+          .filter(c => c.total_amount !== null && c.total_amount !== undefined)
+          .map(async c => {
+            try {
+              const payments = await apiService.getCreditPayments(c.id, token);
+              setPaymentsByCredit(prev => ({ ...prev, [c.id]: payments }));
+            } catch (e) {
+              // Silent per-credit failure; global error already handled
+              console.warn('Prefetch payments failed for credit', c.id, e);
+            }
+          })
+      );
     } catch (err) {
       console.error('Failed to fetch credits:', err);
       setError(err.message);
