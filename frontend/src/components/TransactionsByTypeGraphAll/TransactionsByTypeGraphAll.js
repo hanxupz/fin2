@@ -70,7 +70,7 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
   };
 
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper, height : 400 })}>
       <Bar data={data} options={options} />
     </Paper>
   );

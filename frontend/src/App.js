@@ -368,43 +368,45 @@ const AppContent = () => {
           {/* Main grid: Left (Charts) 2/3, Right (Other panels) 1/3 */}
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid item xs={12} md={8}>
-              <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                <Calendar
-                  transactions={filteredTransactions}
-                  year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
-                  month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
-                />
-              </Box>
-              {configControlDate && (
+              <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
                 <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
-                  
-                  <Box sx={{ mt: 4 }}>
-                    <TransactionsByTypeGraph
-                      transactions={filteredTransactions}
-                      categoryColors={categoryColors}
-                    />
-                  </Box>
-                  <Box sx={{ mt: 4 }}>
-                    <TransactionsByTypeGraphAll
-                      transactions={filteredTransactions}
-                      categoryColors={categoryColors}
-                    />
-                  </Box>
-                  <Box sx={{ mt: 4 }}>
-                    <AccountSumChart 
-                      transactions={filteredTransactions} 
-                      controlDate={configControlDate ? new Date(configControlDate) : null} 
-                    />
-                  </Box>
-                  {getControlDateAccountBarData(allTransactionsFiltered) && (
-                    <Box sx={{ mt: 4 }}>
-                      <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
-                    </Box>
-                  )}
+                  <Calendar
+                    transactions={filteredTransactions}
+                    year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
+                    month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
+                  />
                 </Box>
-              )}
+                {configControlDate && (
+                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                    <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
+                    
+                    <Box sx={{ mt: 4 }}>
+                      <TransactionsByTypeGraph
+                        transactions={filteredTransactions}
+                        categoryColors={categoryColors}
+                      />
+                    </Box>
+                    <Box sx={{ mt: 4 }}>
+                      <TransactionsByTypeGraphAll
+                        transactions={filteredTransactions}
+                        categoryColors={categoryColors}
+                      />
+                    </Box>
+                    <Box sx={{ mt: 4 }}>
+                      <AccountSumChart 
+                        transactions={filteredTransactions} 
+                        controlDate={configControlDate ? new Date(configControlDate) : null} 
+                      />
+                    </Box>
+                    {getControlDateAccountBarData(allTransactionsFiltered) && (
+                      <Box sx={{ mt: 4 }}>
+                        <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
+                      </Box>
+                    )}
+                  </Box>
+                )}
+              </Box>
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
