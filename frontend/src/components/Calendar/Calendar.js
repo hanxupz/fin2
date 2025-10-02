@@ -69,7 +69,7 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper, height : 220 })}>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
       <Box sx={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(7, 1fr)', 
