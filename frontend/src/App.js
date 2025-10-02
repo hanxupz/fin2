@@ -130,12 +130,22 @@ const AppContent = () => {
   // Submit control date config
   const submitControlDateConfig = async () => {
     try {
-      const config = {
-        year: parseInt(configYear),
-        month: parseInt(configMonth),
-        control_date: configControlDate
-      };
-      
+      const parsedYear = parseInt(configYear, 10);
+      const parsedMonth = parseInt(configMonth, 10);
+
+      // Basic front-end validation
+      if (isNaN(parsedYear) || parsedYear < 1970 || parsedYear > 2100) {
+        console.error("Invalid year supplied");
+        return;
+      }
+      if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
+        console.error("Invalid month supplied");
+        return;
+      }
+
+      // Do NOT send control_date so backend validator sets default (1st of month) each time
+      const config = { year: parsedYear, month: parsedMonth };
+
       await apiService.setControlDate(config, token);
       setControlDateDialogOpen(false);
       fetchControlDateConfig();
