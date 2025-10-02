@@ -227,101 +227,98 @@ const AppContent = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
-          <AnimatedBackground />
-          <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pt: { xs: 6, md: 8 }, pb: 6 }}>
-            {/* Account Summary Section */}
-            {configControlDate && (
-              <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                <Typography variant="h5" fontWeight={600}>Account Overview</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your financial snapshot for the current control period</Typography>
-                <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
-              </Box>
-            )}
-            
-            {/* Charts and Visualizations */}
-            {configControlDate && (
-              <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
-                <Box sx={{ mt: 4 }}>
-                  <Calendar
-                    transactions={filteredTransactions}
-                    year={new Date(configControlDate).getFullYear()}
-                    month={new Date(configControlDate).getMonth()}
-                  />
-                </Box>
-                <Box sx={{ mt: 4 }}>
-                  <TransactionsByTypeGraph
-                    transactions={filteredTransactions}
-                    categoryColors={categoryColors}
-                  />
-                </Box>
-                <Box sx={{ display: 'grid', mt: 4, gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                  <TransactionsByTypeGraphAll
-                    transactions={filteredTransactions}
-                    categoryColors={categoryColors}
-                  />
-                  <AccountSumChart 
-                    transactions={filteredTransactions} 
-                    controlDate={configControlDate ? new Date(configControlDate) : null} 
-                  />
-                </Box>
-                {getControlDateAccountBarData(allTransactionsFiltered) && (
-                  <Box sx={{ mt: 4 }}>
-                    <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
-                  </Box>
-                )}
-              </Box>
-            )}
-            
-            {/* Filters Section */}
+        <AnimatedBackground />
+        <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pt: { xs: 6, md: 8 }, pb: 6 }}>
+          {/* Account Summary Section */}
+          {configControlDate && (
             <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-              <Typography variant="h5" fontWeight={600}>Refine Your View</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Filter transactions by category, account, or date range to focus on what matters</Typography>
-              <Filters
-                filterCategory={filterCategory}
-                setFilterCategory={setFilterCategory}
-                filterAccount={filterAccount}
-                setFilterAccount={setFilterAccount}
-                filterDateFrom={filterDateFrom}
-                setFilterDateFrom={setFilterDateFrom}
-                filterDateTo={filterDateTo}
-                setFilterDateTo={setFilterDateTo}
-                categories={CATEGORIES}
-                accounts={ACCOUNTS}
-              />
+              <Typography variant="h5" fontWeight={600}>Account Overview</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your financial snapshot for the current control period</Typography>
+              <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
             </Box>
-            
-            {/* Transaction List Section */}
+          )}
+          
+          {/* Charts and Visualizations */}
+          {configControlDate && (
             <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-              <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your complete financial story, transaction by transaction</Typography>
-              <TransactionList
-                filteredTransactions={filteredTransactions}
-                editTransaction={editTransaction}
-                deleteTransaction={deleteTransaction}
-              />
+              <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
+              <Box sx={{ mt: 4 }}>
+                <Calendar
+                  transactions={filteredTransactions}
+                  year={new Date(configControlDate).getFullYear()}
+                  month={new Date(configControlDate).getMonth()}
+                />
+              </Box>
+              <Box sx={{ mt: 4 }}>
+                <TransactionsByTypeGraph
+                  transactions={filteredTransactions}
+                  categoryColors={categoryColors}
+                />
+              </Box>
+              <Box sx={{ display: 'grid', mt: 4, gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                <TransactionsByTypeGraphAll
+                  transactions={filteredTransactions}
+                  categoryColors={categoryColors}
+                />
+                <AccountSumChart 
+                  transactions={filteredTransactions} 
+                  controlDate={configControlDate ? new Date(configControlDate) : null} 
+                />
+              </Box>
+              {getControlDateAccountBarData(allTransactionsFiltered) && (
+                <Box sx={{ mt: 4 }}>
+                  <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
+                </Box>
+              )}
             </Box>
-            {/* Floating Action Buttons */}
-            <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
-                <AddIcon />
-              </Fab>
-              <Fab aria-label="configure control date" onClick={() => setControlDateDialogOpen(true)} sx={fabSx(theme)} size="medium">
-                <SettingsIcon />
-              </Fab>
-              <Fab aria-label="toggle theme" onClick={handleToggleTheme} sx={fabSx(theme)} size="medium">
-                {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
-              </Fab>
-              <Fab aria-label="logout" onClick={handleLogout} size="medium" sx={(t) => ({ ...fabSx(t), background: t.palette.gradients.danger })}>
-                <span style={{ fontSize: '1.2rem' }}>→</span>
-              </Fab>
-            </Box>
-          </MuiBox>
-        </div>
+          )}
+          
+          {/* Filters Section */}
+          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+            <Typography variant="h5" fontWeight={600}>Refine Your View</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Filter transactions by category, account, or date range to focus on what matters</Typography>
+            <Filters
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+              filterAccount={filterAccount}
+              setFilterAccount={setFilterAccount}
+              filterDateFrom={filterDateFrom}
+              setFilterDateFrom={setFilterDateFrom}
+              filterDateTo={filterDateTo}
+              setFilterDateTo={setFilterDateTo}
+              categories={CATEGORIES}
+              accounts={ACCOUNTS}
+            />
+          </Box>
+          
+          {/* Transaction List Section */}
+          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+            <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your complete financial story, transaction by transaction</Typography>
+            <TransactionList
+              filteredTransactions={filteredTransactions}
+              editTransaction={editTransaction}
+              deleteTransaction={deleteTransaction}
+            />
+          </Box>
+          {/* Floating Action Buttons */}
+          <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
+              <AddIcon />
+            </Fab>
+            <Fab aria-label="configure control date" onClick={() => setControlDateDialogOpen(true)} sx={fabSx(theme)} size="medium">
+              <SettingsIcon />
+            </Fab>
+            <Fab aria-label="toggle theme" onClick={handleToggleTheme} sx={fabSx(theme)} size="medium">
+              {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+            </Fab>
+            <Fab aria-label="logout" onClick={handleLogout} size="medium" sx={(t) => ({ ...fabSx(t), background: t.palette.gradients.danger })}>
+              <span style={{ fontSize: '1.2rem' }}>→</span>
+            </Fab>
+          </Box>
+        </MuiBox>
       </LocalizationProvider>
     </ThemeProvider>
   );
