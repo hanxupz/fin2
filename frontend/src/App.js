@@ -369,13 +369,14 @@ const AppContent = () => {
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid item xs={12} md={8}>
               <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
-                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Calendar
-                    transactions={filteredTransactions}
-                    year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
-                    month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
-                  />
-                </Box>
+                <Typography variant="h6" gutterBottom>📅 Transactions Calendar</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
+                    
+                <Calendar
+                  transactions={filteredTransactions}
+                  year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
+                  month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
+                />
                 {configControlDate && (
                   <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
