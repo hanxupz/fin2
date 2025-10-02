@@ -402,6 +402,29 @@ const AppContent = () => {
               )}
             </Box>
           )}
+
+          {/* Credits Section */}
+          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+            <Typography variant="h5" fontWeight={600}>Credits</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
+            <Box sx={{ mb:2 }}>
+              <CreditsAccordion
+                credits={credits}
+                paymentsByCredit={paymentsByCredit}
+                onExpandFetchPayments={fetchPayments}
+                onEditCredit={editCredit}
+                onDeleteCredit={removeCredit}
+                onAddPayment={addPayment}
+                onEditPayment={editPayment}
+                onDeletePayment={removePayment}
+              />
+            </Box>
+            <Box>
+              <Fab size="small" color="primary" onClick={openCreateCredit}>
+                <AddIcon />
+              </Fab>
+            </Box>
+          </Box>
           
           {/* Filters Section */}
           <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
@@ -434,28 +457,6 @@ const AppContent = () => {
             />
           </Box>
 
-          {/* Credits Section */}
-          <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-            <Typography variant="h5" fontWeight={600}>Credits</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
-            <Box sx={{ mb:2 }}>
-              <CreditsAccordion
-                credits={credits}
-                paymentsByCredit={paymentsByCredit}
-                onExpandFetchPayments={fetchPayments}
-                onEditCredit={editCredit}
-                onDeleteCredit={removeCredit}
-                onAddPayment={addPayment}
-                onEditPayment={editPayment}
-                onDeletePayment={removePayment}
-              />
-            </Box>
-            <Box>
-              <Fab size="small" color="primary" onClick={openCreateCredit}>
-                <AddIcon />
-              </Fab>
-            </Box>
-          </Box>
           {/* Floating Action Buttons */}
           <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             <Fab aria-label="add transaction" onClick={() => setTransactionDialogOpen(true)} sx={fabSx(theme)} size="medium">
