@@ -9,7 +9,6 @@ Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 const AccountSumChart = ({ transactions, controlDate }) => {
   const theme = useTheme();
 
-  // Group by account, sum all amounts (transactions are already filtered by control_date in App.js)
   const grouped = {};
   let poupancaSum = 0;
   transactions.forEach(({ account, amount }) => {
@@ -23,7 +22,6 @@ const AccountSumChart = ({ transactions, controlDate }) => {
 
   if (poupancaSum !== 0) {
     grouped['Poupança'] = poupancaSum;
-    // Remove individual poupança accounts if present
     delete grouped['Poupança Física'];
     delete grouped['Poupança Objectivo'];
   }
@@ -31,54 +29,38 @@ const AccountSumChart = ({ transactions, controlDate }) => {
   const accounts = Object.keys(grouped);
   const values = accounts.map(acc => grouped[acc]);
   const labelColor = theme.palette.text.primary;
+  const gridColor = theme.palette.divider;
+  const palette = theme.palette.charts.category;
 
-  // Chart data
   const data = {
     labels: accounts,
     datasets: [
       {
         label: 'Sum by Account',
         data: values,
-        backgroundColor: theme.palette.gradients.accent,
-        borderRadius: 6,
+        backgroundColor: accounts.map((_, i) => palette[i % palette.length]),
         borderWidth: 0,
+        borderRadius: 6,
       },
     ],
   };
 
-  // Chart options
   const options = {
-    indexAxis: 'y', // horizontal bar
+    indexAxis: 'y',
     responsive: true,
     plugins: {
       legend: { display: false },
-      title: {
-        display: true,
-        text: 'Sum of Values by Account',
-        color: labelColor,
-      },
+      title: { display: true, text: 'Sum of Values by Account', color: labelColor },
       tooltip: {
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.x}`;
-          }
-        },
+        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
       }
     },
     scales: {
-      x: {
-        beginAtZero: true,
-        title: { display: true, text: 'Sum', color: labelColor },
-        ticks: { color: labelColor },
-        grid: { color: theme.palette.divider }, 
-      },
-      y: {
-        ticks: { color: labelColor },
-        grid: { color: theme.palette.divider },
-      },
+      x: { beginAtZero: true, title: { display: true, text: 'Sum', color: labelColor }, ticks: { color: labelColor }, grid: { color: gridColor } },
+      y: { ticks: { color: labelColor }, grid: { color: gridColor } },
     },
     maintainAspectRatio: false,
   };

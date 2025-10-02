@@ -20,7 +20,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
 
   const categories = Object.keys(grouped);
   const labelColor = theme.palette.text.primary;
-  const palette = categoryColors || categories.reduce((acc, cat, idx) => ({ ...acc, [cat]: theme.palette.charts.category[idx % theme.palette.charts.category.length] }), {});
+  const gridColor = theme.palette.divider;
+  const paletteBase = theme.palette.charts.category;
+  const palette = categoryColors || categories.reduce((acc, cat, idx) => ({ ...acc, [cat]: paletteBase[idx % paletteBase.length] }), {});
 
   // If no categories, show a dummy dataset to avoid chartjs errors
   const datasets = categories.length > 0 ? categories.map((cat) => ({
@@ -28,7 +30,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     data: [grouped[cat]],
     backgroundColor: palette[cat],
     stack: 'total',
-  })) : [{ label: 'No Data', data: [0], backgroundColor: theme.palette.divider, stack: 'total' }];
+    borderWidth: 0,
+    borderRadius: 4,
+  })) : [{ label: 'No Data', data: [0], backgroundColor: gridColor, stack: 'total', borderWidth: 0 }];
 
   // Calculate min/max for x axis as the sum of all negative and positive values
   let min = 0, max = 0;
@@ -71,12 +75,12 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         max,
         title: { display: true, text: 'Valor', color: labelColor },
         ticks: { color: labelColor },
-        grid: { color: theme.palette.divider },
+        grid: { color: gridColor },
       },
       y: {
         stacked: true,
         ticks: { color: labelColor },
-        grid: { color: theme.palette.divider },
+        grid: { color: gridColor },
       },
     },
     maintainAspectRatio: false,

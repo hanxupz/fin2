@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
@@ -40,19 +39,15 @@ const ControlDateAccountBarChart = ({ data }) => {
   const globalMax = Math.max(...minMaxPerDate.map(m => m.sum));
 
   // Color palette from theme
-  const palette = [
-    theme.palette.primary.main,
-    theme.palette.secondary.main,
-    '#81d4fa', '#ffd54f', '#ce93d8', '#ffab91', '#a5d6a7', '#f48fb1', '#b39ddb', '#ffcc80'
-  ];
-
+  const paletteBase = theme.palette.charts.category;
   // Build datasets for Chart.js, always show all accounts
   const datasets = allAccounts.map((acc, idx) => ({
     label: acc,
     data: sortedData.map(d => d[acc] || 0),
-    backgroundColor: palette[idx % palette.length],
+    backgroundColor: paletteBase[idx % paletteBase.length],
     stack: 'accounts',
-    borderWidth: 1,
+    borderWidth: 0,
+    borderRadius: 2,
   }));
 
   const chartData = {
@@ -60,33 +55,24 @@ const ControlDateAccountBarChart = ({ data }) => {
     datasets,
   };
 
+  const labelColor = theme.palette.text.primary;
+  const gridColor = theme.palette.divider;
+
   const options = {
     indexAxis: 'y',
     responsive: true,
     plugins: {
       legend: { display: false },
       tooltip: {
-        enabled: true,
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.x}`;
-          }
-        }
+        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
+        titleColor: labelColor,
+        bodyColor: labelColor,
+        backgroundColor: theme.palette.background.paper,
       },
     },
     scales: {
-      x: {
-        stacked: true,
-        grid: { color: theme.palette.divider },
-        ticks: { color: theme.palette.text.primary },
-        min: globalMin,
-        max: globalMax,
-      },
-      y: {
-        stacked: true,
-        grid: { color: theme.palette.divider },
-        ticks: { color: theme.palette.text.primary },
-      },
+      x: { stacked: true, grid: { color: gridColor }, ticks: { color: labelColor }, min: globalMin, max: globalMax },
+      y: { stacked: true, grid: { color: gridColor }, ticks: { color: labelColor } },
     },
     maintainAspectRatio: false,
   };
