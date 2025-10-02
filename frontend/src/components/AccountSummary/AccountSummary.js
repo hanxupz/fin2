@@ -14,9 +14,10 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import SavingsIcon from '@mui/icons-material/Savings';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import CreditScoreIcon from '@mui/icons-material/CreditScore';
 import { surfaceBoxSx } from '../../theme/primitives';
 
-const AccountSummary = ({ transactions, controlDate }) => {
+const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCredit = {} }) => {
   const theme = useTheme();
 
   const filteredTransactions = transactions.filter(
@@ -43,13 +44,29 @@ const AccountSummary = ({ transactions, controlDate }) => {
     totals.All += t.amount;
   });
 
+  // Compute remaining credit (sum of (total_amount - paid) for credits with a total_amount)
+  let remainingCredit = 0;
+  credits.forEach(c => {
+    if (c.total_amount !== null && c.total_amount !== undefined) {
+      const payments = paymentsByCredit[c.id] || [];
+      const paid = payments.reduce((s, p) => s + (p.value || 0), 0);
+      const rem = c.total_amount - paid;
+      remainingCredit += rem; // allow negative if overpaid
+    }
+  });
+
   const formatter = new Intl.NumberFormat('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const extendedConfigs = [
+    ...accountConfigs,
+    { name: 'Remaining Credit', icon: CreditScoreIcon, color: theme.palette.charts.category[8] || theme.palette.warning.main, isRemaining: true }
+  ];
 
   return (
     <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
       <Grid container spacing={2}>
-        {accountConfigs.map((config) => {
-          const amount = totals[config.name];
+        {extendedConfigs.map((config) => {
+          const amount = config.isRemaining ? remainingCredit : totals[config.name];
           const positive = amount >= 0;
           return (
             <Grid item xs={12} sm={6} md={3} key={config.name}>

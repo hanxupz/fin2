@@ -356,7 +356,12 @@ const AppContent = () => {
             <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
               <Typography variant="h5" fontWeight={600}>Account Overview</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your financial snapshot for the current control period</Typography>
-              <AccountSummary transactions={transactions} controlDate={new Date(configControlDate)} />
+              <AccountSummary 
+                transactions={transactions} 
+                controlDate={new Date(configControlDate)} 
+                credits={credits}
+                paymentsByCredit={paymentsByCredit}
+              />
             </Box>
           )}
           
