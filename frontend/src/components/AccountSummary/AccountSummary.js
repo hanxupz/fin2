@@ -57,19 +57,29 @@ const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCre
 
   const formatter = new Intl.NumberFormat('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const netAfterCredit = totals.All - remainingCredit;
+
   const extendedConfigs = [
     ...accountConfigs,
-    { name: 'Remaining Credit', icon: CreditScoreIcon, color: theme.palette.charts.category[8] || theme.palette.warning.main, isRemaining: true }
+    { name: 'Remaining Credit', icon: CreditScoreIcon, color: theme.palette.error.main, isRemaining: true },
+    { name: 'Net After Credit', icon: AccountBalanceIcon, color: theme.palette.charts.category[8] || theme.palette.success.main, isNetAfter: true }
   ];
 
   return (
     <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
       <Grid container spacing={2}>
         {extendedConfigs.map((config) => {
-          const amount = config.isRemaining ? remainingCredit : totals[config.name];
-          const positive = amount >= 0;
+          let amount;
+            if (config.isRemaining) {
+              amount = -remainingCredit; // show as negative liability
+            } else if (config.isNetAfter) {
+              amount = netAfterCredit;
+            } else {
+              amount = totals[config.name];
+            }
+          const positive = config.isRemaining ? false : amount >= 0;
           return (
-            <Grid item xs={12} sm={6} md={3} key={config.name}>
+            <Grid item xs={12} sm={6} md={4} key={config.name}>
               <Card
                 variant="outlined"
                 sx={{
@@ -111,16 +121,14 @@ const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCre
                   <Typography variant="subtitle2" sx={{ fontWeight: 600, letterSpacing: '.5px', color: theme.palette.text.secondary }}>
                     {config.name}
                   </Typography>
-                  <Typography
-                    variant="h6"
+                  <Typography variant="h6"
                     sx={{
                       fontWeight: 700,
                       display: 'flex',
                       alignItems: 'baseline',
                       gap: .5,
-                      color: positive ? theme.palette.success.main : theme.palette.error.main,
-                    }}
-                  >
+                      color: config.isRemaining ? theme.palette.error.main : (positive ? theme.palette.success.main : theme.palette.error.main)
+                    }}>
                     {formatter.format(amount)}€
                   </Typography>
                 </CardContent>
