@@ -8,9 +8,11 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Stack
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { surfaceBoxSx } from "../../theme/primitives";
 
 function TransactionForm({
   description, setDescription,
@@ -27,18 +29,17 @@ function TransactionForm({
   const theme = useTheme();
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
-      <Paper style={{ padding: "1rem", marginBottom: "2rem" }}>
-        <Typography variant="h6" gutterBottom>
-          Add / Edit Transaction
-        </Typography>
-
+    <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
+      <Typography variant="h6" gutterBottom fontWeight={600}>
+        {editingId ? 'Edit Transaction' : 'Add / Edit Transaction'}
+      </Typography>
+      <Stack spacing={2}>
         <TextField
           fullWidth
           label="Description"
-          value={description}
+            value={description}
           onChange={(e) => setDescription(e.target.value)}
-          margin="normal"
+          size="small"
         />
         <TextField
           fullWidth
@@ -46,24 +47,21 @@ function TransactionForm({
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          margin="normal"
+          size="small"
         />
-
         <DatePicker
           label="Date"
           value={date}
           onChange={setDate}
-          slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
+          slotProps={{ textField: { fullWidth: true, size: 'small' } }}
         />
-
         <DatePicker
           label="Control Date"
           value={controlDate}
           onChange={setControlDate}
-          slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
+          slotProps={{ textField: { fullWidth: true, size: 'small' } }}
         />
-
-        <FormControl fullWidth margin="normal">
+        <FormControl fullWidth size="small">
           <InputLabel>Category</InputLabel>
           <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             {categories.map((c) => (
@@ -71,8 +69,7 @@ function TransactionForm({
             ))}
           </Select>
         </FormControl>
-
-        <FormControl fullWidth margin="normal">
+        <FormControl fullWidth size="small">
           <InputLabel>Account</InputLabel>
           <Select label="Account" value={account} onChange={(e) => setAccount(e.target.value)}>
             {accounts.map((a) => (
@@ -80,18 +77,14 @@ function TransactionForm({
             ))}
           </Select>
         </FormControl>
-
         <Button
           variant="contained"
-          color="primary"
-          fullWidth
-          style={{ marginTop: "1rem" }}
           onClick={addOrUpdateTransaction}
         >
           {editingId ? "Update" : "Add"} Transaction
         </Button>
-      </Paper>
-    </div>
+      </Stack>
+    </Paper>
   );
 }
 

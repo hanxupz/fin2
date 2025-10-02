@@ -1,0 +1,199 @@
+import { API_BASE_URL } from '../constants';
+
+class ApiService {
+  constructor() {
+    this.baseURL = API_BASE_URL;
+  }
+
+  // Helper method to get auth headers
+  getAuthHeaders(token) {
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` })
+    };
+  }
+
+  // Helper method to handle API responses
+  async handleResponse(response) {
+    if (response.ok) {
+      return await response.json();
+    }
+    
+    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(errorData.detail || `HTTP ${response.status}`);
+  }
+
+  // Authentication endpoints
+  async register(username, password) {
+    const response = await fetch(`${this.baseURL}/register`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ username, password })
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async login(username, password) {
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+
+    const response = await fetch(`${this.baseURL}/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  // Transaction endpoints
+  async getTransactions(token) {
+    const response = await fetch(`${this.baseURL}/transactions/`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async createTransaction(transaction, token) {
+    const response = await fetch(`${this.baseURL}/transactions/`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(transaction)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async createTransactionsBulk(transactions, token) {
+    const response = await fetch(`${this.baseURL}/transactions/bulk/`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(transactions)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async updateTransaction(id, transaction, token) {
+    const response = await fetch(`${this.baseURL}/transactions/${id}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(transaction)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async deleteTransaction(id, token) {
+    const response = await fetch(`${this.baseURL}/transactions/${id}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    if (response.ok) {
+      return { success: true };
+    }
+    
+    return this.handleResponse(response);
+  }
+
+  // Control date endpoints
+  async getControlDate(token) {
+    const response = await fetch(`${this.baseURL}/config/control_date/`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async setControlDate(config, token) {
+    const response = await fetch(`${this.baseURL}/config/control_date/`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(config)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  // Credits endpoints
+  async getCredits(token) {
+    const response = await fetch(`${this.baseURL}/credits/`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
+
+  async createCredit(credit, token) {
+    const response = await fetch(`${this.baseURL}/credits/`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(credit)
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateCredit(id, credit, token) {
+    const response = await fetch(`${this.baseURL}/credits/${id}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(credit)
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteCredit(id, token) {
+    const response = await fetch(`${this.baseURL}/credits/${id}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    if (response.ok) return { success: true };
+    return this.handleResponse(response);
+  }
+
+  // Credit payments
+  async getCreditPayments(creditId, token) {
+    const response = await fetch(`${this.baseURL}/credits/${creditId}/payments`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
+
+  async createCreditPayment(payment, token) {
+    const response = await fetch(`${this.baseURL}/credits/payments`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(payment)
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateCreditPayment(paymentId, payment, token) {
+    const response = await fetch(`${this.baseURL}/credits/payments/${paymentId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(payment)
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteCreditPayment(paymentId, token) {
+    const response = await fetch(`${this.baseURL}/credits/payments/${paymentId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    if (response.ok) return { success: true };
+    return this.handleResponse(response);
+  }
+}
+
+export default new ApiService();

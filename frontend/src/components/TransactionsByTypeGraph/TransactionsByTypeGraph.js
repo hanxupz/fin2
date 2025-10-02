@@ -3,11 +3,11 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
+import { surfaceBoxSx } from '../../theme/primitives';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
-  // Filter for 'Corrente' account only
   const theme = useTheme();
   const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
@@ -20,19 +20,22 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
   });
 
   const categories = Object.keys(grouped);
-
   const labelColor = theme.palette.text.primary;
+  const gridColor = theme.palette.divider;
+  const paletteBase = theme.palette.charts.category;
+  const palette = categoryColors || categories.reduce((acc, cat, idx) => ({ ...acc, [cat]: paletteBase[idx % paletteBase.length] }), {});
 
   // If no categories, show a dummy dataset to avoid chartjs errors
-  const datasets = categories.length > 0 ? categories.map((cat) => {
-    const value = grouped[cat];
-    return {
-      label: cat,
-      data: [value],
-      backgroundColor: categoryColors && categoryColors[cat] ? categoryColors[cat] : '#888',
-      stack: 'total',
-    };
-  }) : [{ label: 'No Data', data: [0], backgroundColor: '#eee', stack: 'total' }];
+  const datasets = categories.length > 0 ? categories.map((cat) => ({
+    label: cat,
+    data: [grouped[cat]],
+    backgroundColor: palette[cat],
+    stack: 'total',
+    borderWidth: 1,
+    borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)',
+    hoverBorderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+    borderRadius: 4,
+  })) : [{ label: 'No Data', data: [0], backgroundColor: gridColor, stack: 'total', borderWidth: 0 }];
 
   // Calculate min/max for x axis as the sum of all negative and positive values
   let min = 0, max = 0;
@@ -59,17 +62,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
     responsive: true,
     plugins: {
       legend: { display: false },
-      title: {
-        display: true,
-        text: 'Total por Categoria (Corrente)',
-        color: labelColor,
-      },
+      title: { display: true, text: 'Total por Categoria (Corrente)', color: labelColor },
       tooltip: {
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.x}`;
-          }
-        },
+        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
@@ -83,23 +78,21 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         max,
         title: { display: true, text: 'Valor', color: labelColor },
         ticks: { color: labelColor },
-        grid: { color: theme.palette.divider },
+        grid: { color: gridColor },
       },
       y: {
         stacked: true,
         ticks: { color: labelColor },
-        grid: { color: theme.palette.divider },
+        grid: { color: gridColor },
       },
     },
     maintainAspectRatio: false,
   };
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: 200, p: 2 }}>
-        <Bar data={data} options={options} />
-      </Paper>
-    </div>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper, height : 220 })}>
+      <Bar data={data} options={options} />
+    </Paper>
   );
 };
 

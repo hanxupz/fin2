@@ -14,154 +14,130 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import SavingsIcon from '@mui/icons-material/Savings';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import CreditScoreIcon from '@mui/icons-material/CreditScore';
+import { surfaceBoxSx } from '../../theme/primitives';
 
-const AccountSummary = ({ transactions, controlDate }) => {
+const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCredit = {} }) => {
   const theme = useTheme();
 
   const filteredTransactions = transactions.filter(
     (t) =>
       t.control_date &&
-      new Date(t.control_date).toDateString() ===
-        new Date(controlDate).toDateString()
+      new Date(t.control_date).toDateString() === new Date(controlDate).toDateString()
   );
 
-  // Display names and configurations for cards
+  // Helper for translucent surface tone
+  const softBg = (color) => `linear-gradient(135deg, ${alpha(color, 0.14)}, ${alpha(color, 0.04)})`;
+
   const accountConfigs = [
-    {
-      name: "Corrente",
-      icon: AccountBalanceWalletIcon,
-      color: theme.palette.primary.main,
-      gradient: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.8)}, ${alpha(theme.palette.primary.main, 0.4)})`
-    },
-    {
-      name: "Poupança",
-      icon: SavingsIcon,
-      color: theme.palette.secondary.main,
-      gradient: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.8)}, ${alpha(theme.palette.secondary.main, 0.4)})`
-    },
-    {
-      name: "Investimento",
-      icon: TrendingUpIcon,
-      color: theme.palette.success?.main || '#4caf50',
-      gradient: `linear-gradient(135deg, ${alpha(theme.palette.success?.main || '#4caf50', 0.8)}, ${alpha(theme.palette.success?.main || '#4caf50', 0.4)})`
-    },
-    {
-      name: "All",
-      icon: AccountBalanceIcon,
-      color: theme.palette.info?.main || '#2196f3',
-      gradient: `linear-gradient(135deg, ${alpha(theme.palette.info?.main || '#2196f3', 0.8)}, ${alpha(theme.palette.info?.main || '#2196f3', 0.4)})`
-    }
+    { name: 'Corrente', icon: AccountBalanceWalletIcon, color: theme.palette.charts.category[0] },
+    { name: 'Poupança', icon: SavingsIcon, color: theme.palette.charts.category[2] },
+    { name: 'Investimento', icon: TrendingUpIcon, color: theme.palette.charts.category[4] },
+    { name: 'All', icon: AccountBalanceIcon, color: theme.palette.charts.category[6] },
   ];
 
-  // Totals initialization
-  const totals = {
-    Corrente: 0,
-    Poupança: 0,
-    Investimento: 0,
-    All: 0,
-  };
-
+  const totals = { Corrente: 0, Poupança: 0, Investimento: 0, All: 0 };
   filteredTransactions.forEach((t) => {
-    if (t.account === "Corrente") {
-      totals.Corrente += t.amount;
-    } else if (t.account === "Poupança Física" || t.account === "Poupança Objectivo") {
-      totals.Poupança += t.amount;
-    } else if (t.account === "Investimento") {
-      totals.Investimento += t.amount;
-    }
+    if (t.account === 'Corrente') totals.Corrente += t.amount;
+    else if (t.account === 'Poupança Física' || t.account === 'Poupança Objectivo') totals.Poupança += t.amount;
+    else if (t.account === 'Investimento') totals.Investimento += t.amount;
     totals.All += t.amount;
   });
 
+  // Compute remaining credit (sum of (total_amount - paid) for credits with a total_amount)
+  let remainingCredit = 0;
+  credits.forEach(c => {
+    if (c.total_amount !== null && c.total_amount !== undefined) {
+      const payments = paymentsByCredit[c.id] || [];
+      const paid = payments.reduce((s, p) => s + (p.value || 0), 0);
+      const rem = c.total_amount - paid;
+      remainingCredit += rem; // allow negative if overpaid
+    }
+  });
+
+  const formatter = new Intl.NumberFormat('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const netAfterCredit = totals.All - remainingCredit;
+
+  const extendedConfigs = [
+    ...accountConfigs,
+    { name: 'Remaining Credit', icon: CreditScoreIcon, color: theme.palette.charts.category[8], isRemaining: true },
+    { name: 'Net After Credit', icon: AccountBalanceIcon, color: theme.palette.charts.category[11] || theme.palette.success.main, isNetAfter: true }
+  ];
+
   return (
-    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: '100%', p: 2 }}>
-        <Grid container spacing={3}>
-          {accountConfigs.map((config) => {
-            const amount = totals[config.name];
-            const isPositive = amount >= 0;
-            
-            return (
-              <Grid item xs={12} sm={6} md={3} key={config.name}>
-                <Card
-                  sx={{
-                    background: config.gradient,
-                    borderRadius: 3,
-                    boxShadow: theme.shadows[4],
-                    transition: 'all 0.3s ease-in-out',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: theme.shadows[8],
-                    },
-                    border: `1px solid ${alpha(config.color, 0.2)}`,
-                    overflow: 'visible',
-                    position: 'relative',
-                  }}
-                >
-                  <CardContent sx={{ p: 3, pb: '24px !important' }}>
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        mb: 2 
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
+      <Grid container spacing={2}>
+        {extendedConfigs.map((config) => {
+          let amount;
+            if (config.isRemaining) {
+              amount = -remainingCredit; // show as negative liability
+            } else if (config.isNetAfter) {
+              amount = netAfterCredit;
+            } else {
+              amount = totals[config.name];
+            }
+          const positive = config.isRemaining ? false : amount >= 0;
+          return (
+            <Grid item xs={12} sm={6} md={4} key={config.name}>
+              <Card
+                variant="outlined"
+                sx={{
+                  height: '100%',
+                  borderRadius: 3,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  borderColor: alpha(config.color, 0.3),
+                  background: softBg(config.color),
+                  backdropFilter: 'blur(4px)',
+                  transition: 'transform .25s ease, box-shadow .25s ease',
+                  '&:hover': { transform: 'translateY(-4px)', boxShadow: theme.shadows[6] },
+                }}
+              >
+                <CardContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        bgcolor: alpha(config.color, 0.15),
+                        color: config.color,
+                        width: 48,
+                        height: 48,
+                        border: `1px solid ${alpha(config.color, 0.4)}`,
+                        fontSize: 26,
                       }}
                     >
-                      <Avatar
-                        sx={{
-                          bgcolor: alpha('#fff', 0.9),
-                          color: config.color,
-                          width: 48,
-                          height: 48,
-                          boxShadow: theme.shadows[3],
-                        }}
-                      >
-                        <config.icon sx={{ fontSize: 28 }} />
-                      </Avatar>
-                      
-                      <Box
-                        sx={{
-                          backgroundColor: alpha('#fff', 0.15),
-                          borderRadius: '50%',
-                          width: 12,
-                          height: 12,
-                          opacity: 0.6,
-                        }}
-                      />
-                    </Box>
-                    
-                    <Typography 
-                      variant="subtitle1" 
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 500,
-                        mb: 1,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                      }}
-                    >
-                      {config.name}
-                    </Typography>
-                    
-                    <Typography 
-                      variant="h5" 
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 700,
-                        textShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 0.5,
-                      }}
-                    >
-                      {amount.toFixed(2)}€
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Paper>
-    </div>
+                      <config.icon fontSize="inherit" />
+                    </Avatar>
+                    <Box sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: '50%',
+                      backgroundColor: alpha(config.color, 0.6)
+                    }} />
+                  </Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, letterSpacing: '.5px', color: theme.palette.text.secondary }}>
+                    {config.name}
+                  </Typography>
+                  <Typography variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: .5,
+                      color: config.isRemaining ? theme.palette.error.main : (positive ? theme.palette.success.main : theme.palette.error.main)
+                    }}>
+                    {formatter.format(amount)}€
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Paper>
   );
 };
 

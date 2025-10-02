@@ -3,22 +3,16 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
+import { surfaceBoxSx } from '../../theme/primitives';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const AccountSumChart = ({ transactions, controlDate }) => {
   const theme = useTheme();
 
-  // Filter transactions by current control date
-  const dateStr = controlDate?.toISOString().split("T")[0];
-  const filtered = dateStr
-    ? transactions.filter(t => t.control_date === dateStr)
-    : transactions;
-
-  // Group by account, sum all amounts
   const grouped = {};
   let poupancaSum = 0;
-  filtered.forEach(({ account, amount }) => {
+  transactions.forEach(({ account, amount }) => {
     if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
       poupancaSum += amount;
     } else {
@@ -29,7 +23,6 @@ const AccountSumChart = ({ transactions, controlDate }) => {
 
   if (poupancaSum !== 0) {
     grouped['Poupança'] = poupancaSum;
-    // Remove individual poupança accounts if present
     delete grouped['Poupança Física'];
     delete grouped['Poupança Objectivo'];
   }
@@ -37,62 +30,48 @@ const AccountSumChart = ({ transactions, controlDate }) => {
   const accounts = Object.keys(grouped);
   const values = accounts.map(acc => grouped[acc]);
   const labelColor = theme.palette.text.primary;
+  const gridColor = theme.palette.divider;
+  const palette = theme.palette.charts.category;
 
-  // Chart data
   const data = {
     labels: accounts,
     datasets: [
       {
         label: 'Sum by Account',
         data: values,
-        backgroundColor: '#1976d2',
+        backgroundColor: accounts.map((_, i) => palette[i % palette.length]),
+        borderColor: accounts.map(() => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)'),
+        hoverBorderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+        borderWidth: 1,
+        borderRadius: 6,
       },
     ],
   };
 
-  // Chart options
   const options = {
-    indexAxis: 'y', // horizontal bar
+    indexAxis: 'y',
     responsive: true,
     plugins: {
       legend: { display: false },
-      title: {
-        display: true,
-        text: 'Sum of Values by Account',
-        color: labelColor,
-      },
+      title: { display: true, text: 'Sum of Values by Account', color: labelColor },
       tooltip: {
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.x}`;
-          }
-        },
+        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
       }
     },
     scales: {
-      x: {
-        beginAtZero: true,
-        title: { display: true, text: 'Sum', color: labelColor },
-        ticks: { color: labelColor },
-        grid: { color: theme.palette.divider }, 
-      },
-      y: {
-        ticks: { color: labelColor },
-        grid: { color: theme.palette.divider },
-      },
+      x: { beginAtZero: true, title: { display: true, text: 'Sum', color: labelColor }, ticks: { color: labelColor }, grid: { color: gridColor } },
+      y: { ticks: { color: labelColor }, grid: { color: gridColor } },
     },
     maintainAspectRatio: false,
   };
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: labelColor, borderRadius: 8, padding: 16 }}>
-      <Paper elevation={3} sx={{ width: '100%', height: 400, p: 2 }}>
-        <Bar data={data} options={options} />
-      </Paper>
-    </div>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper, height : 400 })}>
+      <Bar data={data} options={options} />
+    </Paper>
   );
 };
 

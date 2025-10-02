@@ -8,101 +8,84 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Grid
+  Stack
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { surfaceBoxSx } from "../../theme/primitives";
 
 function Filters({
   filterCategory, setFilterCategory,
   filterAccount, setFilterAccount,
   filterDateFrom, setFilterDateFrom,
   filterDateTo, setFilterDateTo,
+  filterControlDate, setFilterControlDate,
   categories,
   accounts
 }) {
   const theme = useTheme();
 
   return (
-    <div style={{ background: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: 8, padding: 16 }}>
-      <Paper style={{ padding: "1rem", marginBottom: "1rem" }}>
-        <Typography variant="h6" gutterBottom>
-          Filters
-        </Typography>
-
-        <Grid container spacing={2}>
-          {/* Category */}
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Category</InputLabel>
-              <Select
-                label="Category"
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-              >
-                <MenuItem value="">All Categories</MenuItem>
-                {categories.map((c) => (
-                  <MenuItem key={c} value={c}>{c}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Account */}
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Account</InputLabel>
-              <Select
-                label="Account"
-                value={filterAccount}
-                onChange={(e) => setFilterAccount(e.target.value)}
-              >
-                <MenuItem value="">All Accounts</MenuItem>
-                {accounts.map((a) => (
-                  <MenuItem key={a} value={a}>{a}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* From Date */}
-          <Grid item xs={12} sm={6}>
-            <DatePicker
-              label="From Date"
-              value={filterDateFrom}
-              onChange={setFilterDateFrom}
-              slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
-            />
-          </Grid>
-
-          {/* To Date */}
-          <Grid item xs={12} sm={6}>
-            <DatePicker
-              label="To Date"
-              value={filterDateTo}
-              onChange={setFilterDateTo}
-              slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
-            />
-          </Grid>
-
-          {/* Reset Button full width below */}
-          <Grid item xs={12}>
-            <Button
-              variant="outlined"
-              fullWidth
-              style={{ marginTop: "1rem" }}
-              onClick={() => {
-                setFilterCategory("");
-                setFilterAccount("");
-                setFilterDateFrom(null);
-                setFilterDateTo(null);
-              }}
-            >
-              Reset Filters
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-    </div>
+    <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+        Filters
+      </Typography>
+      <Stack spacing={2}>
+        <FormControl fullWidth size="small">
+          <InputLabel>Category</InputLabel>
+          <Select
+            label="Category"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <MenuItem value=""><em>All</em></MenuItem>
+            {categories.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth size="small">
+          <InputLabel>Account</InputLabel>
+          <Select
+            label="Account"
+            value={filterAccount}
+            onChange={(e) => setFilterAccount(e.target.value)}
+          >
+            <MenuItem value=""><em>All</em></MenuItem>
+            {accounts.map(a => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <DatePicker
+          label="From"
+          value={filterDateFrom}
+          onChange={setFilterDateFrom}
+          slotProps={{ textField: { size: 'small', fullWidth: true } }}
+        />
+        <DatePicker
+          label="To"
+          value={filterDateTo}
+          onChange={setFilterDateTo}
+          slotProps={{ textField: { size: 'small', fullWidth: true } }}
+        />
+        <DatePicker
+          label="Control Date"
+          value={filterControlDate}
+          onChange={setFilterControlDate}
+          slotProps={{ textField: { size: 'small', fullWidth: true } }}
+        />
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setFilterCategory("");
+              setFilterAccount("");
+              setFilterDateFrom(null);
+              setFilterDateTo(null);
+              setFilterControlDate(null);
+            }}
+          >
+            Reset
+          </Button>
+        </Stack>
+      </Stack>
+    </Paper>
   );
 }
 
