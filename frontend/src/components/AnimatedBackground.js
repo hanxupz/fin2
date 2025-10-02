@@ -23,10 +23,26 @@ const AnimatedBackground = ({ className = '' }) => {
         aria-hidden
         sx={(t) => {
           const palette = t.palette;
-          const colors = palette.mode === 'light'
-            ? [palette.primary.light, palette.secondary.light, palette.primary.main]
-            : [palette.primary.dark, (palette.secondary && palette.secondary.dark) || palette.secondary?.main || palette.primary.main, palette.background.default];
-          const gradient = `linear-gradient(120deg, ${colors[0]} 0%, ${colors[1]} 50%, ${colors[2]} 100%)`;
+          const isLight = palette.mode === 'light';
+
+          // Define colors for light and dark
+          const colors = isLight
+            ? [
+                palette.primary.light,
+                palette.secondary.light,
+                palette.info.light,
+                palette.background.default,
+              ]
+            : [
+                palette.primary.dark,
+                palette.secondary?.dark || palette.secondary?.main || palette.primary.main,
+                palette.info.dark,
+                palette.background.default,
+              ];
+
+          // Multi-color gradient
+          const gradient = `linear-gradient(120deg, ${colors[0]} 0%, ${colors[1]} 40%, ${colors[2]} 70%, ${colors[3]} 100%)`;
+
           return {
             position: 'fixed',
             inset: 0,
@@ -37,25 +53,31 @@ const AnimatedBackground = ({ className = '' }) => {
               position: 'absolute',
               inset: 0,
               background: gradient,
-              backgroundSize: bgSize,
-              animation: prefersReducedMotion ? 'none' : `bgShift ${animDuration} ease-in-out infinite`,
-              filter: palette.mode === 'dark' ? 'brightness(.85) saturate(.9)' : 'brightness(1) saturate(1.05)',
+              backgroundSize: '300% 300%',
+              animation: 'bgShift 12s ease-in-out infinite, hueRotate 30s linear infinite',
+              filter: isLight
+                ? 'brightness(1) saturate(1.1)'
+                : 'brightness(0.75) saturate(0.9)',
               transition: 'filter .6s ease'
             },
             '&:after': {
               content: '""',
               position: 'absolute',
               inset: 0,
-              background: palette.mode === 'dark'
-                ? 'radial-gradient(circle at 30% 40%, rgba(73, 110, 155, 0.15), rgba(0,0,0,0.85) 70%)'
-                : 'radial-gradient(circle at 70% 60%, rgba(133, 188, 255, 0.65), rgba(255,255,255,0.9) 70%)',
-              mixBlendMode: palette.mode === 'dark' ? 'overlay' : 'soft-light',
+              background: isLight
+                ? 'radial-gradient(circle at 70% 60%, rgba(133, 188, 255, 0.4), rgba(255,255,255,0.8) 80%)'
+                : 'radial-gradient(circle at 30% 40%, rgba(73, 110, 155, 0.25), rgba(0,0,0,0.9) 80%)',
+              mixBlendMode: isLight ? 'soft-light' : 'overlay',
               pointerEvents: 'none'
             },
             '@keyframes bgShift': {
               '0%': { backgroundPosition: '0% 50%' },
               '50%': { backgroundPosition: '100% 50%' },
               '100%': { backgroundPosition: '0% 50%' }
+            },
+            '@keyframes hueRotate': {
+              '0%': { filter: 'hue-rotate(0deg)' },
+              '100%': { filter: 'hue-rotate(360deg)' }
             }
           };
         }}
