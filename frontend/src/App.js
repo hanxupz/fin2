@@ -381,26 +381,26 @@ const AppContent = () => {
                     <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
                     
-                    <Box sx={{ mt: 4 }}>
+                    <Box sx={{ mb: 2 }}>
                       <TransactionsByTypeGraph
                         transactions={filteredTransactions}
                         categoryColors={categoryColors}
                       />
                     </Box>
-                    <Box sx={{ mt: 4 }}>
+                    <Box sx={{ mb: 2 }}>
                       <TransactionsByTypeGraphAll
                         transactions={filteredTransactions}
                         categoryColors={categoryColors}
                       />
                     </Box>
-                    <Box sx={{ mt: 4 }}>
+                    <Box sx={{ mb: 2 }}>
                       <AccountSumChart 
                         transactions={filteredTransactions} 
                         controlDate={configControlDate ? new Date(configControlDate) : null} 
                       />
                     </Box>
                     {getControlDateAccountBarData(allTransactionsFiltered) && (
-                      <Box sx={{ mt: 4 }}>
+                      <Box>
                         <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
                       </Box>
                     )}
