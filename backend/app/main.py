@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import create_tables, connect_db, disconnect_db
-from .routes import auth_router, transactions_router, control_dates_router
+from .routes import auth_router, transactions_router, control_dates_router, credits_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,6 +40,7 @@ app.add_middleware(
 app.include_router(auth_router, tags=["authentication"])
 app.include_router(transactions_router, prefix="/transactions", tags=["transactions"])
 app.include_router(control_dates_router, prefix="/config/control_date", tags=["control_dates"])
+app.include_router(credits_router, prefix="/credits", tags=["credits"])
 
 # Application lifecycle events
 @app.on_event("startup")

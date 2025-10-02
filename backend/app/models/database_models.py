@@ -46,3 +46,34 @@ transactions_table = sqlalchemy.Table(
     sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
 )
+
+# Credits table
+credits_table = sqlalchemy.Table(
+    "credits",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("name", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("monthly_value", sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column("payment_day", sqlalchemy.Integer, nullable=False),  # Day of month
+    sqlalchemy.Column("total_amount", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
+    sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
+)
+
+# Credit payments table
+credit_payments_table = sqlalchemy.Table(
+    "credit_payments",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("credit_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("value", sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column("date", sqlalchemy.Date, nullable=False),
+    sqlalchemy.Column("type", sqlalchemy.String, nullable=False),  # scheduled, off_schedule
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
+    sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
+)
