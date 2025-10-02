@@ -280,11 +280,13 @@ const AppContent = () => {
                   categoryColors={categoryColors}
                 />
               </Box>
-              <Box sx={{ display: 'grid', mt: 4, gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+              <Box sx={{ mt: 4 }}>
                 <TransactionsByTypeGraphAll
                   transactions={filteredTransactions}
                   categoryColors={categoryColors}
                 />
+              </Box>
+              <Box sx={{ mt: 4 }}>
                 <AccountSumChart 
                   transactions={filteredTransactions} 
                   controlDate={configControlDate ? new Date(configControlDate) : null} 
