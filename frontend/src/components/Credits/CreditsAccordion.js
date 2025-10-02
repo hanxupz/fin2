@@ -46,10 +46,34 @@ const CreditsAccordion = ({
                   {remaining !== null && ` | Remaining: ${remaining.toFixed(2)}`}
                 </Typography>
               </Box>
-              <Stack direction="row" spacing={1}>
-                <Tooltip title="Add payment"><IconButton size="small" onClick={(e)=>{ e.stopPropagation(); onAddPayment(credit); }}><AddIcon fontSize="small" /></IconButton></Tooltip>
-                <Tooltip title="Edit credit"><IconButton size="small" onClick={(e)=>{ e.stopPropagation(); onEditCredit(credit); }}><EditIcon fontSize="small" /></IconButton></Tooltip>
-                <Tooltip title="Delete credit"><IconButton size="small" onClick={(e)=>{ e.stopPropagation(); onDeleteCredit(credit.id); }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Tooltip title="Add payment">
+                  <IconButton
+                    size="small"
+                    onClick={(e)=>{ e.stopPropagation(); onAddPayment(credit); }}
+                    sx={{ width: 32, height: 32 }}
+                  >
+                    <AddIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Edit credit">
+                  <IconButton
+                    size="small"
+                    onClick={(e)=>{ e.stopPropagation(); onEditCredit(credit); }}
+                    sx={{ width: 32, height: 32 }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete credit">
+                  <IconButton
+                    size="small"
+                    onClick={(e)=>{ e.stopPropagation(); onDeleteCredit(credit.id); }}
+                    sx={{ width: 32, height: 32 }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Stack>
             </AccordionSummary>
             <AccordionDetails>

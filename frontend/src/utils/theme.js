@@ -94,4 +94,13 @@ export const getDesignTokens = (mode) => ({
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          marginBottom: '8px',
+        }
+      }
+    }
+  }
 });
