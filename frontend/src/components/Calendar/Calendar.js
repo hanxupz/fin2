@@ -1,5 +1,6 @@
 import React from "react";
 import { Paper, Typography, useTheme, Box } from "@mui/material";
+import { surfaceBoxSx } from '../../theme/primitives';
 
 const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
