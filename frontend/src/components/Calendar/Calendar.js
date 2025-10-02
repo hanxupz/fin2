@@ -68,7 +68,7 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-    <Paper elevation={3} sx={{ width: '100%', p: 2 }}>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
       <Typography variant="h6" gutterBottom>📅 Transactions Calendar</Typography>
       <Box sx={{ 
         display: 'grid', 
