@@ -225,10 +225,6 @@ const AppContent = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {/* Modern background */}
-      <div className="app-background" aria-hidden="true" />
-      
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="App fade-in" data-theme={appState.theme} style={calendarCssVars}>
           <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pb: 6 }}>
