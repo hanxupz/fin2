@@ -47,8 +47,8 @@ const AnimatedBackground = ({ className = '' }) => {
               position: 'absolute',
               inset: 0,
               background: palette.mode === 'dark'
-                ? 'radial-gradient(circle at 30% 40%, rgba(120, 180, 255, 0.15), rgba(0,0,0,0.85) 70%)'
-                : 'radial-gradient(circle at 70% 60%, rgba(120, 180, 255, 0.25), rgba(255,255,255,0.9) 70%)',
+                ? 'radial-gradient(circle at 30% 40%, rgba(73, 110, 155, 0.15), rgba(0,0,0,0.85) 70%)'
+                : 'radial-gradient(circle at 70% 60%, rgba(133, 188, 255, 0.65), rgba(255,255,255,0.9) 70%)',
               mixBlendMode: palette.mode === 'dark' ? 'overlay' : 'soft-light',
               pointerEvents: 'none'
             },
