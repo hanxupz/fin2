@@ -11,7 +11,7 @@ export const sectionContainerSx = (theme) => ({
   mb: 1,
   display: 'flex',
   flexDirection: 'column',
-  gap: 1.5,
+  gap: 1,
 });
 
 export const chartPanelSx = (theme, height = 300) => ({
