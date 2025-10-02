@@ -75,9 +75,10 @@ const AnimatedBackground = ({ className = '' }) => {
               '50%': { backgroundPosition: '100% 50%' },
               '100%': { backgroundPosition: '0% 50%' }
             },
-            '@keyframes hueRotate': {
-              '0%': { filter: 'hue-rotate(0deg)' },
-              '100%': { filter: 'hue-rotate(360deg)' }
+            '@keyframes hueRotateSoft': {
+              '0%': { filter: 'hue-rotate(-20deg)' },
+              '50%': { filter: 'hue-rotate(20deg)' },
+              '100%': { filter: 'hue-rotate(-20deg)' }
             }
           };
         }}
