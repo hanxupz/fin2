@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
+import { surfaceBoxSx } from '../../theme/primitives';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -80,7 +81,7 @@ const ControlDateAccountBarChart = ({ data }) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ width: '100%', height: 600, p: 2 }}>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
       <Bar data={chartData} options={options} />
     </Paper>
   );

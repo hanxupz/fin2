@@ -1,6 +1,5 @@
 import React from "react";
 import { Paper, Typography, useTheme, Box } from "@mui/material";
-import { surfaceBoxSx } from '../../theme/primitives';
 
 const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -69,7 +68,7 @@ const Calendar = ({ transactions, year, month }) => {
   }
 
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
+    <Paper elevation={3} sx={{ width: '100%', p: 2 }}>
       <Typography variant="h6" gutterBottom>📅 Transactions Calendar</Typography>
       <Box sx={{ 
         display: 'grid', 
