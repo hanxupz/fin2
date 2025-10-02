@@ -60,12 +60,6 @@ const AnimatedBackground = ({ className = '' }) => {
           };
         }}
       />
-
-      {/* CSS fallback for older browsers and a low-perf dim */}
-      <div
-        className={`app-background ${isLowPerf ? 'animated-bg-lowperf' : ''} ${className}`}
-        aria-hidden
-      />
     </>
   );
 };

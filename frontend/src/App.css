@@ -4,24 +4,5 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Inter', sans-serif; }
 
-.app-background { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 20% 80%, rgba(26,26,26,0.02) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(26,26,26,0.02) 0%, transparent 50%), linear-gradient(180deg,#fafbfc 0%, #f5f7fa 100%); }
-
 .fade-in { animation: fadeIn 0.6s ease-out; }
 @keyframes fadeIn { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
-
-/* Fallback and low-perf helpers for AnimatedBackground */
-.app-background.animated-bg-lowperf {
-	/* simpler, lower-cost static gradient for low-end devices */
-	background: linear-gradient(180deg, rgba(250,251,252,1) 0%, rgba(245,247,250,1) 100%);
-	opacity: 0.98;
-}
-
-/* If the browser doesn't support CSS animations or prefers reduced motion, keep a static background */
-@media (prefers-reduced-motion: reduce) {
-	.app-background { background: linear-gradient(180deg, #fafbfc 0%, #f5f7fa 100%); }
-}
-
-/* Very old browsers fallback (no gradients) */
-@supports not (background: linear-gradient(black, white)) {
-	.app-background { background: #f7f8fa; }
-}
