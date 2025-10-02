@@ -67,6 +67,7 @@ const AppContent = () => {
   const [filterAccount, setFilterAccount] = useState("");
   const [filterDateFrom, setFilterDateFrom] = useState(null);
   const [filterDateTo, setFilterDateTo] = useState(null);
+  const [filterControlDate, setFilterControlDate] = useState(null);
 
   // Config
   const [configYear, setConfigYear] = useState("");
@@ -189,7 +190,10 @@ const AppContent = () => {
     const matchesAccount = filterAccount ? t.account === filterAccount : true;
     const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
     const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
-    const matchesControlDate = configControlDate ? t.control_date === configControlDate : true;
+    // If user picked an explicit control date filter, override the default configControlDate restriction
+    const matchesControlDate = filterControlDate
+      ? (t.control_date === filterControlDate.toISOString().split('T')[0])
+      : (configControlDate ? t.control_date === configControlDate : true);
     return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo && matchesControlDate;
   });
 
@@ -298,6 +302,8 @@ const AppContent = () => {
               setFilterDateFrom={setFilterDateFrom}
               filterDateTo={filterDateTo}
               setFilterDateTo={setFilterDateTo}
+              filterControlDate={filterControlDate}
+              setFilterControlDate={setFilterControlDate}
               categories={CATEGORIES}
               accounts={ACCOUNTS}
             />

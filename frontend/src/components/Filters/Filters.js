@@ -20,6 +20,7 @@ function Filters({
   filterAccount, setFilterAccount,
   filterDateFrom, setFilterDateFrom,
   filterDateTo, setFilterDateTo,
+  filterControlDate, setFilterControlDate,
   categories,
   accounts
 }) {
@@ -73,6 +74,14 @@ function Filters({
             slotProps={{ textField: { size: 'small', fullWidth: true } }}
           />
         </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <DatePicker
+            label="Control Date"
+            value={filterControlDate}
+            onChange={setFilterControlDate}
+            slotProps={{ textField: { size: 'small', fullWidth: true } }}
+          />
+        </Grid>
         <Grid item xs={12}>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button
@@ -82,6 +91,7 @@ function Filters({
                 setFilterAccount("");
                 setFilterDateFrom(null);
                 setFilterDateTo(null);
+                setFilterControlDate(null);
               }}
             >
               Reset
