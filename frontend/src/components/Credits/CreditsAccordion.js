@@ -37,7 +37,7 @@ const CreditsAccordion = ({
         const totalPaid = payments.reduce((sum, p) => sum + p.value, 0);
         const remaining = credit.total_amount ? (credit.total_amount - totalPaid) : null;
         return (
-          <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
+          <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), background: t.palette.background.paper })}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Box sx={{ flexGrow:1 }}>
                 <Typography variant="subtitle1" fontWeight={600}>{credit.name}</Typography>
