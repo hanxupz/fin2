@@ -29,7 +29,7 @@ function Filters({
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Filters
       </Typography>
-      <Stack spacing={2}>
+      <Stack spacing={2} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
         <FormControl fullWidth size="small">
           <InputLabel>Category</InputLabel>
           <Select
