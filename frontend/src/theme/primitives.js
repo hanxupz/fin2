@@ -12,19 +12,39 @@ export const sectionContainerSx = (theme) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: 1,
-  // Glass morphism effect
-  backgroundColor: theme.palette.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.05)' 
-    : 'rgba(255, 255, 255, 0.25)',
-  backdropFilter: 'blur(10px)',
-  WebkitBackdropFilter: 'blur(10px)', // Safari support
-  border: `1px solid ${theme.palette.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(255, 255, 255, 0.3)'}`,
-  borderRadius: 2,
-  boxShadow: theme.palette.mode === 'dark'
-    ? '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
-    : '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+  position: 'relative',
+  overflow: 'hidden',
+  // Glass morphism effect - similar to .glass-card
+  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  backdropFilter: 'blur(15px)',
+  WebkitBackdropFilter: 'blur(15px)',
+  borderRadius: '20px',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  boxShadow: `
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 20px 10px rgba(255, 255, 255, 0.1)
+  `,
+  // Pseudo-elements for gradient borders using MUI sx
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '1px',
+    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '1px',
+    height: '100%',
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))',
+  },
 });
 
 export const amountColor = (theme, value) => (value >= 0 ? theme.palette.success.main : theme.palette.error.main);
