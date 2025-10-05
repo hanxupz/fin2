@@ -14,19 +14,30 @@ export const sectionContainerSx = (theme) => ({
   gap: 1,
   position: 'relative',
   overflow: 'hidden',
-  // Glass morphism effect - similar to .glass-card
-  backgroundColor: 'rgba(255, 255, 255, 0.07)',
-  backdropFilter: 'blur(10px)',
-  WebkitBackdropFilter: 'blur(10px)',
-  borderRadius: '20px',
-  border: '1px solid rgba(255, 255, 255, 0.3)',
-  boxShadow: `
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 8px 4px rgba(255, 255, 255, 0.4)
-  `,
-  // Pseudo-elements for gradient borders using MUI sx
+  // Premium glass morphism effect with subtle glow
+  backgroundColor: theme.palette.mode === 'dark' 
+    ? 'rgba(255, 255, 255, 0.03)'
+    : 'rgba(255, 255, 255, 0.08)',
+  backdropFilter: 'blur(16px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+  borderRadius: '16px',
+  border: `1px solid ${theme.palette.mode === 'dark' 
+    ? 'rgba(255, 255, 255, 0.12)' 
+    : 'rgba(255, 255, 255, 0.18)'}`,
+  boxShadow: theme.palette.mode === 'dark'
+    ? `
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 0 20px rgba(255, 255, 255, 0.02)
+    `
+    : `
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.2) inset,
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+      0 0 20px rgba(255, 255, 255, 0.1)
+    `,
+  // Subtle gradient borders
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -34,7 +45,12 @@ export const sectionContainerSx = (theme) => ({
     left: 0,
     right: 0,
     height: '1px',
-    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
+    background: `linear-gradient(90deg, transparent, ${
+      theme.palette.mode === 'dark' 
+        ? 'rgba(255, 255, 255, 0.15)' 
+        : 'rgba(255, 255, 255, 0.4)'
+    }, transparent)`,
+    borderRadius: '16px 16px 0 0',
   },
   '&::after': {
     content: '""',
@@ -43,7 +59,33 @@ export const sectionContainerSx = (theme) => ({
     left: 0,
     width: '1px',
     height: '100%',
-    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))',
+    background: `linear-gradient(180deg, ${
+      theme.palette.mode === 'dark' 
+        ? 'rgba(255, 255, 255, 0.15)' 
+        : 'rgba(255, 255, 255, 0.4)'
+    }, transparent, ${
+      theme.palette.mode === 'dark' 
+        ? 'rgba(255, 255, 255, 0.05)' 
+        : 'rgba(255, 255, 255, 0.15)'
+    })`,
+    borderRadius: '16px 0 0 16px',
+  },
+  // Subtle hover glow effect
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  '&:hover': {
+    boxShadow: theme.palette.mode === 'dark'
+      ? `
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+        0 0 30px rgba(255, 255, 255, 0.04)
+      `
+      : `
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+        0 0 30px rgba(255, 255, 255, 0.15)
+      `,
   },
 });
 
