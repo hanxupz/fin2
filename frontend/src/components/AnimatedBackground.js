@@ -26,14 +26,14 @@ const AnimatedBackground = () => {
           // Define colors for light and dark
           const colors = isLight
             ? [
-                palette.primary.light,
+                palette.background.default,
                 palette.secondary.light,
                 palette.info.light,
                 palette.background.default,
               ]
             : [
-                palette.primary.dark,
-                palette.secondary?.dark || palette.secondary?.main || palette.primary.main,
+                palette.background.default,
+                palette.secondary.dark,
                 palette.info.dark,
                 palette.background.default,
               ];
