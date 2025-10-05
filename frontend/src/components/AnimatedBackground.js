@@ -11,58 +11,12 @@ const AnimatedBackground = () => {
     (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)
   );
 
-  const animDuration = isLowPerf ? '80s' : '38s';
-  const particleCount = isLowPerf ? 8 : 12;
+  // Adjust animation speeds based on performance
+  const baseSpeed = isLowPerf ? 1.5 : 1; // Slower animations for low perf devices
 
   return (
     <>
-      {/* Base gradient background */}
-      <Box
-        aria-hidden
-        sx={(t) => {
-          const palette = t.palette;
-          const isLight = palette.mode === 'light';
-
-          // Define colors for light and dark
-          const colors = isLight
-            ? [
-                palette.background.default,
-                palette.background.paper,
-                palette.primary.light,
-                palette.background.default,
-              ]
-            : [
-                palette.background.default,
-                palette.background.paper,
-                palette.primary.dark,
-                palette.background.default,
-              ];
-
-          // Multi-color gradient
-          const gradient = `linear-gradient(120deg, ${colors[0]} 0%, ${colors[1]} 40%, ${colors[2]} 70%, ${colors[3]} 100%)`;
-
-          return {
-            position: 'fixed',
-            inset: 0,
-            zIndex: -2,
-            overflow: 'hidden',
-            background: gradient,
-            backgroundSize: '300% 300%',
-            animation: 'bgShift 12s ease-in-out infinite',
-            filter: isLight
-              ? 'brightness(1) saturate(1.1)'
-              : 'brightness(0.75) saturate(0.9)',
-            transition: 'filter .6s ease',
-            '@keyframes bgShift': {
-              '0%': { backgroundPosition: '0% 50%' },
-              '50%': { backgroundPosition: '100% 50%' },
-              '100%': { backgroundPosition: '0% 50%' }
-            },
-          };
-        }}
-      />
-      
-      {/* Floating particles layer */}
+      {/* Background color layer */}
       <Box
         aria-hidden
         sx={(t) => {
@@ -71,156 +25,120 @@ const AnimatedBackground = () => {
           return {
             position: 'fixed',
             inset: 0,
+            zIndex: -2,
+            backgroundColor: isLight 
+              ? t.palette.background.default 
+              : t.palette.background.default,
+            transition: 'background-color 0.3s ease',
+          };
+        }}
+      />
+
+      {/* SVG Blob Animation */}
+      <Box
+        component="svg"
+        preserveAspectRatio="xMidYMid slice"
+        viewBox="10 10 80 80"
+        aria-hidden
+        sx={(t) => {
+          const isLight = t.palette.mode === 'light';
+          
+          return {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100vh',
             zIndex: -1,
-            overflow: 'hidden',
-            pointerEvents: 'none',
+            opacity: isLight ? 0.7 : 0.5,
+            transition: 'opacity 0.3s ease',
+            
             // Keyframe animations
             '@keyframes rotate': {
               '0%': { transform: 'rotate(0deg)' },
               '100%': { transform: 'rotate(360deg)' }
             },
-            '@keyframes float': {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-20px)' }
+            
+            // Blob animation classes
+            '& .out-top': {
+              animation: `rotate ${20 * baseSpeed}s linear infinite`,
+              transformOrigin: '13px 25px',
             },
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 0.3 },
-              '50%': { opacity: 0.8 }
+            '& .in-top': {
+              animation: `rotate ${10 * baseSpeed}s linear infinite`,
+              transformOrigin: '13px 25px',
             },
-            '@keyframes drift': {
-              '0%': { transform: 'translateX(0px)' },
-              '33%': { transform: 'translateX(30px)' },
-              '66%': { transform: 'translateX(-20px)' },
-              '100%': { transform: 'translateX(0px)' }
-            }
+            '& .out-bottom': {
+              animation: `rotate ${25 * baseSpeed}s linear infinite`,
+              transformOrigin: '84px 93px',
+            },
+            '& .in-bottom': {
+              animation: `rotate ${15 * baseSpeed}s linear infinite`,
+              transformOrigin: '84px 93px',
+            },
           };
         }}
       >
-        {/* Generate floating particles */}
-        {Array.from({ length: particleCount }).map((_, i) => {
-          const size = Math.random() * 100 + 20; // 20-120px
-          const left = Math.random() * 100; // 0-100%
-          const top = Math.random() * 100; // 0-100%
-          const animDelay = Math.random() * 20; // 0-20s
-          const rotateSpeed = 15 + Math.random() * 25; // 15-40s
-          const floatSpeed = 8 + Math.random() * 12; // 8-20s
-          const driftSpeed = 25 + Math.random() * 35; // 25-60s
-          
-          return (
-            <Box
-              key={i}
-              sx={(t) => {
-                const isLight = t.palette.mode === 'light';
-                const baseColor = isLight 
-                  ? t.palette.primary.light 
-                  : t.palette.primary.dark;
-                
-                return {
-                  position: 'absolute',
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  borderRadius: '50%',
-                  background: isLight
-                    ? `radial-gradient(circle, ${baseColor}40, ${baseColor}20, transparent)`
-                    : `radial-gradient(circle, ${baseColor}60, ${baseColor}30, transparent)`,
-                  border: isLight 
-                    ? `1px solid ${baseColor}30`
-                    : `1px solid ${baseColor}50`,
-                  backdropFilter: 'blur(1px)',
-                  animation: `
-                    rotate ${rotateSpeed}s linear infinite,
-                    float ${floatSpeed}s ease-in-out infinite,
-                    pulse ${floatSpeed * 1.5}s ease-in-out infinite,
-                    drift ${driftSpeed}s ease-in-out infinite
-                  `,
-                  animationDelay: `${animDelay}s, ${animDelay * 0.5}s, ${animDelay * 0.3}s, ${animDelay * 0.7}s`,
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    inset: '20%',
-                    borderRadius: '50%',
-                    background: isLight
-                      ? `radial-gradient(circle, ${baseColor}60, transparent)`
-                      : `radial-gradient(circle, ${baseColor}80, transparent)`,
-                    animation: `pulse ${floatSpeed * 0.8}s ease-in-out infinite reverse`,
-                    animationDelay: `${animDelay * 0.2}s`,
-                  }
-                };
-              }}
-            />
-          );
-        })}
-        
-        {/* Additional decorative elements */}
-        {Array.from({ length: Math.floor(particleCount / 2) }).map((_, i) => {
-          const size = Math.random() * 60 + 40; // 40-100px
-          const left = Math.random() * 100;
-          const top = Math.random() * 100;
-          const animDelay = Math.random() * 30;
-          const rotateSpeed = 30 + Math.random() * 50; // Slower rotation
-          
-          return (
-            <Box
-              key={`deco-${i}`}
-              sx={(t) => {
-                const isLight = t.palette.mode === 'light';
-                const secondaryColor = isLight 
-                  ? t.palette.secondary.light 
-                  : t.palette.secondary.dark;
-                
-                return {
-                  position: 'absolute',
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  border: isLight 
-                    ? `2px solid ${secondaryColor}20`
-                    : `2px solid ${secondaryColor}40`,
-                  borderRadius: '50%',
-                  animation: `
-                    rotate ${rotateSpeed}s linear infinite reverse,
-                    pulse ${rotateSpeed * 0.6}s ease-in-out infinite
-                  `,
-                  animationDelay: `${animDelay}s, ${animDelay * 0.4}s`,
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    inset: '30%',
-                    borderRadius: '50%',
-                    border: isLight 
-                      ? `1px solid ${secondaryColor}30`
-                      : `1px solid ${secondaryColor}50`,
-                    animation: `rotate ${rotateSpeed * 0.7}s linear infinite`,
-                    animationDelay: `${animDelay * 0.6}s`,
-                  }
-                };
-              }}
-            />
-          );
-        })}
+        <defs>
+          {/* Gradients for light mode */}
+          <linearGradient id="gradient1-light" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.primary.light} stopOpacity="0.8" />
+            <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity="0.6" />
+          </linearGradient>
+          <linearGradient id="gradient2-light" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.secondary.light} stopOpacity="0.7" />
+            <stop offset="100%" stopColor={theme.palette.secondary.main} stopOpacity="0.5" />
+          </linearGradient>
+          <linearGradient id="gradient3-light" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.info.light} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={theme.palette.info.main} stopOpacity="0.4" />
+          </linearGradient>
+          <linearGradient id="gradient4-light" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.success.light} stopOpacity="0.5" />
+            <stop offset="100%" stopColor={theme.palette.success.main} stopOpacity="0.3" />
+          </linearGradient>
+
+          {/* Gradients for dark mode */}
+          <linearGradient id="gradient1-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={theme.palette.primary.dark} stopOpacity="0.8" />
+          </linearGradient>
+          <linearGradient id="gradient2-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.secondary.main} stopOpacity="0.5" />
+            <stop offset="100%" stopColor={theme.palette.secondary.dark} stopOpacity="0.7" />
+          </linearGradient>
+          <linearGradient id="gradient3-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.info.main} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={theme.palette.info.dark} stopOpacity="0.6" />
+          </linearGradient>
+          <linearGradient id="gradient4-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={theme.palette.success.main} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={theme.palette.success.dark} stopOpacity="0.5" />
+          </linearGradient>
+        </defs>
+
+        {/* Blob shapes */}
+        <path 
+          fill={`url(#gradient1-${theme.palette.mode})`}
+          className="out-top" 
+          d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"
+        />
+        <path 
+          fill={`url(#gradient2-${theme.palette.mode})`}
+          className="in-top" 
+          d="M20.6,4.1C11.6,1.5-1.9,2.5-8,11.2-16.3,23.1-8.2,45.6,7.4,50S42.1,38.9,41,24.5C40.2,14.1,29.4,6.6,20.6,4.1Z"
+        />
+        <path 
+          fill={`url(#gradient3-${theme.palette.mode})`}
+          className="out-bottom" 
+          d="M105.9,48.6c-12.4-8.2-29.3-4.8-39.4.8-23.4,12.8-37.7,51.9-19.1,74.1s63.9,15.3,76-5.6c7.6-13.3,1.8-31.1-2.3-43.8C117.6,63.3,114.7,54.3,105.9,48.6Z"
+        />
+        <path 
+          fill={`url(#gradient4-${theme.palette.mode})`}
+          className="in-bottom" 
+          d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"
+        />
       </Box>
-      
-      {/* Overlay for additional depth */}
-      <Box
-        aria-hidden
-        sx={(t) => {
-          const isLight = t.palette.mode === 'light';
-          
-          return {
-            position: 'fixed',
-            inset: 0,
-            zIndex: -1,
-            background: isLight
-              ? 'radial-gradient(circle at 70% 60%, rgba(133, 188, 255, 0.1), rgba(255,255,255,0.3) 80%)'
-              : 'radial-gradient(circle at 30% 40%, rgba(73, 110, 155, 0.15), rgba(0,0,0,0.5) 80%)',
-            mixBlendMode: isLight ? 'soft-light' : 'overlay',
-            pointerEvents: 'none'
-          };
-        }}
-      />
     </>
   );
 };
