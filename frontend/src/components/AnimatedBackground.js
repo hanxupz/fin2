@@ -80,22 +80,22 @@ const AnimatedBackground = () => {
         }}
       >
         <defs>
-          {/* Gradients for light mode */}
+          {/* Gradients for light mode - Custom colors */}
           <linearGradient id="gradient1-light" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={theme.palette.primary.light} stopOpacity="0.8" />
-            <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity="0.6" />
+            <stop offset="0%" stopColor="#540D6E" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#540D6E" stopOpacity="0.6" />
           </linearGradient>
           <linearGradient id="gradient2-light" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={theme.palette.secondary.light} stopOpacity="0.7" />
-            <stop offset="100%" stopColor={theme.palette.secondary.main} stopOpacity="0.5" />
+            <stop offset="0%" stopColor="#EE4266" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#EE4266" stopOpacity="0.5" />
           </linearGradient>
           <linearGradient id="gradient3-light" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={theme.palette.info.light} stopOpacity="0.6" />
-            <stop offset="100%" stopColor={theme.palette.info.main} stopOpacity="0.4" />
+            <stop offset="0%" stopColor="#FFD23F" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#FFD23F" stopOpacity="0.4" />
           </linearGradient>
           <linearGradient id="gradient4-light" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={theme.palette.success.light} stopOpacity="0.5" />
-            <stop offset="100%" stopColor={theme.palette.success.main} stopOpacity="0.3" />
+            <stop offset="0%" stopColor="#3BCEAC" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#0EAD69" stopOpacity="0.3" />
           </linearGradient>
 
           {/* Gradients for dark mode */}
