@@ -11,34 +11,7 @@ import {
   Box
 } from "@mui/material";
 import { amountColor, surfaceBoxSx } from "../../theme/primitives";
-
-// Map categories to emojis
-const categoryEmojis = {
-  "Comida": "🍔",
-  "Carro": "🚗",
-  "Tabaco": "🚬",
-  "Ajuste": "🛠️",
-  "Salário": "💵",
-  "Futebol": "⚽",
-  "Cartão Crédito": "💳",
-  "Telemóvel": "📱",
-  "Jogo": "🎲",
-  "Transferência": "🔄",
-  "Saúde": "🩺",
-  "Desktop": "🖥️",
-  "Subscrições": "📦",
-  "Tabaco Extra": "🚬",
-  "Noite": "🌙",
-  "Jogos PC/Switch/Play": "🎮",
-  "Cerveja": "🍺",
-  "Roupa": "👕",
-  "Poupança": "💰",
-  "Casa": "🏠",
-  "Shareworks": "📈",
-  "Educação": "🎓",
-  "Outro": "❓",
-  "Férias": "🏖️"
-};
+import { CATEGORY_EMOJIS } from "../../constants";
 
 function TransactionList({ filteredTransactions, editTransaction, deleteTransaction }) {
   const theme = useTheme();
@@ -58,7 +31,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
                 <CardContent sx={{ pb: 1.5 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Typography variant="h5" component="span" sx={{ lineHeight: 1 }}>
-                      {categoryEmojis[t.category] || '💰'}
+                      {CATEGORY_EMOJIS[t.category] || '💰'}
                     </Typography>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                       {t.description}

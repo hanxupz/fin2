@@ -1,11 +1,9 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
-const AnimatedBackground = ({ className = '' }) => {
+const AnimatedBackground = () => {
   const theme = useTheme();
-  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   // Heuristic for lower-performance devices: low device memory or few CPU cores
   const isLowPerf = typeof navigator !== 'undefined' && (

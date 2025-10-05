@@ -19,6 +19,3 @@ export const getControlDateAccountBarData = (transactions) => {
   
   return Object.values(grouped);
 };
-
-// NOTE: getCategoryColors deprecated. Use theme.palette.charts.category and map categories:
-// const palette = theme.palette.charts.category; const map = categories.reduce((m,c,i)=>({...m,[c]:palette[i%palette.length]}),{});

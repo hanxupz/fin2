@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-  Container,
   Grid,
   Box,
   CssBaseline,
   Typography,
   Fab,
   Dialog,
-  DialogTitle,
   DialogContent,
   useMediaQuery,
   useTheme as useMuiTheme,
@@ -112,7 +110,6 @@ const AppContent = () => {
   const theme = React.useMemo(() => createTheme(getDesignTokens(appState.theme)), [appState.theme]);
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
-  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   // Fetch control date config
   const fetchControlDateConfig = async () => {
@@ -319,32 +316,9 @@ const AppContent = () => {
     return CATEGORIES.reduce((acc, cat, idx) => ({ ...acc, [cat]: palette[idx % palette.length] }), {});
   }, [theme, appState.theme]);
 
-  // CSS variables for calendar
-  const calendarCssVars = {
-    '--calendar-weekday-bg': theme.palette.calendar.weekdayBg,
-    '--calendar-weekday-text': theme.palette.calendar.weekdayText,
-    '--calendar-day-bg': theme.palette.calendar.dayBg,
-    '--calendar-day-text': theme.palette.calendar.dayText,
-    '--calendar-today-bg': theme.palette.calendar.todayBg,
-    '--calendar-today-text': theme.palette.calendar.todayText,
-    '--calendar-transaction-bg': theme.palette.calendar.transactionBg,
-    '--calendar-transaction-text': theme.palette.calendar.transactionText,
-  };
-
   if (!isAuthenticated) {
     return <Login onLogin={login} />;
   }
-
-  // FAB positioning
-  const fabStyle = {
-    position: "fixed",
-    zIndex: 1000,
-    ...(isMobile ? {
-      right: 16,
-    } : {
-      right: 30,
-    })
-  };
 
   return (
     <ThemeProvider theme={theme}>

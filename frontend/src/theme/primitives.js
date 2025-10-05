@@ -14,15 +14,6 @@ export const sectionContainerSx = (theme) => ({
   gap: 1,
 });
 
-export const chartPanelSx = (theme, height = 300) => ({
-  width: '100%',
-  height,
-  p: 2,
-  borderRadius: 2,
-  backdropFilter: 'blur(4px)',
-  backgroundColor: theme.palette.background.paper,
-});
-
 export const amountColor = (theme, value) => (value >= 0 ? theme.palette.success.main : theme.palette.error.main);
 
 export const fabSx = (theme) => ({
