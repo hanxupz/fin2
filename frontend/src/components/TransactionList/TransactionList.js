@@ -23,7 +23,23 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   return (
     <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
       <Grid container spacing={2}>
-        {filteredTransactions.sort((a, b) => b.date - a.date).map((t) => {
+        {filteredTransactions.sort((a, b) => {
+          const dateA = a.date ? new Date(a.date) : null;
+          const dateB = b.date ? new Date(b.date) : null;
+          
+          if (dateA && dateB) {
+            const dateDiff = dateB.getTime() - dateA.getTime();
+            if (dateDiff !== 0) return dateDiff;
+          }
+          
+          if (dateA && !dateB) return -1;
+          if (!dateA && dateB) return 1;
+          
+          const createdA = new Date(a.createddate || 0);
+          const createdB = new Date(b.createddate || 0);
+          
+          return createdB.getTime() - createdA.getTime();
+        }).map((t) => {
           const color = amountColor(theme, t.amount);
           return (
             <Grid item xs={12} key={t.id}>
