@@ -86,14 +86,6 @@ const CreditsAccordion = ({
                         title={`${credit.name}: ${progressPercentage}%`}
                       />
                     </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        {progressPercentage.toFixed(1)}% paid
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {totalPaid.toFixed(2)} / {credit.total_amount.toFixed(2)}
-                      </Typography>
-                    </Box>
                   </Box>
                 )}
               </Box>
