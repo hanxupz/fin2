@@ -36,6 +36,13 @@ function TransactionForm({
     }
   }, [editingId, configControlDate, setControlDate]);
 
+  // Handle amount adjustments
+  const handleAmountAdjustment = (adjustment) => {
+    const currentAmount = parseFloat(amount) || 0;
+    const newAmount = currentAmount + adjustment;
+    setAmount(Math.max(0, newAmount).toFixed(2)); // Keep it positive and format to 2 decimals
+  };
+
   // Reset all form values to defaults
   const handleReset = () => {
     setDescription("");
@@ -67,6 +74,84 @@ function TransactionForm({
           onChange={(e) => setAmount(e.target.value)}
           size="small"
         />
+        
+        {/* Amount Adjustment Buttons */}
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, mb: 0.5 }}>
+          Quick Amount Adjustments:
+        </Typography>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+          {/* Positive adjustments */}
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => handleAmountAdjustment(0.01)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            +0.01
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => handleAmountAdjustment(0.10)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            +0.10
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => handleAmountAdjustment(1)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            +1
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => handleAmountAdjustment(10)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            +10
+          </Button>
+          
+          {/* Negative adjustments */}
+          <Button
+            size="small"
+            variant="outlined"
+            color="secondary"
+            onClick={() => handleAmountAdjustment(-10)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            -10
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            color="secondary"
+            onClick={() => handleAmountAdjustment(-1)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            -1
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            color="secondary"
+            onClick={() => handleAmountAdjustment(-0.10)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            -0.10
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            color="secondary"
+            onClick={() => handleAmountAdjustment(-0.01)}
+            sx={{ minWidth: 'auto', px: 1 }}
+          >
+            -0.01
+          </Button>
+        </Stack>
         <DatePicker
           label="Date"
           value={date}
