@@ -77,7 +77,13 @@ function TransactionForm({
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'primary.light' }
+              borderColor: 'success.main',
+              color: 'success.main',
+              '&:hover': { 
+                backgroundColor: 'success.main',
+                color: 'white',
+                borderColor: 'success.main'
+              }
             }}
           >
             +0.01
@@ -90,7 +96,13 @@ function TransactionForm({
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'primary.light' }
+              borderColor: 'success.main',
+              color: 'success.main',
+              '&:hover': { 
+                backgroundColor: 'success.main',
+                color: 'white',
+                borderColor: 'success.main'
+              }
             }}
           >
             +0.10
@@ -103,7 +115,13 @@ function TransactionForm({
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'primary.light' }
+              borderColor: 'success.main',
+              color: 'success.main',
+              '&:hover': { 
+                backgroundColor: 'success.main',
+                color: 'white',
+                borderColor: 'success.main'
+              }
             }}
           >
             +1
@@ -116,7 +134,13 @@ function TransactionForm({
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'primary.light' }
+              borderColor: 'success.main',
+              color: 'success.main',
+              '&:hover': { 
+                backgroundColor: 'success.main',
+                color: 'white',
+                borderColor: 'success.main'
+              }
             }}
           >
             +10
@@ -126,13 +150,18 @@ function TransactionForm({
           <Button
             size="small"
             variant="outlined"
-            color="secondary"
             onClick={() => handleAmountAdjustment(-10)}
             sx={{ 
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'secondary.light' }
+              borderColor: 'error.main',
+              color: 'error.main',
+              '&:hover': { 
+                backgroundColor: 'error.main',
+                color: 'white',
+                borderColor: 'error.main'
+              }
             }}
           >
             -10
@@ -140,13 +169,18 @@ function TransactionForm({
           <Button
             size="small"
             variant="outlined"
-            color="secondary"
             onClick={() => handleAmountAdjustment(-1)}
             sx={{ 
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'secondary.light' }
+              borderColor: 'error.main',
+              color: 'error.main',
+              '&:hover': { 
+                backgroundColor: 'error.main',
+                color: 'white',
+                borderColor: 'error.main'
+              }
             }}
           >
             -1
@@ -154,13 +188,18 @@ function TransactionForm({
           <Button
             size="small"
             variant="outlined"
-            color="secondary"
             onClick={() => handleAmountAdjustment(-0.10)}
             sx={{ 
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'secondary.light' }
+              borderColor: 'error.main',
+              color: 'error.main',
+              '&:hover': { 
+                backgroundColor: 'error.main',
+                color: 'white',
+                borderColor: 'error.main'
+              }
             }}
           >
             -0.10
@@ -168,13 +207,18 @@ function TransactionForm({
           <Button
             size="small"
             variant="outlined"
-            color="secondary"
             onClick={() => handleAmountAdjustment(-0.01)}
             sx={{ 
               minWidth: 'auto', 
               px: 1, 
               pointerEvents: 'auto',
-              '&:hover': { backgroundColor: 'secondary.light' }
+              borderColor: 'error.main',
+              color: 'error.main',
+              '&:hover': { 
+                backgroundColor: 'error.main',
+                color: 'white',
+                borderColor: 'error.main'
+              }
             }}
           >
             -0.01
@@ -196,7 +240,7 @@ function TransactionForm({
             variant="outlined"
             onClick={() => {
               const targetDate = new Date();
-              targetDate.setDate(targetDate.getDate() - 1);
+              targetDate.setDate(targetDate.getDate() - 2);
               setDate(targetDate);
             }}
             sx={{ minWidth: 'auto', px: 2 }}
