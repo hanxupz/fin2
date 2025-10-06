@@ -76,11 +76,10 @@ const CreditsAccordion = ({
                           backgroundColor: (theme) => 
                             totalPaid >= credit.total_amount 
                               ? theme.palette.success.main 
-                              : theme.palette.primary.main,
+                              : theme.palette.error.main,
                           borderRadius: 3,
                           transition: 'width 0.3s ease',
                           // Add debug border to see the actual width
-                          border: `1px solid red`,
                           boxSizing: 'border-box'
                         }}
                         title={`${credit.name}: ${progressPercentage}%`}
