@@ -42,8 +42,6 @@ const CreditsAccordion = ({
               <Box sx={{ flexGrow:1 }}>
                 <Typography variant="subtitle1" fontWeight={600}>{credit.name}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Monthly: {credit.monthly_value.toFixed(2)}<br />
-                  Day: {credit.payment_day}
                   {credit.total_amount && <><br />Total: {credit.total_amount.toFixed(2)}</>}
                   {remaining !== null && <><br />Remaining: {remaining.toFixed(2)}</>}
                 </Typography>
