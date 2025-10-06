@@ -40,7 +40,7 @@ function TransactionForm({
   const handleAmountAdjustment = (adjustment) => {
     const currentAmount = parseFloat(amount) || 0;
     const newAmount = currentAmount + adjustment;
-    setAmount(Math.max(0, newAmount).toFixed(2)); // Keep it positive and format to 2 decimals
+    setAmount(newAmount.toFixed(2)); // Allow negative values and format to 2 decimals
   };
 
   // Reset all form values to defaults
@@ -66,26 +66,19 @@ function TransactionForm({
           onChange={(e) => setDescription(e.target.value)}
           size="small"
         />
-        <TextField
-          fullWidth
-          label="Amount"
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          size="small"
-        />
-        
         {/* Amount Adjustment Buttons */}
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, mb: 0.5 }}>
-          Quick Amount Adjustments:
-        </Typography>
-        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5, pointerEvents: 'auto' }}>
           {/* Positive adjustments */}
           <Button
             size="small"
             variant="outlined"
             onClick={() => handleAmountAdjustment(0.01)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'primary.light' }
+            }}
           >
             +0.01
           </Button>
@@ -93,7 +86,12 @@ function TransactionForm({
             size="small"
             variant="outlined"
             onClick={() => handleAmountAdjustment(0.10)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'primary.light' }
+            }}
           >
             +0.10
           </Button>
@@ -101,7 +99,12 @@ function TransactionForm({
             size="small"
             variant="outlined"
             onClick={() => handleAmountAdjustment(1)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'primary.light' }
+            }}
           >
             +1
           </Button>
@@ -109,7 +112,12 @@ function TransactionForm({
             size="small"
             variant="outlined"
             onClick={() => handleAmountAdjustment(10)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'primary.light' }
+            }}
           >
             +10
           </Button>
@@ -120,7 +128,12 @@ function TransactionForm({
             variant="outlined"
             color="secondary"
             onClick={() => handleAmountAdjustment(-10)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'secondary.light' }
+            }}
           >
             -10
           </Button>
@@ -129,7 +142,12 @@ function TransactionForm({
             variant="outlined"
             color="secondary"
             onClick={() => handleAmountAdjustment(-1)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'secondary.light' }
+            }}
           >
             -1
           </Button>
@@ -138,7 +156,12 @@ function TransactionForm({
             variant="outlined"
             color="secondary"
             onClick={() => handleAmountAdjustment(-0.10)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'secondary.light' }
+            }}
           >
             -0.10
           </Button>
@@ -147,11 +170,64 @@ function TransactionForm({
             variant="outlined"
             color="secondary"
             onClick={() => handleAmountAdjustment(-0.01)}
-            sx={{ minWidth: 'auto', px: 1 }}
+            sx={{ 
+              minWidth: 'auto', 
+              px: 1, 
+              pointerEvents: 'auto',
+              '&:hover': { backgroundColor: 'secondary.light' }
+            }}
           >
             -0.01
           </Button>
         </Stack>
+        
+        <TextField
+          fullWidth
+          label="Amount"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          size="small"
+        />
+        {/* Date Shortcut Buttons */}
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => {
+              const targetDate = new Date();
+              targetDate.setDate(targetDate.getDate() - 1);
+              setDate(targetDate);
+            }}
+            sx={{ minWidth: 'auto', px: 2 }}
+          >
+            Yesterday - 1
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => {
+              const targetDate = new Date();
+              targetDate.setDate(targetDate.getDate() - 1);
+              setDate(targetDate);
+            }}
+            sx={{ minWidth: 'auto', px: 2 }}
+          >
+            Yesterday
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => {
+              const targetDate = new Date();
+              setDate(targetDate);
+            }}
+            sx={{ minWidth: 'auto', px: 2 }}
+          >
+            Today
+          </Button>
+        </Stack>
+        
         <DatePicker
           label="Date"
           value={date}
