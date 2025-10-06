@@ -37,12 +37,15 @@ const CreditsAccordion = ({
         const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
         const remaining = credit.total_amount ? (credit.total_amount - totalPaid) : null;
         
-        // Calculate progress percentage
+        // More explicit calculation with debugging
         let progressPercentage = 0;
         if (credit.total_amount && credit.total_amount > 0) {
           const rawPercentage = (totalPaid / credit.total_amount) * 100;
           progressPercentage = Math.min(Math.max(rawPercentage, 0), 100);
         }
+        
+        // Debug log to console (remove after fixing)
+        console.log(`Credit ${credit.name}: totalPaid=${totalPaid}, total=${credit.total_amount}, percentage=${progressPercentage}`);
         return (
           <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 0, background: t.palette.background.paper })}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -54,7 +57,7 @@ const CreditsAccordion = ({
                 </Typography>
                 {credit.total_amount && credit.total_amount > 0 && (
                   <Box sx={{ mt: 1, mr: 2 }}>
-                    {/* Custom progress bar - more reliable than LinearProgress */}
+                    {/* Custom progress bar */}
                     <Box
                       sx={{
                         width: '100%',
@@ -66,6 +69,7 @@ const CreditsAccordion = ({
                       }}
                     >
                       <Box
+                        key={`progress-bar-${credit.id}-${Date.now()}`}
                         sx={{
                           width: `${progressPercentage}%`,
                           height: '100%',
@@ -74,8 +78,12 @@ const CreditsAccordion = ({
                               ? theme.palette.success.main 
                               : theme.palette.primary.main,
                           borderRadius: 3,
-                          transition: 'width 0.3s ease'
+                          transition: 'width 0.3s ease',
+                          // Add debug border to see the actual width
+                          border: `1px solid red`,
+                          boxSizing: 'border-box'
                         }}
+                        title={`${credit.name}: ${progressPercentage}%`}
                       />
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
