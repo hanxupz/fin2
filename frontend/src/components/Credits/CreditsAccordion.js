@@ -50,22 +50,30 @@ const CreditsAccordion = ({
                 </Typography>
                 {credit.total_amount && credit.total_amount > 0 && (
                   <Box sx={{ mt: 1, mr: 2 }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={progressPercentage}
+                    {/* Custom progress bar */}
+                    <Box
                       sx={{
+                        width: '100%',
                         height: 6,
-                        borderRadius: 3,
                         backgroundColor: (theme) => theme.palette.grey[200],
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 3,
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                        position: 'relative'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: `${progressPercentage}%`,
+                          height: '100%',
                           backgroundColor: (theme) => 
                             totalPaid >= credit.total_amount 
                               ? theme.palette.success.main 
-                              : theme.palette.primary.main
-                        }
-                      }}
-                    />
+                              : theme.palette.primary.main,
+                          borderRadius: 3,
+                          transition: 'width 0.3s ease'
+                        }}
+                      />
+                    </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                       <Typography variant="caption" color="text.secondary">
                         {progressPercentage.toFixed(1)}% paid
