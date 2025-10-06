@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Accordion, AccordionSummary, AccordionDetails,
-  Typography, IconButton, Box, Stack, Divider, Tooltip, Chip
+  Typography, IconButton, Box, Stack, Divider, Tooltip, Chip, LinearProgress
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -47,6 +47,34 @@ const CreditsAccordion = ({
                   {credit.total_amount && <><br />Total: {credit.total_amount.toFixed(2)}</>}
                   {remaining !== null && <><br />Remaining: {remaining.toFixed(2)}</>}
                 </Typography>
+                {credit.total_amount && (
+                  <Box sx={{ mt: 1, mr: 2 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min((totalPaid / credit.total_amount) * 100, 100)}
+                      sx={{
+                        height: 6,
+                        borderRadius: 3,
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 3,
+                          backgroundColor: (theme) => 
+                            totalPaid >= credit.total_amount 
+                              ? theme.palette.success.main 
+                              : theme.palette.primary.main
+                        }
+                      }}
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {((totalPaid / credit.total_amount) * 100).toFixed(1)}% paid
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {totalPaid.toFixed(2)} / {credit.total_amount.toFixed(2)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
               </Box>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Tooltip title="Add payment">
