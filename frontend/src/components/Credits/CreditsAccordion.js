@@ -37,15 +37,12 @@ const CreditsAccordion = ({
         const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
         const remaining = credit.total_amount ? (credit.total_amount - totalPaid) : null;
         
-        // More explicit calculation with debugging
+        // Calculate progress percentage
         let progressPercentage = 0;
         if (credit.total_amount && credit.total_amount > 0) {
           const rawPercentage = (totalPaid / credit.total_amount) * 100;
           progressPercentage = Math.min(Math.max(rawPercentage, 0), 100);
         }
-        
-        // Debug log to console (remove after fixing)
-        console.log(`Credit ${credit.name}: totalPaid=${totalPaid}, total=${credit.total_amount}, percentage=${progressPercentage}`);
         return (
           <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 0, background: t.palette.background.paper })}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -57,35 +54,22 @@ const CreditsAccordion = ({
                 </Typography>
                 {credit.total_amount && credit.total_amount > 0 && (
                   <Box sx={{ mt: 1, mr: 2 }}>
-                    {/* Custom progress bar */}
-                    <Box
+                    <LinearProgress
+                      variant="determinate"
+                      value={progressPercentage}
                       sx={{
-                        width: '100%',
                         height: 6,
-                        backgroundColor: (theme) => theme.palette.grey[200],
                         borderRadius: 3,
-                        overflow: 'hidden',
-                        position: 'relative'
-                      }}
-                    >
-                      <Box
-                        key={`progress-bar-${credit.id}-${Date.now()}`}
-                        sx={{
-                          width: `${progressPercentage}%`,
-                          height: '100%',
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 3,
                           backgroundColor: (theme) => 
                             totalPaid >= credit.total_amount 
                               ? theme.palette.success.main 
-                              : theme.palette.primary.main,
-                          borderRadius: 3,
-                          transition: 'width 0.3s ease',
-                          // Add debug border to see the actual width
-                          border: `1px solid red`,
-                          boxSizing: 'border-box'
-                        }}
-                        title={`${credit.name}: ${progressPercentage}%`}
-                      />
-                    </Box>
+                              : theme.palette.primary.main
+                        }
+                      }}
+                    />
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                       <Typography variant="caption" color="text.secondary">
                         {progressPercentage.toFixed(1)}% paid
