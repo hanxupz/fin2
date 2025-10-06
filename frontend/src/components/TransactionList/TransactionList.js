@@ -23,7 +23,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   return (
     <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
       <Grid container spacing={2}>
-        {filteredTransactions.map((t) => {
+        {filteredTransactions.sort((a, b) => b.date - a.date).map((t) => {
           const color = amountColor(theme, t.amount);
           return (
             <Grid item xs={12} key={t.id}>
