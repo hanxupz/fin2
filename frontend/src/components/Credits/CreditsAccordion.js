@@ -34,8 +34,11 @@ const CreditsAccordion = ({
     <Box>
       {credits.map((credit) => {
         const payments = paymentsByCredit[credit.id] || [];
-        const totalPaid = payments.reduce((sum, p) => sum + p.value, 0);
+        const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
         const remaining = credit.total_amount ? (credit.total_amount - totalPaid) : null;
+        const progressPercentage = credit.total_amount && credit.total_amount > 0 
+          ? Math.min(Math.max((totalPaid / credit.total_amount) * 100, 0), 100)
+          : 0;
         return (
           <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 0, background: t.palette.background.paper })}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -45,11 +48,11 @@ const CreditsAccordion = ({
                   {credit.total_amount && <><br />Total: {credit.total_amount.toFixed(2)}</>}
                   {remaining !== null && <><br />Remaining: {remaining.toFixed(2)}</>}
                 </Typography>
-                {credit.total_amount && (
+                {credit.total_amount && credit.total_amount > 0 && (
                   <Box sx={{ mt: 1, mr: 2 }}>
                     <LinearProgress
                       variant="determinate"
-                      value={Math.min((totalPaid / credit.total_amount) * 100, 100)}
+                      value={progressPercentage}
                       sx={{
                         height: 6,
                         borderRadius: 3,
@@ -65,7 +68,7 @@ const CreditsAccordion = ({
                     />
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                       <Typography variant="caption" color="text.secondary">
-                        {((totalPaid / credit.total_amount) * 100).toFixed(1)}% paid
+                        {progressPercentage.toFixed(1)}% paid
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {totalPaid.toFixed(2)} / {credit.total_amount.toFixed(2)}
