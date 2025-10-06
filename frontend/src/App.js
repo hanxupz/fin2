@@ -194,6 +194,18 @@ const AppContent = () => {
     setTransactionDialogOpen(true);
   };
 
+  // Clone transaction
+  const cloneTransaction = (t) => {
+    setEditingId(null); // No ID = new transaction
+    setDescription(t.description);
+    setAmount(t.amount);
+    setDate(t.date ? new Date(t.date) : null);
+    setControlDate(t.control_date ? new Date(t.control_date) : null);
+    setCategory(t.category || DEFAULT_CATEGORY);
+    setAccount(t.account || DEFAULT_ACCOUNT);
+    setTransactionDialogOpen(true);
+  };
+
   // Handle logout
   const handleLogout = () => {
     logout();
@@ -437,6 +449,7 @@ const AppContent = () => {
                   <TransactionList
                     filteredTransactions={filteredTransactions}
                     editTransaction={editTransaction}
+                    cloneTransaction={cloneTransaction}
                     deleteTransaction={deleteTransaction}
                   />
                 </Box>
@@ -485,6 +498,7 @@ const AppContent = () => {
                 editingId={editingId}
                 categories={CATEGORIES}
                 accounts={ACCOUNTS}
+                configControlDate={configControlDate}
               />
             </DialogContent>
           </Dialog>

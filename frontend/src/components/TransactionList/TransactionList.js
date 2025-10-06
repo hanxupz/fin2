@@ -13,7 +13,7 @@ import {
 import { amountColor, surfaceBoxSx } from "../../theme/primitives";
 import { CATEGORY_EMOJIS } from "../../constants";
 
-function TransactionList({ filteredTransactions, editTransaction, deleteTransaction }) {
+function TransactionList({ filteredTransactions, editTransaction, deleteTransaction, cloneTransaction }) {
   const theme = useTheme();
 
   if (filteredTransactions.length === 0) {
@@ -63,6 +63,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
                 </CardContent>
                 <CardActions sx={{ pt: 0, pb: 1.5, px: 2 }}>
                   <Button size="small" onClick={() => editTransaction(t)}>Edit</Button>
+                  <Button size="small" color="info" onClick={() => cloneTransaction(t)}>Clone</Button>
                   <Button size="small" color="error" onClick={() => deleteTransaction(t.id)}>Delete</Button>
                 </CardActions>
               </Card>

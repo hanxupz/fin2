@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { surfaceBoxSx } from "../../theme/primitives";
+import { DEFAULT_CATEGORY, DEFAULT_ACCOUNT } from "../../constants";
 
 function TransactionForm({
   description, setDescription,
@@ -24,9 +25,26 @@ function TransactionForm({
   addOrUpdateTransaction,
   editingId,
   categories,
-  accounts
+  accounts,
+  configControlDate
 }) {
   const theme = useTheme();
+
+  React.useEffect(() => {
+    if (!editingId && !controlDate && configControlDate) {
+      setControlDate(new Date(configControlDate));
+    }
+  }, [editingId, configControlDate, setControlDate]);
+
+  // Reset all form values to defaults
+  const handleReset = () => {
+    setDescription("");
+    setAmount("");
+    setDate(null);
+    setControlDate(configControlDate ? new Date(configControlDate) : null);
+    setCategory(DEFAULT_CATEGORY);
+    setAccount(DEFAULT_ACCOUNT);
+  };
 
   return (
     <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
@@ -77,12 +95,22 @@ function TransactionForm({
             ))}
           </Select>
         </FormControl>
-        <Button
-          variant="contained"
-          onClick={addOrUpdateTransaction}
-        >
-          {editingId ? "Update" : "Add"} Transaction
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            onClick={addOrUpdateTransaction}
+            sx={{ flex: 1 }}
+          >
+            {editingId ? "Update" : "Add"} Transaction
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleReset}
+            color="secondary"
+          >
+            Reset
+          </Button>
+        </Stack>
       </Stack>
     </Paper>
   );
