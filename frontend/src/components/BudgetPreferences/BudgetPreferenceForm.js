@@ -134,7 +134,7 @@ const BudgetPreferenceForm = ({
           onChange={(e) => setLocalName(e.target.value)}
           size="small"
           placeholder="e.g., Essential Expenses, Entertainment"
-          error={localName !== '' && localName.trim().length === 0}
+          error={Boolean(localName !== '' && localName.trim().length === 0)}
           helperText={localName !== '' && localName.trim().length === 0 ? "Name is required" : ""}
         />
 
@@ -150,7 +150,7 @@ const BudgetPreferenceForm = ({
             max: remainingPercentage.toString(), 
             step: "0.01" 
           }}
-          error={percentageError}
+          error={Boolean(percentageError)}
           helperText={
             percentageError 
               ? `Percentage must be between 0.01 and ${remainingPercentage.toFixed(2)}%`
