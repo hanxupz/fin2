@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
   Accordion, AccordionSummary, AccordionDetails,
-  Typography, IconButton, Box, Stack, Divider, Tooltip, Chip
+  Typography, IconButton, Box, Stack, Divider, Tooltip, Chip, LinearProgress
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import { surfaceBoxSx } from "../../theme/primitives";
 
 const formatDate = (d) => d ? new Date(d).toISOString().split('T')[0] : '';
 
@@ -31,20 +32,61 @@ const CreditsAccordion = ({
 
   return (
     <Box>
-      {credits.map((credit) => {
+      {credits.map((credit, index) => {
         const payments = paymentsByCredit[credit.id] || [];
-        const totalPaid = payments.reduce((sum, p) => sum + p.value, 0);
+        const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
         const remaining = credit.total_amount ? (credit.total_amount - totalPaid) : null;
+        
+        // More explicit calculation with debugging
+        let progressPercentage = 0;
+        if (credit.total_amount && credit.total_amount > 0) {
+          const rawPercentage = (totalPaid / credit.total_amount) * 100;
+          progressPercentage = Math.min(Math.max(rawPercentage, 0), 100);
+        }
+        
+        // Debug log to console (remove after fixing)
+        console.log(`Credit ${credit.name}: totalPaid=${totalPaid}, total=${credit.total_amount}, percentage=${progressPercentage}`);
         return (
-          <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)}>
+          <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 0, background: t.palette.background.paper })}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Box sx={{ flexGrow:1 }}>
                 <Typography variant="subtitle1" fontWeight={600}>{credit.name}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Monthly: {credit.monthly_value.toFixed(2)} | Day: {credit.payment_day}
-                  {credit.total_amount && ` | Total: ${credit.total_amount.toFixed(2)}`}
-                  {remaining !== null && ` | Remaining: ${remaining.toFixed(2)}`}
+                  {credit.total_amount && <><br />Total: {credit.total_amount.toFixed(2)}</>}
+                  {remaining !== null && <><br />Remaining: {remaining.toFixed(2)}</>}
                 </Typography>
+                {credit.total_amount && credit.total_amount > 0 && (
+                  <Box sx={{ mt: 1, mr: 2 }}>
+                    {/* Custom progress bar */}
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: 6,
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                        position: 'relative'
+                      }}
+                    >
+                      <Box
+                        key={`progress-bar-${credit.id}-${Date.now()}`}
+                        sx={{
+                          width: `${progressPercentage}%`,
+                          height: '100%',
+                          backgroundColor: (theme) => 
+                            totalPaid >= credit.total_amount 
+                              ? theme.palette.success.main 
+                              : theme.palette.error.main,
+                          borderRadius: 3,
+                          transition: 'width 0.3s ease',
+                          // Add debug border to see the actual width
+                          boxSizing: 'border-box'
+                        }}
+                        title={`${credit.name}: ${progressPercentage}%`}
+                      />
+                    </Box>
+                  </Box>
+                )}
               </Box>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Tooltip title="Add payment">

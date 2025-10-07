@@ -11,36 +11,9 @@ import {
   Box
 } from "@mui/material";
 import { amountColor, surfaceBoxSx } from "../../theme/primitives";
+import { CATEGORY_EMOJIS } from "../../constants";
 
-// Map categories to emojis
-const categoryEmojis = {
-  "Comida": "🍔",
-  "Carro": "🚗",
-  "Tabaco": "🚬",
-  "Ajuste": "🛠️",
-  "Salário": "💵",
-  "Futebol": "⚽",
-  "Cartão Crédito": "💳",
-  "Telemóvel": "📱",
-  "Jogo": "🎲",
-  "Transferência": "🔄",
-  "Saúde": "🩺",
-  "Desktop": "🖥️",
-  "Subscrições": "📦",
-  "Tabaco Extra": "🚬",
-  "Noite": "🌙",
-  "Jogos PC/Switch/Play": "🎮",
-  "Cerveja": "🍺",
-  "Roupa": "👕",
-  "Poupança": "💰",
-  "Casa": "🏠",
-  "Shareworks": "📈",
-  "Educação": "🎓",
-  "Outro": "❓",
-  "Férias": "🏖️"
-};
-
-function TransactionList({ filteredTransactions, editTransaction, deleteTransaction }) {
+function TransactionList({ filteredTransactions, editTransaction, deleteTransaction, cloneTransaction }) {
   const theme = useTheme();
 
   if (filteredTransactions.length === 0) {
@@ -50,7 +23,23 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
   return (
     <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
       <Grid container spacing={2}>
-        {filteredTransactions.map((t) => {
+        {filteredTransactions.sort((a, b) => {
+          const dateA = a.date ? new Date(a.date) : null;
+          const dateB = b.date ? new Date(b.date) : null;
+          
+          if (dateA && dateB) {
+            const dateDiff = dateB.getTime() - dateA.getTime();
+            if (dateDiff !== 0) return dateDiff;
+          }
+          
+          if (dateA && !dateB) return -1;
+          if (!dateA && dateB) return 1;
+          
+          const createdA = new Date(a.createddate || 0);
+          const createdB = new Date(b.createddate || 0);
+          
+          return createdB.getTime() - createdA.getTime();
+        }).map((t) => {
           const color = amountColor(theme, t.amount);
           return (
             <Grid item xs={12} key={t.id}>
@@ -58,7 +47,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
                 <CardContent sx={{ pb: 1.5 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Typography variant="h5" component="span" sx={{ lineHeight: 1 }}>
-                      {categoryEmojis[t.category] || '💰'}
+                      {CATEGORY_EMOJIS[t.category] || '💰'}
                     </Typography>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                       {t.description}
@@ -74,6 +63,7 @@ function TransactionList({ filteredTransactions, editTransaction, deleteTransact
                 </CardContent>
                 <CardActions sx={{ pt: 0, pb: 1.5, px: 2 }}>
                   <Button size="small" onClick={() => editTransaction(t)}>Edit</Button>
+                  <Button size="small" color="info" onClick={() => cloneTransaction(t)}>Clone</Button>
                   <Button size="small" color="error" onClick={() => deleteTransaction(t.id)}>Delete</Button>
                 </CardActions>
               </Card>

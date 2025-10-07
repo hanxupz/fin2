@@ -7,17 +7,13 @@ import {
   Typography,
   Stack,
   Box,
-  useMediaQuery,
   Alert,
   Link
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { surfaceBoxSx } from '../theme/primitives';
 import AnimatedBackground from './AnimatedBackground';
 
 const Login = ({ onLogin }) => {
-  const theme = useTheme();
-  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);

@@ -3,30 +3,30 @@ export const getDesignTokens = (mode) => ({
     mode,
     ...(mode === 'light'
       ? {
-          primary: { main: '#1a1a1a' }, // clean black/dark gray
-          secondary: { main: '#64748b' }, // sophisticated blue-gray
+          primary: { main: '#2f2f2f' }, // softer dark gray instead of near-black
+          secondary: { main: '#6b7280' }, // gentle neutral gray-blue
           background: {
-            default: '#fafbfc',
-            paper: 'rgba(255, 255, 255, 0.8)',
+            default: '#ffffff', // true white for clean brightness
+            paper: 'rgba(255, 255, 255, 0.95)', // slightly translucent paper
           },
           text: {
-            primary: '#1a1a1a',
-            secondary: '#64748b',
+            primary: '#2f2f2f', // dark gray (not black) for comfort
+            secondary: '#6b7280', // soft contrast for muted text
           },
           calendar: {
-            weekdayBg: 'rgba(255, 255, 255, 0.9)',
-            weekdayText: '#1a1a1a',
-            dayBg: 'rgba(255, 255, 255, 0.6)',
+            weekdayBg: 'rgba(255, 255, 255, 0.95)',
+            weekdayText: '#1f2937', // slate-800
+            dayBg: 'rgba(250, 250, 250, 0.7)',
             dayText: '#374151',
-            todayBg: '#1a1a1a',
+            todayBg: '#2563EB', // bright blue accent
             todayText: '#ffffff',
-            transactionBg: 'rgba(26, 26, 26, 0.05)',
-            transactionText: '#1a1a1a',
+            transactionBg: 'rgba(37, 99, 235, 0.05)', // light blue hint for events
+            transactionText: '#1f2937',
           },
         }
       : {
-          primary: { main: '#ffffff' }, // clean white for dark mode
-          secondary: { main: '#94a3b8' }, // light blue-gray
+          primary: { main: '#ffffff' },
+          secondary: { main: '#94a3b8' },
           background: {
             default: '#0f172a',
             paper: 'rgba(30, 41, 59, 0.8)',
@@ -49,45 +49,44 @@ export const getDesignTokens = (mode) => ({
     gradients: {
       primary:
         mode === 'light'
-          ? 'linear-gradient(135deg,#1a1a1a,#374151)'
+          ? 'linear-gradient(135deg, #e5e7eb, #f3f4f6)' // subtle gray-white blend
           : 'linear-gradient(135deg,#334155,#0f172a)',
       danger: 'linear-gradient(135deg,#ef4444,#dc2626)',
       accent:
         mode === 'light'
-          ? 'linear-gradient(135deg,#6366f1,#8b5cf6)'
+          ? 'linear-gradient(135deg,#818cf8,#a78bfa)' // lighter accent
           : 'linear-gradient(135deg,#818cf8,#6366f1)',
     },
     charts: {
-      // High-contrast categorical palette (12 colors) chosen for accessibility & distinction
       category:
         mode === 'dark'
           ? [
-              '#60A5FA', // blue 400
-              '#F87171', // red 400
-              '#34D399', // emerald 400
-              '#FBBF24', // amber 400
-              '#C084FC', // violet 300
-              '#F472B6', // pink 400
-              '#2DD4BF', // teal 400
-              '#FB923C', // orange 400
-              '#A78BFA', // violet 400
-              '#4ADE80', // green 400
-              '#FB7185', // rose 400
-              '#93C5FD', // blue 300
+              '#60A5FA',
+              '#F87171',
+              '#34D399',
+              '#FBBF24',
+              '#C084FC',
+              '#F472B6',
+              '#2DD4BF',
+              '#FB923C',
+              '#A78BFA',
+              '#4ADE80',
+              '#FB7185',
+              '#93C5FD',
             ]
           : [
-              '#2563EB', // blue 600
-              '#DC2626', // red 600
-              '#059669', // emerald 600
-              '#D97706', // amber 600
-              '#7C3AED', // violet 600
-              '#DB2777', // pink 600
-              '#0D9488', // teal 600
-              '#EA580C', // orange 600
-              '#9333EA', // purple 600
-              '#16A34A', // green 600
+              '#3B82F6', // blue 500
+              '#EF4444', // red 500
+              '#10B981', // emerald 500
+              '#F59E0B', // amber 500
+              '#8B5CF6', // violet 500
+              '#EC4899', // pink 500
+              '#14B8A6', // teal 500
+              '#F97316', // orange 500
+              '#A855F7', // purple 500
+              '#22C55E', // green 500
               '#E11D48', // rose 600
-              '#1E40AF', // blue 800
+              '#2563EB', // blue 600
             ],
     },
   },
