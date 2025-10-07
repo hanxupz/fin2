@@ -183,7 +183,7 @@ const TransactionForm = React.memo(({
             onClick={amountAdjustmentHandlers.plus001}
             sx={POSITIVE_BUTTON_SX}
           >
-            +0.01
+            +.01
           </Button>
           <Button
             size="small"
@@ -191,7 +191,7 @@ const TransactionForm = React.memo(({
             onClick={amountAdjustmentHandlers.plus010}
             sx={POSITIVE_BUTTON_SX}
           >
-            +0.10
+            +.1
           </Button>
           <Button
             size="small"
@@ -233,7 +233,7 @@ const TransactionForm = React.memo(({
             onClick={amountAdjustmentHandlers.minus010}
             sx={NEGATIVE_BUTTON_SX}
           >
-            -0.10
+            -.1
           </Button>
           <Button
             size="small"
@@ -241,7 +241,7 @@ const TransactionForm = React.memo(({
             onClick={amountAdjustmentHandlers.minus001}
             sx={NEGATIVE_BUTTON_SX}
           >
-            -0.01
+            -.01
           </Button>
         </Stack>
         
