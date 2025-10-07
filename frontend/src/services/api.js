@@ -197,7 +197,7 @@ class ApiService {
 
   // Budget Preferences endpoints
   async getBudgetPreferences(token) {
-    const response = await fetch(`${this.baseURL}/budget-preferences`, {
+    const response = await fetch(`${this.baseURL}/budget-preferences/`, {
       method: 'GET',
       headers: this.getAuthHeaders(token)
     });
@@ -205,7 +205,7 @@ class ApiService {
   }
 
   async createBudgetPreference(budgetPreference, token) {
-    const response = await fetch(`${this.baseURL}/budget-preferences`, {
+    const response = await fetch(`${this.baseURL}/budget-preferences/`, {
       method: 'POST',
       headers: this.getAuthHeaders(token),
       body: JSON.stringify(budgetPreference)
