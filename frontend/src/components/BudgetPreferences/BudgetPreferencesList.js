@@ -47,7 +47,7 @@ const BudgetPreferencesList = ({
   }
 
   return (
-    <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
+    <Box>
       <Typography variant="h6" gutterBottom fontWeight={600}>
         Budget Preferences
       </Typography>
@@ -274,7 +274,7 @@ const BudgetPreferencesList = ({
           </Grid>
         </Box>
       )}
-    </Paper>
+    </Box>
   );
 };
 
