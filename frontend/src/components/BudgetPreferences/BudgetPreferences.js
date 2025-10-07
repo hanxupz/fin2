@@ -9,12 +9,14 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Fab
+  Fab,
+  Paper
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../hooks/useAuth';
 import { useBudgetPreferences } from '../../hooks/useBudgetPreferences';
 import BudgetPreferencesList from './BudgetPreferencesList';
+import { surfaceBoxSx } from '../../theme/primitives';
 
 const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
   const { token } = useAuth();
