@@ -433,13 +433,11 @@ const AppContent = () => {
                       Allocate your spending across different categories to create a comprehensive budget plan
                     </Typography>
                     
-                    <Box>
-                      <BudgetPreferences 
-                        onOpenCreateDialog={openCreateBudgetPreference}
-                        onEdit={editBudgetPreference}
-                        onDelete={removeBudgetPreference}
-                      />
-                    </Box>
+                    <BudgetPreferences 
+                      onOpenCreateDialog={openCreateBudgetPreference}
+                      onEdit={editBudgetPreference}
+                      onDelete={removeBudgetPreference}
+                    />
                 </Box>
 
                 {configControlDate && (
