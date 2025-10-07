@@ -357,7 +357,7 @@ const AppContent = () => {
             <Grid item xs={12} md={8}>
               <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
                 <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h6" gutterBottom>📅 Transactions Calendar</Typography>
+                  <Typography variant="h6" gutterBottom>Transactions Calendar</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
                       
                   <Calendar
@@ -366,6 +366,16 @@ const AppContent = () => {
                     month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
                   />
                 </Box>
+
+                {/* Budget Preferences Section */}
+                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                  <Typography variant="h6" gutterBottom>Budget Preference</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your budget preferences</Typography>
+                  <Box sx={{ mt: 3 }}>
+                    <BudgetPreferences />
+                  </Box>
+                </Box>
+                
                 {configControlDate && (
                   <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
@@ -457,11 +467,6 @@ const AppContent = () => {
               </Box>
             </Grid>
           </Grid>
-
-          {/* Budget Preferences Section */}
-          <Box sx={{ mt: 3 }}>
-            <BudgetPreferences />
-          </Box>
 
           {/* Floating Action Buttons */}
           <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
