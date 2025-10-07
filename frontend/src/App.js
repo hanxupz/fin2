@@ -370,13 +370,13 @@ const AppContent = () => {
                 {/* Budget Preferences Section */}
                 <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>
-                      💰 Budget Preferences
+                      Budget Preferences
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>
                       Allocate your spending across different categories to create a comprehensive budget plan
                     </Typography>
                     
-                    <Box sx={{ mt: 3 }}>
+                    <Box>
                       <BudgetPreferences />
                     </Box>
                 </Box>
