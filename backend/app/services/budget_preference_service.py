@@ -78,7 +78,7 @@ class BudgetPreferenceService:
         """Get a budget preference by ID."""
         
         # Get budget preference
-        query = select([budget_preferences_table]).where(
+        query = select(budget_preferences_table).where(
             and_(
                 budget_preferences_table.c.id == budget_preference_id,
                 budget_preferences_table.c.user_id == user_id
@@ -90,7 +90,7 @@ class BudgetPreferenceService:
             return None
         
         # Get categories
-        query = select([budget_preference_categories_table.c.category]).where(
+        query = select(budget_preference_categories_table.c.category).where(
             budget_preference_categories_table.c.budget_preference_id == budget_preference_id
         )
         categories_result = await database.fetch_all(query)
@@ -114,7 +114,7 @@ class BudgetPreferenceService:
             logger.info(f"Starting get_user_budget_preferences for user_id: {user_id}")
             
             # Get all budget preferences for user
-            query = select([budget_preferences_table]).where(
+            query = select(budget_preferences_table).where(
                 budget_preferences_table.c.user_id == user_id
             ).order_by(budget_preferences_table.c.create_date)
             
@@ -130,7 +130,7 @@ class BudgetPreferenceService:
                 logger.debug(f"Processing budget preference {i+1}/{len(budget_preferences_raw)}: {bp['name']} (id={bp['id']})")
                 
                 # Get categories for this budget preference
-                query = select([budget_preference_categories_table.c.category]).where(
+                query = select(budget_preference_categories_table.c.category).where(
                     budget_preference_categories_table.c.budget_preference_id == bp["id"]
                 )
                 logger.debug(f"Fetching categories for budget_preference_id: {bp['id']}")
@@ -294,10 +294,10 @@ class BudgetPreferenceService:
         """Validate that categories don't overlap with existing budget preferences."""
         
         # Get existing categories for user
-        query = select([
+        query = select(
             budget_preference_categories_table.c.category,
             budget_preference_categories_table.c.budget_preference_id
-        ]).select_from(
+        ).select_from(
             budget_preference_categories_table.join(
                 budget_preferences_table,
                 budget_preference_categories_table.c.budget_preference_id == budget_preferences_table.c.id
@@ -328,7 +328,7 @@ class BudgetPreferenceService:
         """Validate that total percentage doesn't exceed 100%."""
         
         # Get sum of existing percentages
-        query = select([func.sum(budget_preferences_table.c.percentage)]).where(
+        query = select(func.sum(budget_preferences_table.c.percentage)).where(
             budget_preferences_table.c.user_id == user_id
         )
         
