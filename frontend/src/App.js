@@ -357,7 +357,7 @@ const AppContent = () => {
             <Grid item xs={12} md={8}>
               <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
                 <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h6" gutterBottom>Transactions Calendar</Typography>
+                  <Typography variant="h5" fontWeight={600}>Transactions Calendar</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
                       
                   <Calendar
@@ -369,13 +369,18 @@ const AppContent = () => {
 
                 {/* Budget Preferences Section */}
                 <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h6" gutterBottom>Budget Preference</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your budget preferences</Typography>
-                  <Box sx={{ mt: 3 }}>
-                    <BudgetPreferences />
-                  </Box>
+                    <Typography variant="h5" fontWeight={600}>
+                      💰 Budget Preferences
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>
+                      Allocate your spending across different categories to create a comprehensive budget plan
+                    </Typography>
+                    
+                    <Box sx={{ mt: 3 }}>
+                      <BudgetPreferences />
+                    </Box>
                 </Box>
-                
+
                 {configControlDate && (
                   <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>

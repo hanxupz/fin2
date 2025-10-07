@@ -112,18 +112,11 @@ const BudgetPreferences = () => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight={600} gutterBottom>
-        💰 Budget Preferences
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Allocate your spending across different categories to create a comprehensive budget plan
-      </Typography>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
-      )}
+        {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+            </Alert>
+        )}
 
       <Grid container spacing={3}>
         {/* Form Section */}
