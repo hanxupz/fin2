@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/budget-preferences", 
+    "/", 
     response_model=BudgetPreferenceResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create Budget Preference",
@@ -56,7 +56,7 @@ async def create_budget_preference(
 
 
 @router.get(
-    "/budget-preferences",
+    "/",
     response_model=BudgetPreferencesSummary,
     summary="Get Budget Preferences Summary",
     description="Get all budget preferences for the current user with validation summary."
@@ -84,7 +84,7 @@ async def get_budget_preferences_summary(
 
 
 @router.get(
-    "/budget-preferences/{budget_preference_id}",
+    "/{budget_preference_id}",
     response_model=BudgetPreferenceResponse,
     summary="Get Budget Preference",
     description="Get a specific budget preference by ID."
@@ -112,7 +112,7 @@ async def get_budget_preference(
 
 
 @router.put(
-    "/budget-preferences/{budget_preference_id}",
+    "/{budget_preference_id}",
     response_model=BudgetPreferenceResponse,
     summary="Update Budget Preference",
     description="Update a budget preference. Validates category uniqueness and total percentage limits."
@@ -160,7 +160,7 @@ async def update_budget_preference(
 
 
 @router.delete(
-    "/budget-preferences/{budget_preference_id}",
+    "/{budget_preference_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete Budget Preference",
     description="Delete a budget preference and all its associated categories."
@@ -194,7 +194,7 @@ async def delete_budget_preference(
 
 
 @router.post(
-    "/budget-preferences/validate",
+    "/validate",
     response_model=BudgetPreferencesSummary,
     summary="Validate Budget Preferences",
     description="Validate current budget preferences without making changes."
