@@ -9,46 +9,27 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Grid
+  Fab
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../hooks/useAuth';
 import { useBudgetPreferences } from '../../hooks/useBudgetPreferences';
-import BudgetPreferenceForm from './BudgetPreferenceForm';
 import BudgetPreferencesList from './BudgetPreferencesList';
 
-const BudgetPreferences = () => {
+const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
   const { token } = useAuth();
   const {
     budgetPreferences,
     budgetSummary,
     loading,
     error,
-    createBudgetPreference,
-    updateBudgetPreference,
     deleteBudgetPreference,
     refetch
   } = useBudgetPreferences(token);
 
-  // Form state
-  const [name, setName] = useState('');
-  const [percentage, setPercentage] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-
   // UI state
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null, name: '' });
-
-  // Get all assigned categories for validation
-  const assignedCategories = useMemo(() => {
-    const allCategories = [];
-    budgetPreferences.forEach(bp => {
-      if (bp.categories) {
-        allCategories.push(...bp.categories);
-      }
-    });
-    return allCategories;
-  }, [budgetPreferences]);
 
   const showSnackbar = useCallback((message, severity = 'info') => {
     setSnackbar({ open: true, message, severity });
@@ -56,35 +37,6 @@ const BudgetPreferences = () => {
 
   const closeSnackbar = useCallback(() => {
     setSnackbar({ open: false, message: '', severity: 'info' });
-  }, []);
-
-  const resetForm = useCallback(() => {
-    setName('');
-    setPercentage('');
-    setCategories([]);
-    setEditingId(null);
-  }, []);
-
-  const handleSubmit = useCallback(async (formData) => {
-    try {
-      if (editingId) {
-        await updateBudgetPreference(editingId, formData);
-        showSnackbar('Budget preference updated successfully!', 'success');
-      } else {
-        await createBudgetPreference(formData);
-        showSnackbar('Budget preference created successfully!', 'success');
-      }
-      resetForm();
-    } catch (err) {
-      showSnackbar(err.message || 'Failed to save budget preference', 'error');
-    }
-  }, [editingId, createBudgetPreference, updateBudgetPreference, showSnackbar, resetForm]);
-
-  const handleEdit = useCallback((budgetPreference) => {
-    setName(budgetPreference.name);
-    setPercentage(budgetPreference.percentage.toString());
-    setCategories(budgetPreference.categories || []);
-    setEditingId(budgetPreference.id);
   }, []);
 
   const handleDeleteClick = useCallback((id) => {
@@ -112,40 +64,26 @@ const BudgetPreferences = () => {
 
   return (
     <Box>
-        {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-            </Alert>
-        )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
-      <Grid container spacing={3}>
-        {/* Form Section */}
-        <Grid item xs={12} lg={4}>
-          <BudgetPreferenceForm
-            name={name}
-            setName={setName}
-            percentage={percentage}
-            setPercentage={setPercentage}
-            categories={categories}
-            setCategories={setCategories}
-            onSubmit={handleSubmit}
-            onReset={resetForm}
-            editingId={editingId}
-            budgetSummary={budgetSummary}
-            assignedCategories={assignedCategories}
-          />
-        </Grid>
+      <Box sx={{ mb: 2 }}>
+        <BudgetPreferencesList
+          budgetSummary={budgetSummary}
+          onEdit={onEdit}
+          onDelete={handleDeleteClick}
+          loading={loading}
+        />
+      </Box>
 
-        {/* List Section */}
-        <Grid item xs={12} lg={8}>
-          <BudgetPreferencesList
-            budgetSummary={budgetSummary}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
+      <Box>
+        <Fab size="small" color="primary" onClick={onOpenCreateDialog}>
+          <AddIcon />
+        </Fab>
+      </Box>
 
       {/* Delete Confirmation Dialog */}
       <Dialog

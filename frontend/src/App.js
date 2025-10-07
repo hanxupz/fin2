@@ -49,7 +49,9 @@ import CreditForm from './components/Credits/CreditForm';
 import CreditPaymentForm from './components/Credits/CreditPaymentForm';
 import CreditsAccordion from './components/Credits/CreditsAccordion';
 import { BudgetPreferences } from './components/BudgetPreferences';
+import BudgetPreferenceForm from './components/BudgetPreferences/BudgetPreferenceForm';
 import { useCredits } from './hooks/useCredits';
+import { useBudgetPreferences } from './hooks/useBudgetPreferences';
 
 // Helper: format a Date as YYYY-MM-DD in LOCAL time (avoids UTC shift when using toISOString)
 const formatLocalDate = (d) => {
@@ -65,6 +67,7 @@ const AppContent = () => {
   const { token, isAuthenticated, login, logout } = useAuth();
   const { transactions, createTransaction, updateTransaction, deleteTransaction } = useTransactions(token);
   const { credits, paymentsByCredit, fetchPayments, createCredit, updateCredit, deleteCredit, createPayment, updatePayment, deletePayment } = useCredits(token);
+  const { budgetPreferences, budgetSummary, createBudgetPreference, updateBudgetPreference, deleteBudgetPreference } = useBudgetPreferences(token);
 
   // Local state
   const [description, setDescription] = useState("");
@@ -92,6 +95,7 @@ const AppContent = () => {
   const [controlDateDialogOpen, setControlDateDialogOpen] = useState(false);
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [budgetPreferenceDialogOpen, setBudgetPreferenceDialogOpen] = useState(false);
 
   // Credit form state
   const [creditName, setCreditName] = useState("");
@@ -106,6 +110,12 @@ const AppContent = () => {
   const [paymentType, setPaymentType] = useState("scheduled");
   const [editingPaymentId, setEditingPaymentId] = useState(null);
   const [activePaymentCreditId, setActivePaymentCreditId] = useState(null);
+
+  // Budget preference form state
+  const [budgetPreferenceName, setBudgetPreferenceName] = useState("");
+  const [budgetPreferencePercentage, setBudgetPreferencePercentage] = useState("");
+  const [budgetPreferenceCategories, setBudgetPreferenceCategories] = useState([]);
+  const [editingBudgetPreferenceId, setEditingBudgetPreferenceId] = useState(null);
 
   // Theme and responsive
   const theme = React.useMemo(() => createTheme(getDesignTokens(appState.theme)), [appState.theme]);
@@ -294,6 +304,53 @@ const AppContent = () => {
   const removePayment = async (paymentId, creditId) => {
     try { await deletePayment(paymentId, creditId); } catch (e) { console.error(e);} };
 
+  // Budget preference handlers
+  const openCreateBudgetPreference = () => {
+    setEditingBudgetPreferenceId(null);
+    setBudgetPreferenceName("");
+    setBudgetPreferencePercentage("");
+    setBudgetPreferenceCategories([]);
+    setBudgetPreferenceDialogOpen(true);
+  };
+
+  const submitBudgetPreference = async () => {
+    const payload = {
+      name: budgetPreferenceName,
+      percentage: parseFloat(budgetPreferencePercentage),
+      categories: budgetPreferenceCategories
+    };
+    try {
+      if (editingBudgetPreferenceId) {
+        await updateBudgetPreference(editingBudgetPreferenceId, payload);
+      } else {
+        await createBudgetPreference(payload);
+      }
+      setBudgetPreferenceDialogOpen(false);
+    } catch (e) { console.error(e); }
+  };
+
+  const editBudgetPreference = (budgetPreference) => {
+    setEditingBudgetPreferenceId(budgetPreference.id);
+    setBudgetPreferenceName(budgetPreference.name);
+    setBudgetPreferencePercentage(budgetPreference.percentage.toString());
+    setBudgetPreferenceCategories(budgetPreference.categories || []);
+    setBudgetPreferenceDialogOpen(true);
+  };
+
+  const removeBudgetPreference = async (id) => {
+    try { await deleteBudgetPreference(id); } catch (e) { console.error(e);} };
+
+  // Get all assigned categories for validation
+  const assignedCategories = React.useMemo(() => {
+    const allCategories = [];
+    budgetPreferences.forEach(bp => {
+      if (bp.categories) {
+        allCategories.push(...bp.categories);
+      }
+    });
+    return allCategories;
+  }, [budgetPreferences]);
+
   // Load config on mount
   useEffect(() => {
     if (token) {
@@ -377,7 +434,11 @@ const AppContent = () => {
                     </Typography>
                     
                     <Box>
-                      <BudgetPreferences />
+                      <BudgetPreferences 
+                        onOpenCreateDialog={openCreateBudgetPreference}
+                        onEdit={editBudgetPreference}
+                        onDelete={removeBudgetPreference}
+                      />
                     </Box>
                 </Box>
 
@@ -467,6 +528,7 @@ const AppContent = () => {
                     editTransaction={editTransaction}
                     cloneTransaction={cloneTransaction}
                     deleteTransaction={deleteTransaction}
+                    onOpenCreateDialog={() => setTransactionDialogOpen(true)}
                   />
                 </Box>
               </Box>
@@ -576,6 +638,33 @@ const AppContent = () => {
                 setType={setPaymentType}
                 onSubmit={submitPayment}
                 editingPaymentId={editingPaymentId}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* Budget Preference Dialog */}
+          <Dialog
+            open={budgetPreferenceDialogOpen}
+            onClose={() => setBudgetPreferenceDialogOpen(false)}
+            fullWidth maxWidth="sm"
+          >
+            <DialogContent sx={{ pb:3 }}>
+              <BudgetPreferenceForm
+                name={budgetPreferenceName}
+                setName={setBudgetPreferenceName}
+                percentage={budgetPreferencePercentage}
+                setPercentage={setBudgetPreferencePercentage}
+                categories={budgetPreferenceCategories}
+                setCategories={setBudgetPreferenceCategories}
+                onSubmit={submitBudgetPreference}
+                onReset={() => {
+                  setBudgetPreferenceName("");
+                  setBudgetPreferencePercentage("");
+                  setBudgetPreferenceCategories([]);
+                }}
+                editingId={editingBudgetPreferenceId}
+                budgetSummary={budgetSummary}
+                assignedCategories={assignedCategories}
               />
             </DialogContent>
           </Dialog>
