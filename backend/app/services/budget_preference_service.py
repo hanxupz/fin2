@@ -1,5 +1,6 @@
 from typing import List, Optional, Dict, Any
 from datetime import datetime
+import logging
 from sqlalchemy import select, delete, and_, func
 from ..core.database import database
 from ..models.database_models import (
@@ -13,6 +14,9 @@ from ..schemas.budget_preference_schemas import (
     BudgetPreferencesSummary,
     BudgetPreferenceValidationError
 )
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 class BudgetPreferenceService:
@@ -106,56 +110,80 @@ class BudgetPreferenceService:
     async def get_user_budget_preferences(user_id: int) -> BudgetPreferencesSummary:
         """Get all budget preferences for a user with summary information."""
         
-        # Get all budget preferences for user
-        query = select([budget_preferences_table]).where(
-            budget_preferences_table.c.user_id == user_id
-        ).order_by(budget_preferences_table.c.create_date)
-        
-        budget_preferences_raw = await database.fetch_all(query)
-        
-        budget_preferences = []
-        all_categories = []
-        total_percentage = 0.0
-        
-        for bp in budget_preferences_raw:
-            # Get categories for this budget preference
-            query = select([budget_preference_categories_table.c.category]).where(
-                budget_preference_categories_table.c.budget_preference_id == bp["id"]
+        try:
+            logger.info(f"Starting get_user_budget_preferences for user_id: {user_id}")
+            
+            # Get all budget preferences for user
+            query = select([budget_preferences_table]).where(
+                budget_preferences_table.c.user_id == user_id
+            ).order_by(budget_preferences_table.c.create_date)
+            
+            logger.debug(f"Executing query: {query}")
+            budget_preferences_raw = await database.fetch_all(query)
+            logger.info(f"Found {len(budget_preferences_raw)} budget preferences for user_id: {user_id}")
+            
+            budget_preferences = []
+            all_categories = []
+            total_percentage = 0.0
+            
+            for i, bp in enumerate(budget_preferences_raw):
+                logger.debug(f"Processing budget preference {i+1}/{len(budget_preferences_raw)}: {bp['name']} (id={bp['id']})")
+                
+                # Get categories for this budget preference
+                query = select([budget_preference_categories_table.c.category]).where(
+                    budget_preference_categories_table.c.budget_preference_id == bp["id"]
+                )
+                logger.debug(f"Fetching categories for budget_preference_id: {bp['id']}")
+                categories_result = await database.fetch_all(query)
+                categories = [row["category"] for row in categories_result]
+                logger.debug(f"Found {len(categories)} categories for budget preference {bp['name']}: {categories}")
+                
+                budget_preferences.append(BudgetPreferenceResponse(
+                    id=bp["id"],
+                    name=bp["name"],
+                    percentage=bp["percentage"],
+                    categories=categories,
+                    user_id=bp["user_id"],
+                    create_date=bp["create_date"],
+                    update_date=bp["update_date"],
+                ))
+                
+                all_categories.extend(categories)
+                total_percentage += bp["percentage"]
+                logger.debug(f"Running total percentage: {total_percentage}")
+            
+            # Find overlapping categories
+            logger.debug(f"Checking for overlapping categories in: {all_categories}")
+            category_counts = {}
+            for category in all_categories:
+                category_counts[category] = category_counts.get(category, 0) + 1
+            
+            overlapping_categories = [cat for cat, count in category_counts.items() if count > 1]
+            logger.debug(f"Overlapping categories found: {overlapping_categories}")
+            
+            total_percentage = round(total_percentage, 2)
+            missing_percentage = round(100.0 - total_percentage, 2)
+            is_complete = abs(total_percentage - 100.0) < 0.01  # Allow for small floating point errors
+            
+            logger.info(f"Summary for user_id {user_id}: {len(budget_preferences)} preferences, {total_percentage}% allocated, complete: {is_complete}")
+            
+            result = BudgetPreferencesSummary(
+                budget_preferences=budget_preferences,
+                total_percentage=total_percentage,
+                is_complete=is_complete,
+                missing_percentage=missing_percentage,
+                overlapping_categories=overlapping_categories,
             )
-            categories_result = await database.fetch_all(query)
-            categories = [row["category"] for row in categories_result]
             
-            budget_preferences.append(BudgetPreferenceResponse(
-                id=bp["id"],
-                name=bp["name"],
-                percentage=bp["percentage"],
-                categories=categories,
-                user_id=bp["user_id"],
-                create_date=bp["create_date"],
-                update_date=bp["update_date"],
-            ))
+            logger.info(f"Successfully created BudgetPreferencesSummary for user_id: {user_id}")
+            return result
             
-            all_categories.extend(categories)
-            total_percentage += bp["percentage"]
-        
-        # Find overlapping categories
-        category_counts = {}
-        for category in all_categories:
-            category_counts[category] = category_counts.get(category, 0) + 1
-        
-        overlapping_categories = [cat for cat, count in category_counts.items() if count > 1]
-        
-        total_percentage = round(total_percentage, 2)
-        missing_percentage = round(100.0 - total_percentage, 2)
-        is_complete = abs(total_percentage - 100.0) < 0.01  # Allow for small floating point errors
-        
-        return BudgetPreferencesSummary(
-            budget_preferences=budget_preferences,
-            total_percentage=total_percentage,
-            is_complete=is_complete,
-            missing_percentage=missing_percentage,
-            overlapping_categories=overlapping_categories,
-        )
+        except Exception as e:
+            logger.error(f"Error in get_user_budget_preferences for user_id: {user_id}")
+            logger.error(f"Error type: {type(e).__name__}")
+            logger.error(f"Error details: {str(e)}")
+            logger.exception("Full traceback:")
+            raise
     
     @staticmethod
     async def update_budget_preference(

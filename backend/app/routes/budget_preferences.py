@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
+import logging
 from ..schemas.budget_preference_schemas import (
     BudgetPreferenceCreate,
     BudgetPreferenceUpdate,
@@ -13,6 +14,9 @@ from ..schemas.user_schemas import User
 
 
 router = APIRouter()
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -75,8 +79,21 @@ async def get_budget_preferences_summary(
     - Any overlapping categories (validation errors)
     """
     try:
-        return await budget_preference_service.get_user_budget_preferences(current_user.id)
+        logger.info(f"Getting budget preferences for user_id: {current_user.id}")
+        logger.debug(f"Current user details: {current_user}")
+        
+        result = await budget_preference_service.get_user_budget_preferences(current_user.id)
+        
+        logger.info(f"Successfully retrieved budget preferences for user_id: {current_user.id}")
+        logger.debug(f"Result summary - Total preferences: {len(result.budget_preferences)}, Total percentage: {result.total_percentage}")
+        
+        return result
     except Exception as e:
+        logger.error(f"Error getting budget preferences for user_id: {current_user.id}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error details: {str(e)}")
+        logger.exception("Full traceback:")
+        
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve budget preferences"

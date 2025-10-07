@@ -7,7 +7,10 @@ from .core.database import create_tables, connect_db, disconnect_db
 from .routes import auth_router, transactions_router, control_dates_router, credits_router, budget_preferences_router
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 # Create FastAPI app
