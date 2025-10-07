@@ -77,3 +77,30 @@ credit_payments_table = sqlalchemy.Table(
     sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
 )
+
+# Budget preferences table
+budget_preferences_table = sqlalchemy.Table(
+    "budget_preferences",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("name", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("percentage", sqlalchemy.Float, nullable=False),  # Percentage allocation (0-100)
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
+    sqlalchemy.Column("update_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("update_date", sqlalchemy.DateTime, nullable=False),
+)
+
+# Budget preference categories table (many-to-many relationship)
+budget_preference_categories_table = sqlalchemy.Table(
+    "budget_preference_categories",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("budget_preference_id", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("category", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("create_by", sqlalchemy.Integer, nullable=False),
+    sqlalchemy.Column("create_date", sqlalchemy.DateTime, nullable=False),
+    # Unique constraint to prevent duplicate category assignments for the same budget preference
+    sqlalchemy.UniqueConstraint("budget_preference_id", "category", name="uq_budget_preference_category"),
+)

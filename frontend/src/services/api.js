@@ -194,6 +194,50 @@ class ApiService {
     if (response.ok) return { success: true };
     return this.handleResponse(response);
   }
+
+  // Budget Preferences endpoints
+  async getBudgetPreferences(token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
+
+  async createBudgetPreference(budgetPreference, token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(budgetPreference)
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateBudgetPreference(id, budgetPreference, token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/${id}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(budgetPreference)
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteBudgetPreference(id, token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/${id}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    if (response.ok) return { success: true };
+    return this.handleResponse(response);
+  }
+
+  async validateBudgetPreferences(token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/validate`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
 }
 
 export default new ApiService();

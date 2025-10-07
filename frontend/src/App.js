@@ -48,6 +48,7 @@ import { Box as MuiBox } from '@mui/material';
 import CreditForm from './components/Credits/CreditForm';
 import CreditPaymentForm from './components/Credits/CreditPaymentForm';
 import CreditsAccordion from './components/Credits/CreditsAccordion';
+import { BudgetPreferences } from './components/BudgetPreferences';
 import { useCredits } from './hooks/useCredits';
 
 // Helper: format a Date as YYYY-MM-DD in LOCAL time (avoids UTC shift when using toISOString)
@@ -456,6 +457,11 @@ const AppContent = () => {
               </Box>
             </Grid>
           </Grid>
+
+          {/* Budget Preferences Section */}
+          <Box sx={{ mt: 3 }}>
+            <BudgetPreferences />
+          </Box>
 
           {/* Floating Action Buttons */}
           <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
