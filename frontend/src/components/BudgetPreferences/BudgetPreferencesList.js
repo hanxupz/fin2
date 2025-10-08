@@ -144,7 +144,7 @@ const BudgetPreferencesList = ({
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="body2">
-                Total Available Budget (Corrente +):
+                Total Available Budget (Net + categories):
               </Typography>
               <Typography variant="body2" fontWeight={600} color="success.main">
                 €{budgetTracking.totalBudget.toFixed(2)}
@@ -184,7 +184,7 @@ const BudgetPreferencesList = ({
           <Alert severity="info" sx={{ mt: 2 }}>
             <Typography variant="body2">
               No budget data available for {new Date(controlDate).toLocaleDateString()}. 
-              Add positive transactions to 'Corrente' account to establish a budget.
+              Add transactions to 'Corrente' account where categories have positive net totals to establish a budget.
             </Typography>
           </Alert>
         )}
