@@ -177,26 +177,6 @@ const BudgetPreferencesList = ({
                     />
                   )) || []}
                 </Box>
-
-                {/* Percentage Bar */}
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Budget Share
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={Math.min((preference.percentage / 100) * 100, 100)}
-                    sx={{
-                      height: 6,
-                      borderRadius: 3,
-                      mt: 0.5,
-                      backgroundColor: (theme) => theme.palette.grey[200],
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 3,
-                      },
-                    }}
-                  />
-                </Box>
               </CardContent>
 
               <CardActions sx={{ pt: 0, justifyContent: 'flex-end' }}>
