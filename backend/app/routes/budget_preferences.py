@@ -192,18 +192,27 @@ async def delete_budget_preference(
     - **budget_preference_id**: ID of the budget preference to delete
     """
     try:
+        logger.info(f"Attempting to delete budget preference {budget_preference_id} for user {current_user.id}")
+        
         result = await budget_preference_service.delete_budget_preference(
             budget_preference_id, current_user.id
         )
         
         if not result:
+            logger.warning(f"Budget preference {budget_preference_id} not found for user {current_user.id}")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Budget preference not found"
             )
         
+        logger.info(f"Successfully deleted budget preference {budget_preference_id} for user {current_user.id}")
         return None
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
+        logger.error(f"Error deleting budget preference {budget_preference_id} for user {current_user.id}: {str(e)}")
+        logger.exception("Full traceback:")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete budget preference"

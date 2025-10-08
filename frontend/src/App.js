@@ -344,15 +344,20 @@ const AppContent = () => {
 
     try {
       if (editingBudgetPreferenceId) {
+        console.log('Updating budget preference:', editingBudgetPreferenceId, payload);
         await updateBudgetPreference(editingBudgetPreferenceId, payload);
+        console.log('Budget preference updated successfully');
       } else {
+        console.log('Creating budget preference:', payload);
         await createBudgetPreference(payload);
+        console.log('Budget preference created successfully');
       }
       setBudgetPreferenceDialogOpen(false);
       // Reset form state
       setBudgetPreferenceName("");
       setBudgetPreferencePercentage("");
       setBudgetPreferenceCategories([]);
+      setEditingBudgetPreferenceId(null);
     } catch (e) { 
       console.error('Budget preference submission error:', e);
       if (e.response?.data?.detail) {
@@ -371,7 +376,15 @@ const AppContent = () => {
   };
 
   const removeBudgetPreference = async (id) => {
-    try { await deleteBudgetPreference(id); } catch (e) { console.error(e);} };
+    try {
+      console.log('Deleting budget preference:', id);
+      await deleteBudgetPreference(id);
+      console.log('Budget preference deleted successfully');
+    } catch (e) {
+      console.error('Error deleting budget preference:', e);
+      throw e; // Re-throw so the component can handle the error
+    }
+  };
 
   // Get all assigned categories for validation
   const assignedCategories = React.useMemo(() => {
@@ -468,7 +481,10 @@ const AppContent = () => {
                     </Typography>
                     
                     <BudgetPreferences 
-                      onOpenCreateDialog={openCreateBudgetPreference}
+                      budgetPreferences={budgetPreferences}
+                      budgetSummary={budgetSummary}
+                      loading={false} // App.js doesn't track loading state for budget preferences
+                      error={null} // App.js doesn't track error state for budget preferences
                       onEdit={editBudgetPreference}
                       onDelete={removeBudgetPreference}
                     />

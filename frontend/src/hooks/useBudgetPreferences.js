@@ -20,7 +20,9 @@ export const useBudgetPreferences = (token) => {
     setError(null);
     
     try {
+      console.log('Fetching budget preferences...');
       const summary = await apiService.getBudgetPreferences(token);
+      console.log('Fetched budget preferences:', summary);
       setBudgetSummary(summary);
       setBudgetPreferences(summary.budget_preferences || []);
     } catch (err) {
@@ -35,7 +37,9 @@ export const useBudgetPreferences = (token) => {
     if (!token) return;
     
     try {
+      console.log('Creating budget preference:', budgetPreferenceData);
       const newBudgetPreference = await apiService.createBudgetPreference(budgetPreferenceData, token);
+      console.log('Budget preference created, refreshing data...');
       
       // Refresh the full summary after creation to get updated totals
       await fetchBudgetPreferences();
@@ -52,7 +56,9 @@ export const useBudgetPreferences = (token) => {
     if (!token) return;
     
     try {
+      console.log('Updating budget preference:', id, budgetPreferenceData);
       const updatedBudgetPreference = await apiService.updateBudgetPreference(id, budgetPreferenceData, token);
+      console.log('Budget preference updated, refreshing data...');
       
       // Refresh the full summary after update to get updated totals
       await fetchBudgetPreferences();
@@ -69,7 +75,9 @@ export const useBudgetPreferences = (token) => {
     if (!token) return;
     
     try {
+      console.log('Deleting budget preference:', id);
       await apiService.deleteBudgetPreference(id, token);
+      console.log('Budget preference deleted, refreshing data...');
       
       // Refresh the summary after deletion
       await fetchBudgetPreferences();

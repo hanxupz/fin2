@@ -10,21 +10,17 @@ import {
   DialogActions,
   Button
 } from '@mui/material';
-import { useAuth } from '../../hooks/useAuth';
-import { useBudgetPreferences } from '../../hooks/useBudgetPreferences';
 import BudgetPreferencesList from './BudgetPreferencesList';
 import { surfaceBoxSx } from "../../theme/primitives";
 
-const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
-  const { token } = useAuth();
-  const {
-    budgetPreferences,
-    budgetSummary,
-    loading,
-    error,
-    deleteBudgetPreference,
-    refetch
-  } = useBudgetPreferences(token);
+const BudgetPreferences = ({ 
+  budgetPreferences = [],
+  budgetSummary = { budget_preferences: [], total_percentage: 0, is_complete: false, missing_percentage: 100, overlapping_categories: [] },
+  loading = false,
+  error = null,
+  onEdit,
+  onDelete
+}) => {
 
   // UI state
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
@@ -49,13 +45,15 @@ const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
 
   const handleDeleteConfirm = useCallback(async () => {
     try {
-      await deleteBudgetPreference(deleteDialog.id);
-      showSnackbar('Budget preference deleted successfully!', 'success');
+      if (onDelete) {
+        await onDelete(deleteDialog.id);
+        showSnackbar('Budget preference deleted successfully!', 'success');
+      }
       setDeleteDialog({ open: false, id: null, name: '' });
     } catch (err) {
       showSnackbar(err.message || 'Failed to delete budget preference', 'error');
     }
-  }, [deleteDialog.id, deleteBudgetPreference, showSnackbar]);
+  }, [deleteDialog.id, onDelete, showSnackbar]);
 
   const handleDeleteCancel = useCallback(() => {
     setDeleteDialog({ open: false, id: null, name: '' });

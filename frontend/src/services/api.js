@@ -227,7 +227,17 @@ class ApiService {
       method: 'DELETE',
       headers: this.getAuthHeaders(token)
     });
-    if (response.ok) return { success: true };
+    
+    if (response.ok) {
+      // 204 No Content has no body, so just return success
+      if (response.status === 204) {
+        return { success: true };
+      }
+      // For other successful responses, try to parse JSON
+      return await response.json();
+    }
+    
+    // Handle error responses
     return this.handleResponse(response);
   }
 

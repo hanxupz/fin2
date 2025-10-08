@@ -263,27 +263,42 @@ class BudgetPreferenceService:
     async def delete_budget_preference(budget_preference_id: int, user_id: int) -> bool:
         """Delete a budget preference and its categories."""
         
+        logger.info(f"Delete budget preference service called for ID {budget_preference_id}, user {user_id}")
+        
         # Check if budget preference exists and belongs to user
         existing = await BudgetPreferenceService.get_budget_preference(budget_preference_id, user_id)
         if not existing:
+            logger.warning(f"Budget preference {budget_preference_id} not found for user {user_id}")
             return False
         
-        # Delete categories first (due to foreign key constraint)
-        query = delete(budget_preference_categories_table).where(
-            budget_preference_categories_table.c.budget_preference_id == budget_preference_id
-        )
-        await database.execute(query)
+        logger.info(f"Found budget preference {budget_preference_id}, proceeding with deletion")
         
-        # Delete budget preference
-        query = delete(budget_preferences_table).where(
-            and_(
-                budget_preferences_table.c.id == budget_preference_id,
-                budget_preferences_table.c.user_id == user_id
+        try:
+            # Delete categories first (due to foreign key constraint)
+            categories_query = delete(budget_preference_categories_table).where(
+                budget_preference_categories_table.c.budget_preference_id == budget_preference_id
             )
-        )
-        result = await database.execute(query)
-        
-        return result > 0
+            categories_deleted = await database.execute(categories_query)
+            logger.info(f"Deleted {categories_deleted} categories for budget preference {budget_preference_id}")
+            
+            # Delete budget preference
+            bp_query = delete(budget_preferences_table).where(
+                and_(
+                    budget_preferences_table.c.id == budget_preference_id,
+                    budget_preferences_table.c.user_id == user_id
+                )
+            )
+            result = await database.execute(bp_query)
+            logger.info(f"Delete query executed, rows affected: {result}")
+            
+            success = result > 0
+            logger.info(f"Budget preference {budget_preference_id} deletion {'successful' if success else 'failed'}")
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error during deletion of budget preference {budget_preference_id}: {str(e)}")
+            logger.exception("Full traceback:")
+            raise
     
     @staticmethod
     async def _validate_no_category_overlap(
