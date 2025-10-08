@@ -114,14 +114,14 @@ const BudgetPreferencesList = ({
   return (
     <Box>
       {/* Overall Budget Status */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            Overall Budget Allocation
+      <Box sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+          <Typography variant="body2" color="text.secondary" fontWeight={500}>
+            Budget Allocation
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body2" fontWeight={600}>
-              {total_percentage?.toFixed(2) || 0}% / 100%
+              {total_percentage?.toFixed(1) || 0}%
             </Typography>
             {is_complete ? (
               <CheckCircleIcon color="success" fontSize="small" />
@@ -133,49 +133,28 @@ const BudgetPreferencesList = ({
 
         {/* Budget Overview */}
         {controlDate && budgetTracking.totalBudget > 0 && (
-          <Box sx={{ mt: 2, p: 2, backgroundColor: 'action.hover', borderRadius: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Budget Overview for {new Date(controlDate).toLocaleDateString()}
+          <Box sx={{ mt: 1, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                {new Date(controlDate).toLocaleDateString()} Budget
               </Typography>
-              <Tooltip title="Budget is calculated from categories with positive net totals in 'Corrente' account. Spending is calculated from negative transactions in assigned categories from 'Corrente' account only.">
+              <Tooltip title="Budget from positive net categories in 'Corrente' account">
                 <WarningIcon fontSize="small" color="action" />
               </Tooltip>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="body2">
-                Total Available Budget (Net + categories):
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+              <Typography variant="caption" color="success.main" fontWeight={600}>
+                €{budgetTracking.totalBudget.toFixed(0)} total
               </Typography>
-              <Typography variant="body2" fontWeight={600} color="success.main">
-                €{budgetTracking.totalBudget.toFixed(2)}
+              <Typography variant="caption" color="error.main" fontWeight={600}>
+                €{budgetTracking.preferencesWithBudget.reduce((sum, p) => sum + p.actualSpending, 0).toFixed(0)} spent
               </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
-              <Typography variant="body2">
-                Total Allocated Budget ({total_percentage.toFixed(1)}%):
-              </Typography>
-              <Typography variant="body2" fontWeight={600} color="info.main">
-                €{(budgetTracking.totalBudget * (total_percentage / 100)).toFixed(2)}
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
-              <Typography variant="body2">
-                Total Actual Spending:
-              </Typography>
-              <Typography variant="body2" fontWeight={600} color="error.main">
-                €{budgetTracking.preferencesWithBudget.reduce((sum, p) => sum + p.actualSpending, 0).toFixed(2)}
-              </Typography>
-            </Box>
-            {total_percentage < 100 && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
-                <Typography variant="body2">
-                  Unallocated Budget ({missing_percentage.toFixed(1)}%):
+              {total_percentage < 100 && (
+                <Typography variant="caption" color="warning.main" fontWeight={600}>
+                  €{(budgetTracking.totalBudget * (missing_percentage / 100)).toFixed(0)} unallocated
                 </Typography>
-                <Typography variant="body2" fontWeight={600} color="warning.main">
-                  €{(budgetTracking.totalBudget * (missing_percentage / 100)).toFixed(2)}
-                </Typography>
-              </Box>
-            )}
+              )}
+            </Box>
           </Box>
         )}
 
@@ -209,7 +188,7 @@ const BudgetPreferencesList = ({
           </Typography>
         </Alert>
       ) : (
-        <Stack spacing={2}>
+        <Stack spacing={1}>
           {budgetTracking.preferencesWithBudget.map((preference) => (
             <Card 
               key={preference.id}
@@ -223,21 +202,31 @@ const BudgetPreferencesList = ({
                 }
               })}
             >
-              <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
+              <CardContent sx={{ py: 1, px: 2, '&:last-child': { pb: 1 } }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                   {/* Left side: Title, Categories, and Budget Info */}
                   <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'text.primary' }}>
+                    {/* Title row with name, percentage, and status */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
+                      <Typography variant="body1" fontWeight={600} sx={{ color: 'text.primary' }}>
                         {preference.name}
                       </Typography>
                       <Typography 
-                        variant="body1" 
+                        variant="body2" 
                         color="primary.main" 
-                        fontWeight={700}
+                        fontWeight={600}
                       >
                         {preference.percentage?.toFixed(1)}%
                       </Typography>
+                      {preference.budgetAmount !== undefined && (
+                        <Typography 
+                          variant="caption" 
+                          color={preference.isOverBudget ? 'error.main' : 'success.main'}
+                          fontWeight={600}
+                        >
+                          €{preference.budgetAmount.toFixed(0)}
+                        </Typography>
+                      )}
                       {/* Budget Status Icon */}
                       {preference.budgetAmount !== undefined && (
                         <Tooltip title={
@@ -258,82 +247,38 @@ const BudgetPreferencesList = ({
                       )}
                     </Box>
                     
-                    {/* Categories as compact text */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: preference.budgetAmount !== undefined ? 1 : 0 }}>
-                      <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
-                        {preference.categories?.length || 0} categories:
+                    {/* Categories and budget info in one compact line */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {preference.categories?.length || 0} categories
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        color="text.primary"
-                        sx={{ 
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          flex: 1,
-                          maxWidth: '300px'
-                        }}
-                      >
-                        {preference.categories?.map((category, index) => (
-                          `${CATEGORY_EMOJIS[category] || '📁'} ${category}`
-                        )).join(' • ') || 'No categories'}
-                      </Typography>
+                      {preference.budgetAmount !== undefined && (
+                        <>
+                          <Typography variant="caption" color="text.secondary">•</Typography>
+                          <Typography variant="caption" color="error.main" fontWeight={500}>
+                            €{preference.actualSpending.toFixed(0)} spent
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">•</Typography>
+                          <Typography 
+                            variant="caption" 
+                            color={preference.isOverBudget ? 'error.main' : 'success.main'}
+                            fontWeight={500}
+                          >
+                            €{Math.abs(preference.variance).toFixed(0)} {preference.isOverBudget ? 'over' : 'left'}
+                          </Typography>
+                        </>
+                      )}
                     </Box>
 
-                    {/* Budget Tracking Information */}
+                    {/* Compact Budget Progress Bar */}
                     {preference.budgetAmount !== undefined && (
-                      <Box sx={{ mt: 1, p: 1, backgroundColor: 'action.hover', borderRadius: 0.5 }}>
-                        <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={4}>
-                            <Typography variant="caption" color="text.secondary">
-                              Budget
-                            </Typography>
-                            <Typography variant="body2" fontWeight={600} color="success.main">
-                              €{preference.budgetAmount.toFixed(2)}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="caption" color="text.secondary">
-                              Spent
-                            </Typography>
-                            <Typography variant="body2" fontWeight={600} color="error.main">
-                              €{preference.actualSpending.toFixed(2)}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="caption" color="text.secondary">
-                              {preference.isOverBudget ? 'Over' : 'Remaining'}
-                            </Typography>
-                            <Typography 
-                              variant="body2" 
-                              fontWeight={600} 
-                              color={preference.isOverBudget ? 'error.main' : 'success.main'}
-                            >
-                              €{Math.abs(preference.variance).toFixed(2)}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        
-                        {/* Budget Usage Progress Bar */}
-                        <Box sx={{ mt: 1 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                            <Typography variant="caption" color="text.secondary">
-                              Budget Usage
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {preference.budgetAmount > 0 
-                                ? `${((preference.actualSpending / preference.budgetAmount) * 100).toFixed(1)}%`
-                                : '0%'
-                              }
-                            </Typography>
-                          </Box>
-                          <LinearProgress
-                            variant="determinate"
-                            value={Math.min(100, preference.budgetAmount > 0 ? (preference.actualSpending / preference.budgetAmount) * 100 : 0)}
-                            color={preference.isOverBudget ? 'error' : preference.actualSpending / preference.budgetAmount > 0.8 ? 'warning' : 'success'}
-                            sx={{ height: 6, borderRadius: 1 }}
-                          />
-                        </Box>
+                      <Box sx={{ mt: 0.5 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.min(100, preference.budgetAmount > 0 ? (preference.actualSpending / preference.budgetAmount) * 100 : 0)}
+                          color={preference.isOverBudget ? 'error' : preference.actualSpending / preference.budgetAmount > 0.8 ? 'warning' : 'success'}
+                          sx={{ height: 4, borderRadius: 1 }}
+                        />
                       </Box>
                     )}
                   </Box>
