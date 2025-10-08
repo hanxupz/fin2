@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   Alert,
-  Snackbar,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -23,16 +22,7 @@ const BudgetPreferences = ({
 }) => {
 
   // UI state
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null, name: '' });
-
-  const showSnackbar = useCallback((message, severity = 'info') => {
-    setSnackbar({ open: true, message, severity });
-  }, []);
-
-  const closeSnackbar = useCallback(() => {
-    setSnackbar({ open: false, message: '', severity: 'info' });
-  }, []);
 
   const handleDeleteClick = useCallback((id) => {
     const budgetPreference = budgetPreferences.find(bp => bp.id === id);
@@ -47,13 +37,12 @@ const BudgetPreferences = ({
     try {
       if (onDelete) {
         await onDelete(deleteDialog.id);
-        showSnackbar('Budget preference deleted successfully!', 'success');
       }
       setDeleteDialog({ open: false, id: null, name: '' });
     } catch (err) {
-      showSnackbar(err.message || 'Failed to delete budget preference', 'error');
+      console.error('Failed to delete budget preference:', err);
     }
-  }, [deleteDialog.id, onDelete, showSnackbar]);
+  }, [deleteDialog.id, onDelete]);
 
   const handleDeleteCancel = useCallback(() => {
     setDeleteDialog({ open: false, id: null, name: '' });
@@ -101,23 +90,6 @@ const BudgetPreferences = ({
             </Button>
           </DialogActions>
         </Dialog>
-
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={closeSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert
-          onClose={closeSnackbar}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
