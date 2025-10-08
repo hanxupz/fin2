@@ -61,10 +61,11 @@ const BudgetPreferencesList = ({
     const preferencesWithBudget = budget_preferences.map(preference => {
       const budgetAmount = totalBudget * (preference.percentage / 100);
       
-      // Calculate actual spending (sum of negative amounts in preference categories)
+      // Calculate actual spending (sum of negative amounts in preference categories from 'Corrente' account only)
       const actualSpending = Math.abs(
         currentControlDateTransactions
           .filter(t => 
+            t.account === 'Corrente' && 
             preference.categories.includes(t.category) && 
             t.amount < 0
           )
