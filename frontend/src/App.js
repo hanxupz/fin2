@@ -425,8 +425,8 @@ const AppContent = () => {
                 </Box>
 
                 {/* Budget Preferences Section */}
-                <Box sx={(t)=>({ ...sectionContainerSx(t), position: 'relative' })}>
-                  <Box component={Paper} elevation={3} sx={{ p:3, borderRadius:4 }}>
+                <Box sx={{ position: 'relative' }}>
+                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>
                       Budget Preferences
                     </Typography>
@@ -485,8 +485,8 @@ const AppContent = () => {
             <Grid item xs={12} md={4}>
               <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
                 {/* Credits Section */}
-                <Box sx={(t)=>({ ...sectionContainerSx(t), position: 'relative' })}>
-                  <Box component={Paper} elevation={3} sx={{ p:3, borderRadius:4 }}>
+                <Box sx={{ position: 'relative' }}>
+                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>Credits</Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
                     <Box sx={{ mb:2 }}>
@@ -533,8 +533,8 @@ const AppContent = () => {
                 </Box>
 
                 {/* Transaction List Section */}
-                <Box sx={(t)=>({ ...sectionContainerSx(t), position: 'relative' })}>
-                  <Box component={Paper} elevation={3} sx={{ p:3, borderRadius:4 }}>
+                <Box sx={{ position: 'relative' }}>
+                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
                     <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Complete record of activity</Typography>
                     <TransactionList
