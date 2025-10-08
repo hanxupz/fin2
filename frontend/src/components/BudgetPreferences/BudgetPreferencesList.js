@@ -52,10 +52,21 @@ const BudgetPreferencesList = ({
       new Date(t.control_date).toDateString() === new Date(controlDate).toDateString()
     );
 
-    // Calculate total budget (sum of positive amounts from 'Corrente' account)
-    const totalBudget = currentControlDateTransactions
-      .filter(t => t.account === 'Corrente' && t.amount > 0)
-      .reduce((sum, t) => sum + t.amount, 0);
+    // Calculate net totals per category for 'Corrente' account
+    const categoryNetTotals = {};
+    currentControlDateTransactions
+      .filter(t => t.account === 'Corrente')
+      .forEach(t => {
+        if (!categoryNetTotals[t.category]) {
+          categoryNetTotals[t.category] = 0;
+        }
+        categoryNetTotals[t.category] += t.amount;
+      });
+
+    // Calculate total budget (sum of positive net amounts from categories in 'Corrente' account)
+    const totalBudget = Object.values(categoryNetTotals)
+      .filter(netTotal => netTotal > 0)
+      .reduce((sum, netTotal) => sum + netTotal, 0);
 
     // Calculate spending and budget for each preference
     const preferencesWithBudget = budget_preferences.map(preference => {
@@ -127,7 +138,7 @@ const BudgetPreferencesList = ({
               <Typography variant="subtitle2" color="text.secondary">
                 Budget Overview for {new Date(controlDate).toLocaleDateString()}
               </Typography>
-              <Tooltip title="Budget is calculated from positive transactions in 'Corrente' account. Spending is calculated from negative transactions in assigned categories from 'Corrente' account only.">
+              <Tooltip title="Budget is calculated from categories with positive net totals in 'Corrente' account. Spending is calculated from negative transactions in assigned categories from 'Corrente' account only.">
                 <WarningIcon fontSize="small" color="action" />
               </Tooltip>
             </Box>
