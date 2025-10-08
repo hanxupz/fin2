@@ -37,15 +37,13 @@ const CreditsAccordion = ({
         const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
         const remaining = credit.total_amount ? (credit.total_amount - totalPaid) : null;
         
-        // More explicit calculation with debugging
+        // Calculate progress percentage
         let progressPercentage = 0;
         if (credit.total_amount && credit.total_amount > 0) {
           const rawPercentage = (totalPaid / credit.total_amount) * 100;
           progressPercentage = Math.min(Math.max(rawPercentage, 0), 100);
         }
         
-        // Debug log to console (remove after fixing)
-        console.log(`Credit ${credit.name}: totalPaid=${totalPaid}, total=${credit.total_amount}, percentage=${progressPercentage}`);
         return (
           <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 0, background: t.palette.background.paper })}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>

@@ -340,17 +340,11 @@ const AppContent = () => {
       return;
     }
 
-    console.log('Submitting budget preference:', payload); // Debug log
-
     try {
       if (editingBudgetPreferenceId) {
-        console.log('Updating budget preference:', editingBudgetPreferenceId, payload);
         await updateBudgetPreference(editingBudgetPreferenceId, payload);
-        console.log('Budget preference updated successfully');
       } else {
-        console.log('Creating budget preference:', payload);
         await createBudgetPreference(payload);
-        console.log('Budget preference created successfully');
       }
       setBudgetPreferenceDialogOpen(false);
       // Reset form state
@@ -377,9 +371,7 @@ const AppContent = () => {
 
   const removeBudgetPreference = async (id) => {
     try {
-      console.log('Deleting budget preference:', id);
       await deleteBudgetPreference(id);
-      console.log('Budget preference deleted successfully');
     } catch (e) {
       console.error('Error deleting budget preference:', e);
       throw e; // Re-throw so the component can handle the error
