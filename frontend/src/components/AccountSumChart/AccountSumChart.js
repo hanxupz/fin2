@@ -4,6 +4,7 @@ import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from '
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import { surfaceBoxSx } from '../../theme/primitives';
+import { formatChartCurrency } from '../../utils/charts';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -62,14 +63,26 @@ const AccountSumChart = React.memo(({ transactions, controlDate }) => {
       legend: { display: false },
       title: { display: true, text: 'Sum of Values by Account', color: labelColor },
       tooltip: {
-        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
+        callbacks: { 
+          label: (c) => `${c.dataset.label}: ${formatChartCurrency(c.parsed.x)}` 
+        },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
       }
     },
     scales: {
-      x: { beginAtZero: true, title: { display: true, text: 'Sum', color: labelColor }, ticks: { color: labelColor }, grid: { color: gridColor } },
+      x: { 
+        beginAtZero: true, 
+        title: { display: true, text: 'Sum', color: labelColor }, 
+        ticks: { 
+          color: labelColor,
+          callback: function(value) {
+            return formatChartCurrency(value);
+          }
+        }, 
+        grid: { color: gridColor } 
+      },
       y: { ticks: { color: labelColor }, grid: { color: gridColor } },
     },
     maintainAspectRatio: false,
