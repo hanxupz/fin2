@@ -444,7 +444,7 @@ const AppContent = () => {
                     size="small" 
                     color="primary" 
                     onClick={openCreateBudgetPreference}
-                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
+                    sx={{ position: 'absolute', top: 24, right: 24, zIndex: 1 }}
                   >
                     <AddIcon />
                   </Fab>
@@ -506,7 +506,7 @@ const AppContent = () => {
                     size="small" 
                     color="primary" 
                     onClick={openCreateCredit}
-                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
+                    sx={{ position: 'absolute', top: 24, right: 24, zIndex: 1 }}
                   >
                     <AddIcon />
                   </Fab>
@@ -548,7 +548,7 @@ const AppContent = () => {
                     size="small" 
                     color="primary" 
                     onClick={() => setTransactionDialogOpen(true)}
-                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
+                    sx={{ position: 'absolute', top: 24, right: 24, zIndex: 1 }}
                   >
                     <AddIcon />
                   </Fab>
