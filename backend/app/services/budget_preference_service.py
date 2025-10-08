@@ -111,30 +111,46 @@ class BudgetPreferenceService:
         """Get all budget preferences for a user with summary information."""
         
         try:
-            # Optimized query using JOIN to avoid N+1 problem
-            from sqlalchemy import text
-            query = text("""
-                SELECT 
-                    bp.id, bp.name, bp.percentage, bp.user_id, bp.create_date, bp.update_date,
-                    STRING_AGG(bpc.category, ',') as categories
-                FROM budget_preferences bp
-                LEFT JOIN budget_preference_categories bpc ON bp.id = bpc.budget_preference_id
-                WHERE bp.user_id = :user_id
-                GROUP BY bp.id, bp.name, bp.percentage, bp.user_id, bp.create_date, bp.update_date
-                ORDER BY bp.create_date
-            """)
+            # First get all budget preferences for user
+            query = select(budget_preferences_table).where(
+                budget_preferences_table.c.user_id == user_id
+            ).order_by(budget_preferences_table.c.create_date)
             
-            budget_preferences_raw = await database.fetch_all(query, {"user_id": user_id})
+            budget_preferences_raw = await database.fetch_all(query)
+            
+            if not budget_preferences_raw:
+                return BudgetPreferencesSummary(
+                    budget_preferences=[],
+                    total_percentage=0.0,
+                    is_complete=False,
+                    missing_percentage=100.0,
+                    overlapping_categories=[],
+                )
+            
+            # Get all categories for these budget preferences in one query
+            bp_ids = [bp["id"] for bp in budget_preferences_raw]
+            categories_query = select([
+                budget_preference_categories_table.c.budget_preference_id,
+                budget_preference_categories_table.c.category
+            ]).where(
+                budget_preference_categories_table.c.budget_preference_id.in_(bp_ids)
+            )
+            categories_raw = await database.fetch_all(categories_query)
+            
+            # Group categories by budget preference id
+            categories_by_bp = {}
+            for cat in categories_raw:
+                bp_id = cat["budget_preference_id"]
+                if bp_id not in categories_by_bp:
+                    categories_by_bp[bp_id] = []
+                categories_by_bp[bp_id].append(cat["category"])
             
             budget_preferences = []
             all_categories = []
             total_percentage = 0.0
             
             for bp in budget_preferences_raw:
-                # Parse categories from comma-separated string
-                categories = []
-                if bp["categories"]:
-                    categories = bp["categories"].split(',')
+                categories = categories_by_bp.get(bp["id"], [])
                 
                 budget_preferences.append(BudgetPreferenceResponse(
                     id=bp["id"],
