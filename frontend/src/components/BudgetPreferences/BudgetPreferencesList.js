@@ -65,25 +65,6 @@ const BudgetPreferencesList = ({
             )}
           </Box>
         </Box>
-
-        <LinearProgress
-          variant="determinate"
-          value={Math.min(total_percentage || 0, 100)}
-          sx={{
-            height: 10,
-            borderRadius: 5,
-            backgroundColor: (theme) => theme.palette.grey[200],
-            '& .MuiLinearProgress-bar': {
-              borderRadius: 5,
-              backgroundColor: (theme) =>
-                is_complete
-                  ? theme.palette.success.main
-                  : total_percentage > 100
-                  ? theme.palette.error.main
-                  : theme.palette.primary.main,
-            },
-          }}
-        />
       </Box>
 
       {/* Validation Alerts */}
