@@ -180,9 +180,41 @@ const BudgetPreferenceForm = ({
               </MenuItem>
             ))}
           </Select>
+          
+          {/* Select All / Clear All Actions */}
+          {availableCategories.length > 0 && (
+            <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+              <Button
+                size="small"
+                variant="text"
+                onClick={() => setLocalCategories([...availableCategories])}
+                disabled={localCategories.length === availableCategories.length}
+                sx={{ textTransform: 'none', fontSize: '0.75rem' }}
+              >
+                Select All ({availableCategories.length})
+              </Button>
+              <Button
+                size="small"
+                variant="text"
+                onClick={() => setLocalCategories([])}
+                disabled={localCategories.length === 0}
+                sx={{ textTransform: 'none', fontSize: '0.75rem' }}
+              >
+                Clear All
+              </Button>
+            </Box>
+          )}
+          
           {localCategories.length === 0 && (
             <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
               At least one category is required
+            </Typography>
+          )}
+          
+          {/* Show helpful message when all categories are selected */}
+          {localCategories.length === availableCategories.length && availableCategories.length > 0 && (
+            <Typography variant="caption" color="success.main" sx={{ mt: 0.5, ml: 1.5 }}>
+              ✅ All available categories selected ({availableCategories.length} categories)
             </Typography>
           )}
         </FormControl>
