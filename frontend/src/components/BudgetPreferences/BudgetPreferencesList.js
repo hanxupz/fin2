@@ -131,33 +131,6 @@ const BudgetPreferencesList = ({
           </Box>
         </Box>
 
-        {/* Budget Overview */}
-        {controlDate && budgetTracking.totalBudget > 0 && (
-          <Box sx={{ mt: 1, p: 1.5, backgroundColor: 'action.hover', borderRadius: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="caption" color="text.secondary">
-                {new Date(controlDate).toLocaleDateString()} Budget
-              </Typography>
-              <Tooltip title="Budget from positive net categories in 'Corrente' account">
-                <WarningIcon fontSize="small" color="action" />
-              </Tooltip>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
-              <Typography variant="caption" color="success.main" fontWeight={600}>
-                €{budgetTracking.totalBudget.toFixed(0)} total
-              </Typography>
-              <Typography variant="caption" color="error.main" fontWeight={600}>
-                €{budgetTracking.preferencesWithBudget.reduce((sum, p) => sum + p.actualSpending, 0).toFixed(0)} spent
-              </Typography>
-              {total_percentage < 100 && (
-                <Typography variant="caption" color="warning.main" fontWeight={600}>
-                  €{(budgetTracking.totalBudget * (missing_percentage / 100)).toFixed(0)} unallocated
-                </Typography>
-              )}
-            </Box>
-          </Box>
-        )}
-
         {/* No Budget Data Alert */}
         {controlDate && budgetTracking.totalBudget === 0 && budget_preferences.length > 0 && (
           <Alert severity="info" sx={{ mt: 2 }}>
