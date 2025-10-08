@@ -725,6 +725,8 @@ const AppContent = () => {
                 editingId={editingBudgetPreferenceId}
                 budgetSummary={budgetSummary}
                 assignedCategories={assignedCategories}
+                transactions={transactions}
+                controlDate={configControlDate}
               />
             </DialogContent>
           </Dialog>

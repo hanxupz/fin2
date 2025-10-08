@@ -13,7 +13,9 @@ import {
   MenuItem,
   Box,
   Alert,
-  LinearProgress
+  LinearProgress,
+  Slider,
+  InputAdornment
 } from '@mui/material';
 import { surfaceBoxSx } from '../../theme/primitives';
 import { CATEGORIES } from '../../constants';
@@ -40,18 +42,92 @@ const BudgetPreferenceForm = ({
   onReset,
   editingId,
   budgetSummary,
-  assignedCategories = []
+  assignedCategories = [],
+  transactions = [],
+  controlDate = null
 }) => {
   const [localName, setLocalName] = useState(name);
   const [localPercentage, setLocalPercentage] = useState(percentage);
   const [localCategories, setLocalCategories] = useState(categories);
+  
+  // State for amount (derived from percentage)
+  const [localAmount, setLocalAmount] = useState('');
+
+  // Calculate total available budget
+  const totalBudget = useMemo(() => {
+    if (!controlDate || !transactions.length) {
+      return 0;
+    }
+
+    // Filter transactions for current control date
+    const currentControlDateTransactions = transactions.filter(t => 
+      t.control_date && 
+      new Date(t.control_date).toDateString() === new Date(controlDate).toDateString()
+    );
+
+    // Calculate net totals per category for 'Corrente' account
+    const categoryNetTotals = {};
+    currentControlDateTransactions
+      .filter(t => t.account === 'Corrente')
+      .forEach(t => {
+        if (!categoryNetTotals[t.category]) {
+          categoryNetTotals[t.category] = 0;
+        }
+        categoryNetTotals[t.category] += t.amount;
+      });
+
+    // Calculate total budget (sum of positive net amounts from categories in 'Corrente' account)
+    return Object.values(categoryNetTotals)
+      .filter(netTotal => netTotal > 0)
+      .reduce((sum, netTotal) => sum + netTotal, 0);
+  }, [controlDate, transactions]);
 
   // Sync local state with props
   useEffect(() => {
     setLocalName(name);
     setLocalPercentage(percentage);
     setLocalCategories(categories);
-  }, [name, percentage, categories]);
+    
+    // Calculate amount based on percentage when props change
+    if (percentage && totalBudget > 0) {
+      const calculatedAmount = (totalBudget * (parseFloat(percentage) / 100));
+      setLocalAmount(calculatedAmount.toFixed(2));
+    }
+  }, [name, percentage, categories, totalBudget]);
+
+  // Handle slider change (works with percentage values)
+  const handleSliderChange = (event, newValue) => {
+    const percentageValue = newValue.toString();
+    setLocalPercentage(percentageValue);
+    if (totalBudget > 0) {
+      const calculatedAmount = (totalBudget * (newValue / 100));
+      setLocalAmount(calculatedAmount.toFixed(2));
+    } else {
+      setLocalAmount('');
+    }
+  };
+
+  // Handle direct percentage input
+  const handlePercentageInputChange = (value) => {
+    setLocalPercentage(value);
+    if (value && totalBudget > 0) {
+      const calculatedAmount = (totalBudget * (parseFloat(value) / 100));
+      setLocalAmount(calculatedAmount.toFixed(2));
+    } else {
+      setLocalAmount('');
+    }
+  };
+
+  // Handle direct amount input
+  const handleAmountInputChange = (value) => {
+    setLocalAmount(value);
+    if (value && totalBudget > 0) {
+      const calculatedPercentage = (parseFloat(value) / totalBudget) * 100;
+      setLocalPercentage(calculatedPercentage.toFixed(2));
+    } else {
+      setLocalPercentage('');
+    }
+  };
 
   // Calculate available categories (not assigned to other budget preferences)
   const availableCategories = useMemo(() => {
@@ -70,10 +146,15 @@ const BudgetPreferenceForm = ({
     return Math.max(0, availablePercentage);
   }, [budgetSummary?.total_percentage, percentage, editingId]);
 
+  // Calculate remaining amount
+  const remainingAmount = useMemo(() => {
+    return totalBudget * (remainingPercentage / 100);
+  }, [totalBudget, remainingPercentage]);
+
   // Validation
   const isValid = useMemo(() => {
     const nameValid = localName && localName.trim().length > 0;
-    const percentageValid = localPercentage && 
+    const percentageValid = localPercentage !== '' && 
       parseFloat(localPercentage) > 0 && 
       parseFloat(localPercentage) <= remainingPercentage;
     const categoriesValid = localCategories && localCategories.length > 0;
@@ -94,6 +175,7 @@ const BudgetPreferenceForm = ({
   const handleReset = () => {
     setLocalName('');
     setLocalPercentage('');
+    setLocalAmount('');
     setLocalCategories([]);
     if (onReset) {
       onReset();
@@ -105,8 +187,11 @@ const BudgetPreferenceForm = ({
     setLocalCategories(typeof value === 'string' ? value.split(',') : value);
   };
 
-  const percentageError = localPercentage && 
+  const percentageError = localPercentage !== '' && 
     (parseFloat(localPercentage) <= 0 || parseFloat(localPercentage) > remainingPercentage);
+  
+  const amountError = localAmount !== '' && 
+    (parseFloat(localAmount) <= 0 || parseFloat(localAmount) > remainingAmount);
 
   return (
     <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
@@ -116,7 +201,10 @@ const BudgetPreferenceForm = ({
       
       {remainingPercentage < 100 && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          Available percentage: {remainingPercentage.toFixed(2)}%
+          Available allocation: {remainingPercentage.toFixed(2)}%
+          {totalBudget > 0 && (
+            <> (€{remainingAmount.toFixed(2)} of €{totalBudget.toFixed(2)} total budget)</>
+          )}
         </Alert>
       )}
       
@@ -138,25 +226,126 @@ const BudgetPreferenceForm = ({
           helperText={localName !== '' && localName.trim().length === 0 ? "Name is required" : ""}
         />
 
-        <TextField
-          fullWidth
-          label="Percentage (%)"
-          type="number"
-          value={localPercentage}
-          onChange={(e) => setLocalPercentage(e.target.value)}
-          size="small"
-          inputProps={{ 
-            min: "0.01", 
-            max: remainingPercentage.toString(), 
-            step: "0.01" 
-          }}
-          error={Boolean(percentageError)}
-          helperText={
-            percentageError 
-              ? `Percentage must be between 0.01 and ${remainingPercentage.toFixed(2)}%`
-              : `Available: ${remainingPercentage.toFixed(2)}%`
-          }
-        />
+        {/* Budget Allocation Slider */}
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Budget Allocation
+          </Typography>
+          
+          {totalBudget > 0 ? (
+            <>
+              {/* Slider */}
+              <Box sx={{ px: 1, mb: 3 }}>
+                <Slider
+                  value={parseFloat(localPercentage) || 0}
+                  onChange={handleSliderChange}
+                  min={0}
+                  max={remainingPercentage}
+                  step={0.1}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${value.toFixed(1)}%`}
+                  marks={[
+                    { value: 0, label: '0%' },
+                    { value: remainingPercentage / 2, label: `${(remainingPercentage / 2).toFixed(1)}%` },
+                    { value: remainingPercentage, label: `${remainingPercentage.toFixed(1)}%` }
+                  ]}
+                  sx={{
+                    '& .MuiSlider-valueLabel': {
+                      backgroundColor: 'primary.main',
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* Current Values Display */}
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                gap: 2, 
+                mb: 2,
+                p: 2,
+                backgroundColor: 'action.hover',
+                borderRadius: 1
+              }}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h6" color="primary.main" fontWeight={600}>
+                    {localPercentage ? parseFloat(localPercentage).toFixed(1) : '0.0'}%
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Percentage
+                  </Typography>
+                </Box>
+                <Typography variant="h6" color="text.secondary">
+                  =
+                </Typography>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h6" color="success.main" fontWeight={600}>
+                    €{localAmount ? parseFloat(localAmount).toFixed(2) : '0.00'}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Amount
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Direct Input Fields */}
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  label="Percentage (%)"
+                  type="number"
+                  value={localPercentage}
+                  onChange={(e) => handlePercentageInputChange(e.target.value)}
+                  size="small"
+                  sx={{ flex: 1 }}
+                  inputProps={{ 
+                    min: "0", 
+                    max: remainingPercentage.toString(), 
+                    step: "0.1" 
+                  }}
+                  error={Boolean(percentageError)}
+                />
+                <TextField
+                  label="Amount"
+                  type="number"
+                  value={localAmount}
+                  onChange={(e) => handleAmountInputChange(e.target.value)}
+                  size="small"
+                  sx={{ flex: 1 }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                  }}
+                  inputProps={{ 
+                    min: "0", 
+                    max: remainingAmount.toString(), 
+                    step: "0.01" 
+                  }}
+                  error={Boolean(amountError)}
+                />
+              </Box>
+
+              {/* Helper Text */}
+              {(percentageError || amountError) ? (
+                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                  {percentageError 
+                    ? `Percentage must be between 0 and ${remainingPercentage.toFixed(2)}%`
+                    : `Amount must be between €0 and €${remainingAmount.toFixed(2)}`
+                  }
+                </Typography>
+              ) : (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                  Available: {remainingPercentage.toFixed(2)}% (€{remainingAmount.toFixed(2)} of €{totalBudget.toFixed(2)} total budget)
+                </Typography>
+              )}
+            </>
+          ) : (
+            <Alert severity="info">
+              <Typography variant="body2">
+                No budget data available for current control date. Add positive transactions to 'Corrente' account to enable budget allocation.
+              </Typography>
+            </Alert>
+          )}
+        </Box>
 
         <FormControl fullWidth size="small">
           <InputLabel>Categories</InputLabel>
