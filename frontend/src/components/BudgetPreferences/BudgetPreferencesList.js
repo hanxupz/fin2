@@ -127,7 +127,7 @@ const BudgetPreferencesList = ({
               <Typography variant="subtitle2" color="text.secondary">
                 Budget Overview for {new Date(controlDate).toLocaleDateString()}
               </Typography>
-              <Tooltip title="Budget is calculated from positive transactions in 'Corrente' account. Spending is calculated from negative transactions in assigned categories.">
+              <Tooltip title="Budget is calculated from positive transactions in 'Corrente' account. Spending is calculated from negative transactions in assigned categories from 'Corrente' account only.">
                 <WarningIcon fontSize="small" color="action" />
               </Tooltip>
             </Box>
