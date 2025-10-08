@@ -48,10 +48,6 @@ const BudgetPreferencesList = ({
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom fontWeight={600}>
-        Budget Preferences
-      </Typography>
-
       {/* Overall Budget Status */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -88,22 +84,6 @@ const BudgetPreferencesList = ({
             },
           }}
         />
-
-        <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {is_complete ? (
-            <Typography variant="caption" color="success.main">
-              ✅ Budget allocation complete!
-            </Typography>
-          ) : missing_percentage > 0 ? (
-            <Typography variant="caption" color="warning.main">
-              Missing {missing_percentage?.toFixed(2)}% to complete budget
-            </Typography>
-          ) : (
-            <Typography variant="caption" color="error.main">
-              Budget exceeds 100% by {Math.abs(missing_percentage)?.toFixed(2)}%
-            </Typography>
-          )}
-        </Box>
       </Box>
 
       {/* Validation Alerts */}
