@@ -79,21 +79,10 @@ async def get_budget_preferences_summary(
     - Any overlapping categories (validation errors)
     """
     try:
-        logger.info(f"Getting budget preferences for user_id: {current_user.id}")
-        logger.debug(f"Current user details: {current_user}")
-        
         result = await budget_preference_service.get_user_budget_preferences(current_user.id)
-        
-        logger.info(f"Successfully retrieved budget preferences for user_id: {current_user.id}")
-        logger.debug(f"Result summary - Total preferences: {len(result.budget_preferences)}, Total percentage: {result.total_percentage}")
-        
         return result
     except Exception as e:
-        logger.error(f"Error getting budget preferences for user_id: {current_user.id}")
-        logger.error(f"Error type: {type(e).__name__}")
-        logger.error(f"Error details: {str(e)}")
-        logger.exception("Full traceback:")
-        
+        logger.error(f"Error getting budget preferences for user_id: {current_user.id}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve budget preferences"
@@ -192,27 +181,22 @@ async def delete_budget_preference(
     - **budget_preference_id**: ID of the budget preference to delete
     """
     try:
-        logger.info(f"Attempting to delete budget preference {budget_preference_id} for user {current_user.id}")
-        
         result = await budget_preference_service.delete_budget_preference(
             budget_preference_id, current_user.id
         )
         
         if not result:
-            logger.warning(f"Budget preference {budget_preference_id} not found for user {current_user.id}")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Budget preference not found"
             )
         
-        logger.info(f"Successfully deleted budget preference {budget_preference_id} for user {current_user.id}")
         return None
     except HTTPException:
         # Re-raise HTTP exceptions as-is
         raise
     except Exception as e:
         logger.error(f"Error deleting budget preference {budget_preference_id} for user {current_user.id}: {str(e)}")
-        logger.exception("Full traceback:")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete budget preference"

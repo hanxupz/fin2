@@ -111,32 +111,26 @@ class BudgetPreferenceService:
         """Get all budget preferences for a user with summary information."""
         
         try:
-            logger.info(f"Starting get_user_budget_preferences for user_id: {user_id}")
             
             # Get all budget preferences for user
             query = select(budget_preferences_table).where(
                 budget_preferences_table.c.user_id == user_id
             ).order_by(budget_preferences_table.c.create_date)
             
-            logger.debug(f"Executing query: {query}")
             budget_preferences_raw = await database.fetch_all(query)
-            logger.info(f"Found {len(budget_preferences_raw)} budget preferences for user_id: {user_id}")
             
             budget_preferences = []
             all_categories = []
             total_percentage = 0.0
             
             for i, bp in enumerate(budget_preferences_raw):
-                logger.debug(f"Processing budget preference {i+1}/{len(budget_preferences_raw)}: {bp['name']} (id={bp['id']})")
                 
                 # Get categories for this budget preference
                 query = select(budget_preference_categories_table.c.category).where(
                     budget_preference_categories_table.c.budget_preference_id == bp["id"]
                 )
-                logger.debug(f"Fetching categories for budget_preference_id: {bp['id']}")
                 categories_result = await database.fetch_all(query)
                 categories = [row["category"] for row in categories_result]
-                logger.debug(f"Found {len(categories)} categories for budget preference {bp['name']}: {categories}")
                 
                 budget_preferences.append(BudgetPreferenceResponse(
                     id=bp["id"],
@@ -150,22 +144,18 @@ class BudgetPreferenceService:
                 
                 all_categories.extend(categories)
                 total_percentage += bp["percentage"]
-                logger.debug(f"Running total percentage: {total_percentage}")
             
             # Find overlapping categories
-            logger.debug(f"Checking for overlapping categories in: {all_categories}")
             category_counts = {}
             for category in all_categories:
                 category_counts[category] = category_counts.get(category, 0) + 1
             
             overlapping_categories = [cat for cat, count in category_counts.items() if count > 1]
-            logger.debug(f"Overlapping categories found: {overlapping_categories}")
             
             total_percentage = round(total_percentage, 2)
             missing_percentage = round(100.0 - total_percentage, 2)
             is_complete = abs(total_percentage - 100.0) < 0.01  # Allow for small floating point errors
             
-            logger.info(f"Summary for user_id {user_id}: {len(budget_preferences)} preferences, {total_percentage}% allocated, complete: {is_complete}")
             
             result = BudgetPreferencesSummary(
                 budget_preferences=budget_preferences,
@@ -175,7 +165,6 @@ class BudgetPreferenceService:
                 overlapping_categories=overlapping_categories,
             )
             
-            logger.info(f"Successfully created BudgetPreferencesSummary for user_id: {user_id}")
             return result
             
         except Exception as e:
@@ -263,7 +252,6 @@ class BudgetPreferenceService:
     async def delete_budget_preference(budget_preference_id: int, user_id: int) -> bool:
         """Delete a budget preference and its categories."""
         
-        logger.info(f"Delete budget preference service called for ID {budget_preference_id}, user {user_id}")
         
         # Check if budget preference exists and belongs to user
         existing = await BudgetPreferenceService.get_budget_preference(budget_preference_id, user_id)
@@ -271,7 +259,6 @@ class BudgetPreferenceService:
             logger.warning(f"Budget preference {budget_preference_id} not found for user {user_id}")
             return False
         
-        logger.info(f"Found budget preference {budget_preference_id}, proceeding with deletion")
         
         try:
             # Delete categories first (due to foreign key constraint)
@@ -279,7 +266,6 @@ class BudgetPreferenceService:
                 budget_preference_categories_table.c.budget_preference_id == budget_preference_id
             )
             await database.execute(categories_query)
-            logger.info(f"Deleted categories for budget preference {budget_preference_id}")
             
             # Delete budget preference
             bp_query = delete(budget_preferences_table).where(
@@ -289,10 +275,8 @@ class BudgetPreferenceService:
                 )
             )
             await database.execute(bp_query)
-            logger.info(f"Executed delete query for budget preference {budget_preference_id}")
             
             # If we reach here without exception, the deletion was successful
-            logger.info(f"Budget preference {budget_preference_id} deletion successful")
             return True
             
         except Exception as e:
