@@ -313,12 +313,35 @@ const AppContent = () => {
     setBudgetPreferenceDialogOpen(true);
   };
 
-  const submitBudgetPreference = async () => {
-    const payload = {
-      name: budgetPreferenceName,
+  const submitBudgetPreference = async (formData) => {
+    // The form passes the data directly, so use that instead of state variables
+    const payload = formData || {
+      name: budgetPreferenceName.trim(),
       percentage: parseFloat(budgetPreferencePercentage),
       categories: budgetPreferenceCategories
     };
+
+    // Validation
+    if (!payload.name || !payload.name.trim()) {
+      console.error('Budget preference name is required');
+      alert('Please enter a budget preference name');
+      return;
+    }
+
+    if (isNaN(payload.percentage) || payload.percentage <= 0 || payload.percentage > 100) {
+      console.error('Invalid percentage:', payload.percentage);
+      alert('Please enter a valid percentage between 0.01 and 100');
+      return;
+    }
+
+    if (!payload.categories || payload.categories.length === 0) {
+      console.error('At least one category is required');
+      alert('Please select at least one category');
+      return;
+    }
+
+    console.log('Submitting budget preference:', payload); // Debug log
+
     try {
       if (editingBudgetPreferenceId) {
         await updateBudgetPreference(editingBudgetPreferenceId, payload);
@@ -326,7 +349,17 @@ const AppContent = () => {
         await createBudgetPreference(payload);
       }
       setBudgetPreferenceDialogOpen(false);
-    } catch (e) { console.error(e); }
+      // Reset form state
+      setBudgetPreferenceName("");
+      setBudgetPreferencePercentage("");
+      setBudgetPreferenceCategories([]);
+    } catch (e) { 
+      console.error('Budget preference submission error:', e);
+      if (e.response?.data?.detail) {
+        console.error('Server error details:', e.response.data.detail);
+        alert(`Error: ${JSON.stringify(e.response.data.detail)}`);
+      }
+    }
   };
 
   const editBudgetPreference = (budgetPreference) => {
