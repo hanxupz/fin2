@@ -61,7 +61,7 @@ const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
   }, []);
 
   return (
-    <Box>
+    <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
