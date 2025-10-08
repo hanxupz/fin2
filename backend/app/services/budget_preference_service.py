@@ -129,10 +129,10 @@ class BudgetPreferenceService:
             
             # Get all categories for these budget preferences in one query
             bp_ids = [bp["id"] for bp in budget_preferences_raw]
-            categories_query = select([
+            categories_query = select(
                 budget_preference_categories_table.c.budget_preference_id,
                 budget_preference_categories_table.c.category
-            ]).where(
+            ).where(
                 budget_preference_categories_table.c.budget_preference_id.in_(bp_ids)
             )
             categories_raw = await database.fetch_all(categories_query)
