@@ -217,7 +217,7 @@ const BudgetPreferenceForm = ({
       <Stack spacing={2}>
         <TextField
           fullWidth
-          label="Budget Preference Name *"
+          label="Budget Preference Name"
           value={localName}
           onChange={(e) => setLocalName(e.target.value)}
           size="small"
