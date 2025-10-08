@@ -25,11 +25,14 @@ logger.info("Using database URL with PostgreSQL driver")
 database = databases.Database(database_url)
 metadata = sqlalchemy.MetaData()
 
-# Create engine with connection pooling and retry
+# Create engine with optimized connection pooling
 engine = sqlalchemy.create_engine(
     database_url,
     pool_pre_ping=True,
-    pool_recycle=300,
+    pool_recycle=3600,  # 1 hour instead of 5 minutes for better performance
+    pool_size=20,       # Explicit pool size for better resource management
+    max_overflow=30,    # Allow overflow connections for peak loads
+    pool_timeout=30,    # Connection timeout
     echo=settings.DEBUG
 )
 
