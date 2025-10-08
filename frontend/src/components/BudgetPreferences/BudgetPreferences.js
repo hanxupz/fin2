@@ -18,7 +18,9 @@ const BudgetPreferences = React.memo(({
   loading = false,
   error = null,
   onEdit,
-  onDelete
+  onDelete,
+  transactions = [],
+  controlDate = null
 }) => {
 
   // UI state
@@ -61,6 +63,8 @@ const BudgetPreferences = React.memo(({
         onEdit={onEdit}
         onDelete={handleDeleteClick}
         loading={loading}
+        transactions={transactions}
+        controlDate={controlDate}
       />
 
         {/* Delete Confirmation Dialog */}

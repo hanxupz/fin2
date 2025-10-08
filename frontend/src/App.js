@@ -474,6 +474,8 @@ const AppContent = () => {
                       error={null} // App.js doesn't track error state for budget preferences
                       onEdit={editBudgetPreference}
                       onDelete={removeBudgetPreference}
+                      transactions={transactions}
+                      controlDate={configControlDate}
                     />
                   </Box>
                   <Fab 
