@@ -97,7 +97,7 @@ const BudgetPreferenceForm = ({
 
   // Handle slider change (works with percentage values)
   const handleSliderChange = (event, newValue) => {
-    const percentageValue = newValue.toFixed(1);
+    const percentageValue = newValue.toString();
     setLocalPercentage(percentageValue);
     if (totalBudget > 0) {
       const calculatedAmount = (totalBudget * (newValue / 100));
@@ -155,34 +155,20 @@ const BudgetPreferenceForm = ({
   const isValid = useMemo(() => {
     const nameValid = localName && localName.trim().length > 0;
     const percentageValid = localPercentage !== '' && 
-      !isNaN(parseFloat(localPercentage)) &&
       parseFloat(localPercentage) > 0 && 
       parseFloat(localPercentage) <= remainingPercentage;
     const categoriesValid = localCategories && localCategories.length > 0;
-    
-    // Debug logging to help understand validation issues
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Form Validation:', {
-        nameValid,
-        percentageValid,
-        categoriesValid,
-        localName: localName?.trim(),
-        localPercentage,
-        parseFloat: parseFloat(localPercentage),
-        remainingPercentage,
-        localCategories: localCategories?.length
-      });
-    }
     
     return nameValid && percentageValid && categoriesValid;
   }, [localName, localPercentage, localCategories, remainingPercentage]);
 
   const handleSubmit = () => {
     if (isValid) {
-      setName(localName.trim());
-      setPercentage(localPercentage);
-      setCategories(localCategories);
-      onSubmit();
+      onSubmit({
+        name: localName.trim(),
+        percentage: parseFloat(localPercentage),
+        categories: localCategories
+      });
     }
   };
 
@@ -231,13 +217,20 @@ const BudgetPreferenceForm = ({
       <Stack spacing={2}>
         <TextField
           fullWidth
-          label="Budget Preference Name"
+          label="Budget Preference Name *"
           value={localName}
           onChange={(e) => setLocalName(e.target.value)}
           size="small"
           placeholder="e.g., Essential Expenses, Entertainment"
+          required
           error={Boolean(localName !== '' && localName.trim().length === 0)}
-          helperText={localName !== '' && localName.trim().length === 0 ? "Name is required" : ""}
+          helperText={
+            localName !== '' && localName.trim().length === 0 
+              ? "Name is required" 
+              : localName.trim().length === 0 
+                ? "Please enter a name for this budget preference" 
+                : ""
+          }
         />
 
         {/* Budget Allocation Slider */}
