@@ -8,46 +8,24 @@ import {
   Button,
   Grid,
   Chip,
-  Box,
-  Fab
+  Box
 } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
 import { amountColor, surfaceBoxSx } from "../../theme/primitives";
 import { CATEGORY_EMOJIS } from "../../constants";
 
-function TransactionList({ filteredTransactions, editTransaction, deleteTransaction, cloneTransaction, onOpenCreateDialog }) {
+function TransactionList({ filteredTransactions, editTransaction, deleteTransaction, cloneTransaction }) {
   const theme = useTheme();
 
   if (filteredTransactions.length === 0) {
     return (
-      <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2, position: 'relative' })}>
+      <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
         <Typography variant="body2" color="text.secondary">No transactions found.</Typography>
-        {onOpenCreateDialog && (
-          <Fab 
-            size="small" 
-            color="primary" 
-            onClick={onOpenCreateDialog}
-            sx={{ position: 'absolute', top: 16, left: 16 }}
-          >
-            <AddIcon />
-          </Fab>
-        )}
       </Box>
     );
   }
 
   return (
-    <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2, position: 'relative' })}>
-      {onOpenCreateDialog && (
-        <Fab 
-          size="small" 
-          color="primary" 
-          onClick={onOpenCreateDialog}
-          sx={{ position: 'absolute', top: 16, left: 16, zIndex: 1 }}
-        >
-          <AddIcon />
-        </Fab>
-      )}
+    <Box sx={(t) => ({ ...surfaceBoxSx(t), p: 2 })}>
       <Grid container spacing={2}>
         {filteredTransactions.sort((a, b) => {
           const dateA = a.date ? new Date(a.date) : null;

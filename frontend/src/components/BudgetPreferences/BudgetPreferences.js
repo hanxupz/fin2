@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -8,15 +8,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  Fab,
-  Paper
+  Button
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../hooks/useAuth';
 import { useBudgetPreferences } from '../../hooks/useBudgetPreferences';
 import BudgetPreferencesList from './BudgetPreferencesList';
-import { surfaceBoxSx } from '../../theme/primitives';
 
 const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
   const { token } = useAuth();
@@ -65,28 +61,19 @@ const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
   }, []);
 
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
-      <Box>
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
+    <Box>
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
-        <Box sx={{ mb: 2 }}>
-          <BudgetPreferencesList
-            budgetSummary={budgetSummary}
-            onEdit={onEdit}
-            onDelete={handleDeleteClick}
-            loading={loading}
-          />
-        </Box>
-
-        <Box>
-          <Fab size="small" color="primary" onClick={onOpenCreateDialog}>
-            <AddIcon />
-          </Fab>
-        </Box>
+      <BudgetPreferencesList
+        budgetSummary={budgetSummary}
+        onEdit={onEdit}
+        onDelete={handleDeleteClick}
+        loading={loading}
+      />
 
         {/* Delete Confirmation Dialog */}
         <Dialog
@@ -116,24 +103,23 @@ const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
           </DialogActions>
         </Dialog>
 
-        {/* Snackbar for notifications */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
           onClose={closeSnackbar}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
         >
-          <Alert
-            onClose={closeSnackbar}
-            severity={snackbar.severity}
-            variant="filled"
-            sx={{ width: '100%' }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </Paper>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 

@@ -425,7 +425,8 @@ const AppContent = () => {
                 </Box>
 
                 {/* Budget Preferences Section */}
-                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
+                <Box sx={(t)=>({ ...sectionContainerSx(t), position: 'relative' })}>
+                  <Box component={Paper} elevation={3} sx={{ p:3, borderRadius:4 }}>
                     <Typography variant="h5" fontWeight={600}>
                       Budget Preferences
                     </Typography>
@@ -438,6 +439,15 @@ const AppContent = () => {
                       onEdit={editBudgetPreference}
                       onDelete={removeBudgetPreference}
                     />
+                  </Box>
+                  <Fab 
+                    size="small" 
+                    color="primary" 
+                    onClick={openCreateBudgetPreference}
+                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
+                  >
+                    <AddIcon />
+                  </Fab>
                 </Box>
 
                 {configControlDate && (
@@ -475,26 +485,31 @@ const AppContent = () => {
             <Grid item xs={12} md={4}>
               <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
                 {/* Credits Section */}
-                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h5" fontWeight={600}>Credits</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
-                  <Box sx={{ mb:2 }}>
-                    <CreditsAccordion
-                      credits={credits}
-                      paymentsByCredit={paymentsByCredit}
-                      onExpandFetchPayments={fetchPayments}
-                      onEditCredit={editCredit}
-                      onDeleteCredit={removeCredit}
-                      onAddPayment={addPayment}
-                      onEditPayment={editPayment}
-                      onDeletePayment={removePayment}
-                    />
+                <Box sx={(t)=>({ ...sectionContainerSx(t), position: 'relative' })}>
+                  <Box component={Paper} elevation={3} sx={{ p:3, borderRadius:4 }}>
+                    <Typography variant="h5" fontWeight={600}>Credits</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
+                    <Box sx={{ mb:2 }}>
+                      <CreditsAccordion
+                        credits={credits}
+                        paymentsByCredit={paymentsByCredit}
+                        onExpandFetchPayments={fetchPayments}
+                        onEditCredit={editCredit}
+                        onDeleteCredit={removeCredit}
+                        onAddPayment={addPayment}
+                        onEditPayment={editPayment}
+                        onDeletePayment={removePayment}
+                      />
+                    </Box>
                   </Box>
-                  <Box>
-                    <Fab size="small" color="primary" onClick={openCreateCredit}>
-                      <AddIcon />
-                    </Fab>
-                  </Box>
+                  <Fab 
+                    size="small" 
+                    color="primary" 
+                    onClick={openCreateCredit}
+                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
+                  >
+                    <AddIcon />
+                  </Fab>
                 </Box>
 
                 {/* Filters Section */}
@@ -518,16 +533,25 @@ const AppContent = () => {
                 </Box>
 
                 {/* Transaction List Section */}
-                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Complete record of activity</Typography>
-                  <TransactionList
-                    filteredTransactions={filteredTransactions}
-                    editTransaction={editTransaction}
-                    cloneTransaction={cloneTransaction}
-                    deleteTransaction={deleteTransaction}
-                    onOpenCreateDialog={() => setTransactionDialogOpen(true)}
-                  />
+                <Box sx={(t)=>({ ...sectionContainerSx(t), position: 'relative' })}>
+                  <Box component={Paper} elevation={3} sx={{ p:3, borderRadius:4 }}>
+                    <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Complete record of activity</Typography>
+                    <TransactionList
+                      filteredTransactions={filteredTransactions}
+                      editTransaction={editTransaction}
+                      cloneTransaction={cloneTransaction}
+                      deleteTransaction={deleteTransaction}
+                    />
+                  </Box>
+                  <Fab 
+                    size="small" 
+                    color="primary" 
+                    onClick={() => setTransactionDialogOpen(true)}
+                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
+                  >
+                    <AddIcon />
+                  </Fab>
                 </Box>
               </Box>
             </Grid>
