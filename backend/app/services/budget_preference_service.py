@@ -279,7 +279,7 @@ class BudgetPreferenceService:
                 budget_preference_categories_table.c.budget_preference_id == budget_preference_id
             )
             categories_deleted = await database.execute(categories_query)
-            logger.info(f"Deleted {categories_deleted} categories for budget preference {budget_preference_id}")
+            logger.info(f"Categories delete result: {categories_deleted} for budget preference {budget_preference_id}")
             
             # Delete budget preference
             bp_query = delete(budget_preferences_table).where(
@@ -289,9 +289,25 @@ class BudgetPreferenceService:
                 )
             )
             result = await database.execute(bp_query)
-            logger.info(f"Delete query executed, rows affected: {result}")
+            logger.info(f"Delete query executed, result: {result}")
             
-            success = result > 0
+            # Check if the result is None or handle different return types
+            if result is None:
+                # If result is None, check if the record still exists to determine success
+                check_query = select(budget_preferences_table).where(
+                    and_(
+                        budget_preferences_table.c.id == budget_preference_id,
+                        budget_preferences_table.c.user_id == user_id
+                    )
+                )
+                remaining = await database.fetch_one(check_query)
+                success = remaining is None
+                logger.info(f"Verified deletion by checking existence: {'successful' if success else 'failed'}")
+            else:
+                # If result is a number, use it directly
+                success = result > 0 if isinstance(result, (int, float)) else bool(result)
+                logger.info(f"Using result value to determine success: {success}")
+            
             logger.info(f"Budget preference {budget_preference_id} deletion {'successful' if success else 'failed'}")
             return success
             
