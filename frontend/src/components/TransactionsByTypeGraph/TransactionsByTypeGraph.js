@@ -7,19 +7,25 @@ import { surfaceBoxSx } from '../../theme/primitives';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
+const TransactionsByTypeGraph = React.memo(({ transactions, categoryColors }) => {
   const theme = useTheme();
-  const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
+  
+  // Memoize expensive calculations
+  const chartData = React.useMemo(() => {
+    const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
+    // Group by category, sum all amounts (can be negative or positive)
+    const grouped = {};
+    correnteTransactions.forEach(({ category, amount }) => {
+      if (!grouped[category]) grouped[category] = 0;
+      grouped[category] += amount;
+    });
 
-  // Group by category, sum all amounts (can be negative or positive)
-  const grouped = {};
-  correnteTransactions.forEach(({ category, amount }) => {
-    if (!grouped[category]) grouped[category] = 0;
-    grouped[category] += amount;
-  });
+    const categories = Object.keys(grouped);
+    return { grouped, categories };
+  }, [transactions]);
 
-  const categories = Object.keys(grouped);
+  const { grouped, categories } = chartData;
   const labelColor = theme.palette.text.primary;
   const gridColor = theme.palette.divider;
   const paletteBase = theme.palette.charts.category;
@@ -94,6 +100,8 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       <Bar data={data} options={options} />
     </Paper>
   );
-};
+});
+
+TransactionsByTypeGraph.displayName = 'TransactionsByTypeGraph';
 
 export default TransactionsByTypeGraph;

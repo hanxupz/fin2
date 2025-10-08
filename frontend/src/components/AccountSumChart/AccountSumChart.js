@@ -7,28 +7,35 @@ import { surfaceBoxSx } from '../../theme/primitives';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const AccountSumChart = ({ transactions, controlDate }) => {
+const AccountSumChart = React.memo(({ transactions, controlDate }) => {
   const theme = useTheme();
 
-  const grouped = {};
-  let poupancaSum = 0;
-  transactions.forEach(({ account, amount }) => {
-    if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
-      poupancaSum += amount;
-    } else {
-      if (!grouped[account]) grouped[account] = 0;
-      grouped[account] += amount;
+  // Memoize expensive calculations
+  const chartData = React.useMemo(() => {
+    const grouped = {};
+    let poupancaSum = 0;
+    transactions.forEach(({ account, amount }) => {
+      if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
+        poupancaSum += amount;
+      } else {
+        if (!grouped[account]) grouped[account] = 0;
+        grouped[account] += amount;
+      }
+    });
+
+    if (poupancaSum !== 0) {
+      grouped['Poupança'] = poupancaSum;
+      delete grouped['Poupança Física'];
+      delete grouped['Poupança Objectivo'];
     }
-  });
 
-  if (poupancaSum !== 0) {
-    grouped['Poupança'] = poupancaSum;
-    delete grouped['Poupança Física'];
-    delete grouped['Poupança Objectivo'];
-  }
+    const accounts = Object.keys(grouped);
+    const values = accounts.map(acc => grouped[acc]);
+    
+    return { accounts, values, grouped };
+  }, [transactions]);
 
-  const accounts = Object.keys(grouped);
-  const values = accounts.map(acc => grouped[acc]);
+  const { accounts, values } = chartData;
   const labelColor = theme.palette.text.primary;
   const gridColor = theme.palette.divider;
   const palette = theme.palette.charts.category;
@@ -73,6 +80,8 @@ const AccountSumChart = ({ transactions, controlDate }) => {
       <Bar data={data} options={options} />
     </Paper>
   );
-};
+});
+
+AccountSumChart.displayName = 'AccountSumChart';
 
 export default AccountSumChart;

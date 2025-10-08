@@ -12,7 +12,7 @@ import {
 import BudgetPreferencesList from './BudgetPreferencesList';
 import { surfaceBoxSx } from "../../theme/primitives";
 
-const BudgetPreferences = ({ 
+const BudgetPreferences = React.memo(({ 
   budgetPreferences = [],
   budgetSummary = { budget_preferences: [], total_percentage: 0, is_complete: false, missing_percentage: 100, overlapping_categories: [] },
   loading = false,
@@ -92,6 +92,8 @@ const BudgetPreferences = ({
         </Dialog>
     </Box>
   );
-};
+});
+
+BudgetPreferences.displayName = 'BudgetPreferences';
 
 export default BudgetPreferences;

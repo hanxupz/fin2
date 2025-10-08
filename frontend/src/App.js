@@ -52,6 +52,7 @@ import { BudgetPreferences } from './components/BudgetPreferences';
 import BudgetPreferenceForm from './components/BudgetPreferences/BudgetPreferenceForm';
 import { useCredits } from './hooks/useCredits';
 import { useBudgetPreferences } from './hooks/useBudgetPreferences';
+import { usePerformanceOptimizations } from './hooks/usePerformanceOptimizations';
 
 // Helper: format a Date as YYYY-MM-DD in LOCAL time (avoids UTC shift when using toISOString)
 const formatLocalDate = (d) => {
@@ -140,8 +141,8 @@ const AppContent = () => {
       const transactionData = {
         description,
         amount: parseFloat(amount),
-        date: formatLocalDate(date),
-        control_date: formatLocalDate(controlDate),
+        date: optimizedFormatLocalDate(date),
+        control_date: optimizedFormatLocalDate(controlDate),
         category,
         account
       };
@@ -396,26 +397,20 @@ const AppContent = () => {
     }
   }, [token]);
 
-  // Filter transactions (includes control_date filtering for most components)
-  const filteredTransactions = (transactions || []).filter((t) => {
-    const matchesCategory = filterCategory ? t.category === filterCategory : true;
-    const matchesAccount = filterAccount ? t.account === filterAccount : true;
-    const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
-    const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
-    // If user picked an explicit control date filter, override the default configControlDate restriction
-    const matchesControlDate = filterControlDate
-      ? (t.control_date === formatLocalDate(filterControlDate))
-      : (configControlDate ? t.control_date === configControlDate : true);
-    return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo && matchesControlDate;
-  });
-
-  // Filter transactions for ControlDateAccountBarChart (no control_date filtering - needs all historical data)
-  const allTransactionsFiltered = (transactions || []).filter((t) => {
-    const matchesCategory = filterCategory ? t.category === filterCategory : true;
-    const matchesAccount = filterAccount ? t.account === filterAccount : true;
-    const matchesDateFrom = filterDateFrom ? new Date(t.date) >= new Date(filterDateFrom) : true;
-    const matchesDateTo = filterDateTo ? new Date(t.date) <= new Date(filterDateTo) : true;
-    return matchesCategory && matchesAccount && matchesDateFrom && matchesDateTo;
+  // Use performance optimizations hook for expensive calculations
+  const {
+    filteredTransactions,
+    allTransactionsFiltered,
+    transactionStats,
+    formatLocalDate: optimizedFormatLocalDate
+  } = usePerformanceOptimizations({
+    transactions,
+    filterCategory,
+    filterAccount,
+    filterDateFrom,
+    filterDateTo,
+    filterControlDate,
+    configControlDate,
   });
 
   // Generate category colors for current theme

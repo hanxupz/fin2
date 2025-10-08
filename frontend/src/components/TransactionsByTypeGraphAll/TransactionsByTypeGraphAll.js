@@ -9,17 +9,26 @@ Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const accountLabels = { 'Corrente': 'Corrente', 'Poupança': 'Poupança', 'Investimento': 'Investimento' };
 
-const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
+const TransactionsByTypeGraphAll = React.memo(({ transactions, categoryColors }) => {
   const theme = useTheme();
-  const grouped = { 'Corrente': {}, 'Poupança': {}, 'Investimento': {} };
-  transactions.forEach(({ account, category, amount }) => {
-    if (account === 'Corrente') grouped['Corrente'][category] = (grouped['Corrente'][category] || 0) + amount;
-    else if (account === 'Investimento') grouped['Investimento'][category] = (grouped['Investimento'][category] || 0) + amount;
-    if (account === 'Poupança Física' || account === 'Poupança Objectivo') grouped['Poupança'][category] = (grouped['Poupança'][category] || 0) + amount;
-  });
+  
+  // Memoize expensive calculations
+  const chartData = React.useMemo(() => {
+    const grouped = { 'Corrente': {}, 'Poupança': {}, 'Investimento': {} };
+    transactions.forEach(({ account, category, amount }) => {
+      if (account === 'Corrente') grouped['Corrente'][category] = (grouped['Corrente'][category] || 0) + amount;
+      else if (account === 'Investimento') grouped['Investimento'][category] = (grouped['Investimento'][category] || 0) + amount;
+      if (account === 'Poupança Física' || account === 'Poupança Objectivo') grouped['Poupança'][category] = (grouped['Poupança'][category] || 0) + amount;
+    });
 
-  const accounts = ['Corrente', 'Poupança', 'Investimento'];
-  const categories = Array.from(new Set(transactions.map(t => t.category)));
+    const accounts = ['Corrente', 'Poupança', 'Investimento'];
+    const categories = Array.from(new Set(transactions.map(t => t.category)));
+    
+    return { grouped, accounts, categories };
+  }, [transactions]);
+  
+  const { grouped, accounts, categories } = chartData;
+  
   const basePalette = theme.palette.charts.category;
   const paletteMap = categories.reduce((acc, cat, idx) => ({ ...acc, [cat]: (categoryColors && categoryColors[cat]) || basePalette[idx % basePalette.length] }), {});
 
@@ -74,6 +83,8 @@ const TransactionsByTypeGraphAll = ({ transactions, categoryColors }) => {
       <Bar data={data} options={options} />
     </Paper>
   );
-};
+});
+
+TransactionsByTypeGraphAll.displayName = 'TransactionsByTypeGraphAll';
 
 export default TransactionsByTypeGraphAll;

@@ -17,14 +17,17 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import CreditScoreIcon from '@mui/icons-material/CreditScore';
 import { surfaceBoxSx } from '../../theme/primitives';
 
-const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCredit = {} }) => {
+const AccountSummary = React.memo(({ transactions, controlDate, credits = [], paymentsByCredit = {} }) => {
   const theme = useTheme();
 
-  const filteredTransactions = transactions.filter(
-    (t) =>
-      t.control_date &&
-      new Date(t.control_date).toDateString() === new Date(controlDate).toDateString()
-  );
+  // Memoize filtered transactions calculation
+  const filteredTransactions = React.useMemo(() => {
+    return transactions.filter(
+      (t) =>
+        t.control_date &&
+        new Date(t.control_date).toDateString() === new Date(controlDate).toDateString()
+    );
+  }, [transactions, controlDate]);
 
   // Helper for translucent surface tone
   const softBg = (color) => `linear-gradient(135deg, ${alpha(color, 0.14)}, ${alpha(color, 0.04)})`;
@@ -139,6 +142,8 @@ const AccountSummary = ({ transactions, controlDate, credits = [], paymentsByCre
       </Grid>
     </Paper>
   );
-};
+});
+
+AccountSummary.displayName = 'AccountSummary';
 
 export default AccountSummary;

@@ -4,22 +4,30 @@ import { surfaceBoxSx } from '../../theme/primitives';
 
 const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const Calendar = ({ transactions, year, month }) => {
+const Calendar = React.memo(({ transactions, year, month }) => {
   const theme = useTheme();
-  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
-  const getStartDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
+  
+  // Memoize expensive calculations
+  const calendarData = React.useMemo(() => {
+    const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+    const getStartDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
 
-  const today = new Date();
-  const daysInMonth = getDaysInMonth(year, month);
-  const startDay = getStartDayOfMonth(year, month);
+    const today = new Date();
+    const daysInMonth = getDaysInMonth(year, month);
+    const startDay = getStartDayOfMonth(year, month);
 
-  const transactionMap = {};
-  transactions.forEach((t) => {
-    const date = new Date(t.date);
-    if (date.getMonth() === month && date.getFullYear() === year) {
-      transactionMap[date.getDate()] = (transactionMap[date.getDate()] || 0) + t.amount;
-    }
-  });
+    const transactionMap = {};
+    transactions.forEach((t) => {
+      const date = new Date(t.date);
+      if (date.getMonth() === month && date.getFullYear() === year) {
+        transactionMap[date.getDate()] = (transactionMap[date.getDate()] || 0) + t.amount;
+      }
+    });
+
+    return { today, daysInMonth, startDay, transactionMap };
+  }, [transactions, year, month]);
+
+  const { today, daysInMonth, startDay, transactionMap } = calendarData;
 
   const cells = [];
   for (let i = 0; i < startDay; i++) {
@@ -95,6 +103,8 @@ const Calendar = ({ transactions, year, month }) => {
       </Box>
     </Paper>
   );
-};
+});
+
+Calendar.displayName = 'Calendar';
 
 export default Calendar;
