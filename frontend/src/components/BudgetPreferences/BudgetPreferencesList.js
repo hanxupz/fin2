@@ -125,107 +125,126 @@ const BudgetPreferencesList = ({
           </Typography>
         </Alert>
       ) : (
-        <Grid container spacing={2}>
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 2, 
+          overflowX: 'auto',
+          pb: 1,
+          '&::-webkit-scrollbar': {
+            height: 8,
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: (theme) => theme.palette.grey[100],
+            borderRadius: 4,
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: (theme) => theme.palette.grey[400],
+            borderRadius: 4,
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.grey[500],
+            },
+          },
+        }}>
           {budget_preferences.map((preference) => (
-            <Grid item xs={12} sm={6} md={4} key={preference.id}>
-              <Card 
-                elevation={1} 
-                sx={(t) => ({
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  border: `1px solid ${t.palette.divider}`,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: t.shadows[3]
-                  }
-                })}
-              >
-                <CardContent sx={{ flexGrow: 1, pb: 1 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                    <Typography variant="subtitle1" fontWeight={600} sx={{ flex: 1 }}>
-                      {preference.name}
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      color="primary.main" 
-                      fontWeight={700}
-                      sx={{ ml: 1 }}
-                    >
-                      {preference.percentage?.toFixed(1)}%
-                    </Typography>
-                  </Box>
-
-                  {/* Categories */}
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Categories ({preference.categories?.length || 0}):
+            <Card 
+              key={preference.id}
+              elevation={1} 
+              sx={(t) => ({
+                minWidth: 280,
+                maxWidth: 320,
+                display: 'flex',
+                flexDirection: 'column',
+                border: `1px solid ${t.palette.divider}`,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: t.shadows[3]
+                }
+              })}
+            >
+              <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                  <Typography variant="subtitle1" fontWeight={600} sx={{ flex: 1 }}>
+                    {preference.name}
                   </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                    {preference.categories?.map((category) => (
-                      <Chip
-                        key={category}
-                        label={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <span>{CATEGORY_EMOJIS[category] || '📁'}</span>
-                            <span>{category}</span>
-                          </Box>
-                        }
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24
-                        }}
-                      />
-                    )) || []}
-                  </Box>
+                  <Typography 
+                    variant="h6" 
+                    color="primary.main" 
+                    fontWeight={700}
+                    sx={{ ml: 1 }}
+                  >
+                    {preference.percentage?.toFixed(1)}%
+                  </Typography>
+                </Box>
 
-                  {/* Percentage Bar */}
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      Budget Share
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min((preference.percentage / 100) * 100, 100)}
+                {/* Categories */}
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Categories ({preference.categories?.length || 0}):
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2, maxHeight: 60, overflowY: 'auto' }}>
+                  {preference.categories?.map((category) => (
+                    <Chip
+                      key={category}
+                      label={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <span>{CATEGORY_EMOJIS[category] || '📁'}</span>
+                          <span>{category}</span>
+                        </Box>
+                      }
+                      size="small"
+                      variant="outlined"
                       sx={{
-                        height: 6,
-                        borderRadius: 3,
-                        mt: 0.5,
-                        backgroundColor: (theme) => theme.palette.grey[200],
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 3,
-                        },
+                        fontSize: '0.75rem',
+                        height: 24
                       }}
                     />
-                  </Box>
-                </CardContent>
+                  )) || []}
+                </Box>
 
-                <CardActions sx={{ pt: 0, justifyContent: 'flex-end' }}>
-                  <Tooltip title="Edit budget preference">
-                    <IconButton
-                      size="small"
-                      onClick={() => onEdit(preference)}
-                      color="primary"
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete budget preference">
-                    <IconButton
-                      size="small"
-                      onClick={() => onDelete(preference.id)}
-                      color="error"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </CardActions>
-              </Card>
-            </Grid>
+                {/* Percentage Bar */}
+                <Box>
+                  <Typography variant="caption" color="text.secondary">
+                    Budget Share
+                  </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min((preference.percentage / 100) * 100, 100)}
+                    sx={{
+                      height: 6,
+                      borderRadius: 3,
+                      mt: 0.5,
+                      backgroundColor: (theme) => theme.palette.grey[200],
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 3,
+                      },
+                    }}
+                  />
+                </Box>
+              </CardContent>
+
+              <CardActions sx={{ pt: 0, justifyContent: 'flex-end' }}>
+                <Tooltip title="Edit budget preference">
+                  <IconButton
+                    size="small"
+                    onClick={() => onEdit(preference)}
+                    color="primary"
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete budget preference">
+                  <IconButton
+                    size="small"
+                    onClick={() => onDelete(preference.id)}
+                    color="error"
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </CardActions>
+            </Card>
           ))}
-        </Grid>
+        </Box>
       )}
 
       {/* Budget Summary Stats */}
