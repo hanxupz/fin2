@@ -15,6 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -24,6 +25,7 @@ import { sectionContainerSx } from './theme/primitives';
 
 // Refactored imports
 import { AppProvider, useAppContext } from './context/AppContext';
+import { LayoutProvider, useLayout } from './context/LayoutContext';
 import { useAuth } from './hooks/useAuth';
 import { useTransactions } from './hooks/useTransactions';
 import { CATEGORIES, ACCOUNTS, DEFAULT_CATEGORY, DEFAULT_ACCOUNT } from './constants';
@@ -50,6 +52,8 @@ import CreditPaymentForm from './components/Credits/CreditPaymentForm';
 import CreditsAccordion from './components/Credits/CreditsAccordion';
 import { BudgetPreferences } from './components/BudgetPreferences';
 import BudgetPreferenceForm from './components/BudgetPreferences/BudgetPreferenceForm';
+import { LayoutManager } from './components/LayoutManager';
+import { LayoutSection, LayoutComponent } from './components/LayoutManager/LayoutComponents';
 import { useCredits } from './hooks/useCredits';
 import { useBudgetPreferences } from './hooks/useBudgetPreferences';
 import { usePerformanceOptimizations } from './hooks/usePerformanceOptimizations';
@@ -65,6 +69,7 @@ const formatLocalDate = (d) => {
 
 const AppContent = () => {
   const { state: appState, actions: appActions } = useAppContext();
+  const { layout, updateLayout, getVisibleComponents, isComponentVisible } = useLayout();
   const { token, isAuthenticated, login, logout } = useAuth();
   const { transactions, createTransaction, updateTransaction, deleteTransaction } = useTransactions(token);
   const { credits, paymentsByCredit, fetchPayments, createCredit, updateCredit, deleteCredit, createPayment, updatePayment, deletePayment } = useCredits(token);
@@ -97,6 +102,7 @@ const AppContent = () => {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [budgetPreferenceDialogOpen, setBudgetPreferenceDialogOpen] = useState(false);
+  const [layoutManagerOpen, setLayoutManagerOpen] = useState(false);
 
   // Credit form state
   const [creditName, setCreditName] = useState("");
@@ -419,6 +425,175 @@ const AppContent = () => {
     return CATEGORIES.reduce((acc, cat, idx) => ({ ...acc, [cat]: palette[idx % palette.length] }), {});
   }, [theme, appState.theme]);
 
+  // Helper function to render components based on their ID
+  const renderComponent = (item, index) => {
+    switch (item.componentId) {
+      case 'accountSummary':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="accountSummary"
+            isVisible={item.isVisible}
+            title="Account Overview"
+            description="Your financial snapshot for the current control period"
+            requiresControlDate={true}
+            controlDate={configControlDate}
+          >
+            <AccountSummary 
+              transactions={transactions} 
+              controlDate={configControlDate ? new Date(configControlDate) : null} 
+              credits={credits}
+              paymentsByCredit={paymentsByCredit}
+            />
+          </LayoutComponent>
+        );
+      case 'calendar':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="calendar"
+            isVisible={item.isVisible}
+            title="Transactions Calendar"
+            description="Visual representation of your spending patterns and trends"
+          >
+            <Calendar
+              transactions={filteredTransactions}
+              year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
+              month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
+            />
+          </LayoutComponent>
+        );
+      case 'budgetPreferences':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="budgetPreferences"
+            isVisible={item.isVisible}
+            title="Budget Preferences"
+            description="Allocate your spending across different categories to create a comprehensive budget plan"
+            showFab={true}
+            onFabClick={openCreateBudgetPreference}
+          >
+            <BudgetPreferences 
+              budgetPreferences={budgetPreferences}
+              budgetSummary={budgetSummary}
+              loading={false}
+              error={null}
+              onEdit={editBudgetPreference}
+              onDelete={removeBudgetPreference}
+              transactions={transactions}
+              controlDate={configControlDate}
+            />
+          </LayoutComponent>
+        );
+      case 'financialInsights':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="financialInsights"
+            isVisible={item.isVisible}
+            title="Financial Insights"
+            description="Visual representation of your spending patterns and trends"
+            requiresControlDate={true}
+            controlDate={configControlDate}
+          >
+            <Box sx={{ mb: 2 }}>
+              <TransactionsByTypeGraph
+                transactions={filteredTransactions}
+                categoryColors={categoryColors}
+              />
+            </Box>
+            <Box sx={{ mb: 2 }}>
+              <TransactionsByTypeGraphAll
+                transactions={filteredTransactions}
+                categoryColors={categoryColors}
+              />
+            </Box>
+            <Box sx={{ mb: 2 }}>
+              <AccountSumChart 
+                transactions={filteredTransactions} 
+                controlDate={configControlDate ? new Date(configControlDate) : null} 
+              />
+            </Box>
+            {getControlDateAccountBarData(allTransactionsFiltered) && (
+              <Box>
+                <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
+              </Box>
+            )}
+          </LayoutComponent>
+        );
+      case 'credits':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="credits"
+            isVisible={item.isVisible}
+            title="Credits"
+            description="Manage your credits and track payments"
+            showFab={true}
+            onFabClick={openCreateCredit}
+          >
+            <CreditsAccordion
+              credits={credits}
+              paymentsByCredit={paymentsByCredit}
+              onExpandFetchPayments={fetchPayments}
+              onEditCredit={editCredit}
+              onDeleteCredit={removeCredit}
+              onAddPayment={addPayment}
+              onEditPayment={editPayment}
+              onDeletePayment={removePayment}
+            />
+          </LayoutComponent>
+        );
+      case 'filters':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="filters"
+            isVisible={item.isVisible}
+            title="Refine Your View"
+            description="Filter transactions by category, account, or date range"
+          >
+            <Filters
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+              filterAccount={filterAccount}
+              setFilterAccount={setFilterAccount}
+              filterDateFrom={filterDateFrom}
+              setFilterDateFrom={setFilterDateFrom}
+              filterDateTo={filterDateTo}
+              setFilterDateTo={setFilterDateTo}
+              filterControlDate={filterControlDate}
+              setFilterControlDate={setFilterControlDate}
+              categories={CATEGORIES}
+              accounts={ACCOUNTS}
+            />
+          </LayoutComponent>
+        );
+      case 'transactionList':
+        return (
+          <LayoutComponent
+            key={item.componentId}
+            componentId="transactionList"
+            isVisible={item.isVisible}
+            title="Transaction History"
+            description="Complete record of activity"
+            showFab={true}
+            onFabClick={() => setTransactionDialogOpen(true)}
+          >
+            <TransactionList
+              filteredTransactions={filteredTransactions}
+              editTransaction={editTransaction}
+              cloneTransaction={cloneTransaction}
+              deleteTransaction={deleteTransaction}
+            />
+          </LayoutComponent>
+        );
+      default:
+        return null;
+    }
+  };
+
   if (!isAuthenticated) {
     return <Login onLogin={login} />;
   }
@@ -428,170 +603,41 @@ const AppContent = () => {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AnimatedBackground />
         <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pt: { xs: 6, md: 8 }, pb: 6 }}>
-          {/* Account Summary Section */}
-          {configControlDate && (
-            <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-              <Typography variant="h5" fontWeight={600}>Account Overview</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Your financial snapshot for the current control period</Typography>
-              <AccountSummary 
-                transactions={transactions} 
-                controlDate={new Date(configControlDate)} 
-                credits={credits}
-                paymentsByCredit={paymentsByCredit}
-              />
-            </Box>
-          )}
+          {/* Main Section */}
+          <LayoutSection
+            sectionId="main"
+            components={getVisibleComponents('main')}
+            sx={{ mb: 3 }}
+          >
+            {getVisibleComponents('main').map((item, index) => 
+              renderComponent(item, index)
+            )}
+          </LayoutSection>
 
-          {/* Main grid: Left (Charts) 2/3, Right (Other panels) 1/3 */}
+          {/* Two-column grid: Left (2/3) and Right (1/3) */}
           <Grid container spacing={3} sx={{ mt: 1 }}>
+            {/* Left Panel */}
             <Grid item xs={12} md={8}>
-              <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
-                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h5" fontWeight={600}>Transactions Calendar</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
-                      
-                  <Calendar
-                    transactions={filteredTransactions}
-                    year={new Date(filterControlDate ? filterControlDate : configControlDate).getFullYear()}
-                    month={new Date(filterControlDate ? filterControlDate : configControlDate).getMonth()}
-                  />
-                </Box>
-
-                {/* Budget Preferences Section */}
-                <Box sx={{ position: 'relative' }}>
-                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                    <Typography variant="h5" fontWeight={600}>
-                      Budget Preferences
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>
-                      Allocate your spending across different categories to create a comprehensive budget plan
-                    </Typography>
-                    
-                    <BudgetPreferences 
-                      budgetPreferences={budgetPreferences}
-                      budgetSummary={budgetSummary}
-                      loading={false} // App.js doesn't track loading state for budget preferences
-                      error={null} // App.js doesn't track error state for budget preferences
-                      onEdit={editBudgetPreference}
-                      onDelete={removeBudgetPreference}
-                      transactions={transactions}
-                      controlDate={configControlDate}
-                    />
-                  </Box>
-                  <Fab 
-                    size="small" 
-                    color="primary" 
-                    onClick={openCreateBudgetPreference}
-                    sx={{ position: 'absolute', top: 24, right: 24, zIndex: 1 }}
-                  >
-                    <AddIcon />
-                  </Fab>
-                </Box>
-
-                {configControlDate && (
-                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                    <Typography variant="h5" fontWeight={600}>Financial Insights</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Visual representation of your spending patterns and trends</Typography>
-                    
-                    <Box sx={{ mb: 2 }}>
-                      <TransactionsByTypeGraph
-                        transactions={filteredTransactions}
-                        categoryColors={categoryColors}
-                      />
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <TransactionsByTypeGraphAll
-                        transactions={filteredTransactions}
-                        categoryColors={categoryColors}
-                      />
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <AccountSumChart 
-                        transactions={filteredTransactions} 
-                        controlDate={configControlDate ? new Date(configControlDate) : null} 
-                      />
-                    </Box>
-                    {getControlDateAccountBarData(allTransactionsFiltered) && (
-                      <Box>
-                        <ControlDateAccountBarChart data={getControlDateAccountBarData(allTransactionsFiltered)} />
-                      </Box>
-                    )}
-                  </Box>
+              <LayoutSection
+                sectionId="left"
+                components={getVisibleComponents('left')}
+              >
+                {getVisibleComponents('left').map((item, index) => 
+                  renderComponent(item, index)
                 )}
-              </Box>
+              </LayoutSection>
             </Grid>
+            
+            {/* Right Panel */}
             <Grid item xs={12} md={4}>
-              <Box sx={{ display:'flex', flexDirection:'column', gap:3 }}>
-                {/* Credits Section */}
-                <Box sx={{ position: 'relative' }}>
-                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                    <Typography variant="h5" fontWeight={600}>Credits</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Manage your credits and track payments</Typography>
-                    <Box>
-                      <CreditsAccordion
-                        credits={credits}
-                        paymentsByCredit={paymentsByCredit}
-                        onExpandFetchPayments={fetchPayments}
-                        onEditCredit={editCredit}
-                        onDeleteCredit={removeCredit}
-                        onAddPayment={addPayment}
-                        onEditPayment={editPayment}
-                        onDeletePayment={removePayment}
-                      />
-                    </Box>
-                  </Box>
-                  <Fab 
-                    size="small" 
-                    color="primary" 
-                    onClick={openCreateCredit}
-                    sx={{ position: 'absolute', top: 24, right: 24, zIndex: 1 }}
-                  >
-                    <AddIcon />
-                  </Fab>
-                </Box>
-
-                {/* Filters Section */}
-                <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                  <Typography variant="h5" fontWeight={600}>Refine Your View</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Filter transactions by category, account, or date range</Typography>
-                  <Filters
-                    filterCategory={filterCategory}
-                    setFilterCategory={setFilterCategory}
-                    filterAccount={filterAccount}
-                    setFilterAccount={setFilterAccount}
-                    filterDateFrom={filterDateFrom}
-                    setFilterDateFrom={setFilterDateFrom}
-                    filterDateTo={filterDateTo}
-                    setFilterDateTo={setFilterDateTo}
-                    filterControlDate={filterControlDate}
-                    setFilterControlDate={setFilterControlDate}
-                    categories={CATEGORIES}
-                    accounts={ACCOUNTS}
-                  />
-                </Box>
-
-                {/* Transaction List Section */}
-                <Box sx={{ position: 'relative' }}>
-                  <Box component={Paper} elevation={3} sx={(t)=>({ ...sectionContainerSx(t), p:3, borderRadius:4 })}>
-                    <Typography variant="h5" fontWeight={600}>Transaction History</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5, mb: 2 }}>Complete record of activity</Typography>
-                    <TransactionList
-                      filteredTransactions={filteredTransactions}
-                      editTransaction={editTransaction}
-                      cloneTransaction={cloneTransaction}
-                      deleteTransaction={deleteTransaction}
-                    />
-                  </Box>
-                  <Fab 
-                    size="small" 
-                    color="primary" 
-                    onClick={() => setTransactionDialogOpen(true)}
-                    sx={{ position: 'absolute', top: 24, right: 24, zIndex: 1 }}
-                  >
-                    <AddIcon />
-                  </Fab>
-                </Box>
-              </Box>
+              <LayoutSection
+                sectionId="right"
+                components={getVisibleComponents('right')}
+              >
+                {getVisibleComponents('right').map((item, index) => 
+                  renderComponent(item, index)
+                )}
+              </LayoutSection>
             </Grid>
           </Grid>
 
@@ -602,6 +648,9 @@ const AppContent = () => {
             </Fab>
             <Fab aria-label="configure control date" onClick={() => setControlDateDialogOpen(true)} sx={fabSx(theme)} size="medium">
               <SettingsIcon />
+            </Fab>
+            <Fab aria-label="manage layout" onClick={() => setLayoutManagerOpen(true)} sx={fabSx(theme)} size="medium">
+              <ViewQuiltIcon />
             </Fab>
             <Fab aria-label="toggle theme" onClick={handleToggleTheme} sx={fabSx(theme)} size="medium">
               {appState.theme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
@@ -730,6 +779,14 @@ const AppContent = () => {
               />
             </DialogContent>
           </Dialog>
+
+          {/* Layout Manager Dialog */}
+          <LayoutManager
+            open={layoutManagerOpen}
+            onClose={() => setLayoutManagerOpen(false)}
+            layout={layout}
+            onUpdateLayout={updateLayout}
+          />
         </MuiBox>
       </LocalizationProvider>
     </ThemeProvider>
@@ -739,7 +796,9 @@ const AppContent = () => {
 const App = () => {
   return (
     <AppProvider>
-      <AppContent />
+      <LayoutProvider>
+        <AppContent />
+      </LayoutProvider>
     </AppProvider>
   );
 };
