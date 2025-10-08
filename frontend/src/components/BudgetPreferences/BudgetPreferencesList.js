@@ -208,64 +208,6 @@ const BudgetPreferencesList = ({
           ))}
         </Stack>
       )}
-
-      {/* Budget Summary Stats */}
-      {budget_preferences.length > 0 && (
-        <Box sx={{ 
-          mt: 3, 
-          p: 2, 
-          backgroundColor: (t) => t.palette.mode === 'light' 
-            ? 'rgba(248, 250, 252, 0.8)' 
-            : 'rgba(30, 41, 59, 0.4)', 
-          borderRadius: 2,
-          border: (t) => `1px solid ${t.palette.mode === 'light' 
-            ? 'rgba(226, 232, 240, 0.6)' 
-            : 'rgba(71, 85, 105, 0.3)'}`,
-          backdropFilter: 'blur(8px)',
-        }}>
-          <Typography variant="subtitle2" fontWeight={600} gutterBottom color="text.primary">
-            Budget Summary
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="caption" color="text.secondary">
-                Total Preferences
-              </Typography>
-              <Typography variant="body2" fontWeight={600} color="text.primary">
-                {budget_preferences.length}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="caption" color="text.secondary">
-                Categories Assigned
-              </Typography>
-              <Typography variant="body2" fontWeight={600} color="text.primary">
-                {budget_preferences.reduce((sum, bp) => sum + (bp.categories?.length || 0), 0)}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="caption" color="text.secondary">
-                Allocated
-              </Typography>
-              <Typography variant="body2" fontWeight={600} color="text.primary">
-                {total_percentage?.toFixed(1)}%
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="caption" color="text.secondary">
-                Status
-              </Typography>
-              <Typography 
-                variant="body2" 
-                fontWeight={600}
-                color={is_complete ? "success.main" : "warning.main"}
-              >
-                {is_complete ? "Complete" : "Incomplete"}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Box>
-      )}
     </Box>
   );
 };
