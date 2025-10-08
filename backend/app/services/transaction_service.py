@@ -20,7 +20,7 @@ class TransactionService:
     async def get_user_transactions_count(user_id: int) -> int:
         """Get total count of transactions for a user."""
         from sqlalchemy import func
-        query = transactions_table.select().with_only_columns([func.count()]).where(
+        query = transactions_table.select().with_only_columns(func.count()).where(
             transactions_table.c.user_id == user_id
         )
         result = await database.fetch_one(query)
