@@ -242,18 +242,6 @@ const BudgetPreferencesList = ({
                         </>
                       )}
                     </Box>
-
-                    {/* Compact Budget Progress Bar */}
-                    {preference.budgetAmount !== undefined && (
-                      <Box sx={{ mt: 0.5 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={Math.min(100, preference.budgetAmount > 0 ? (preference.actualSpending / preference.budgetAmount) * 100 : 0)}
-                          color={preference.isOverBudget ? 'error' : preference.actualSpending / preference.budgetAmount > 0.8 ? 'warning' : 'success'}
-                          sx={{ height: 4, borderRadius: 1 }}
-                        />
-                      </Box>
-                    )}
                   </Box>
 
                   {/* Right side: Actions */}
@@ -278,6 +266,19 @@ const BudgetPreferencesList = ({
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
+                  </Box>
+                  <Box>
+                    {/* Compact Budget Progress Bar */}
+                    {preference.budgetAmount !== undefined && (
+                      <Box sx={{ mt: 0.5 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Math.min(100, preference.budgetAmount > 0 ? (preference.actualSpending / preference.budgetAmount) * 100 : 0)}
+                          color={preference.isOverBudget ? 'error' : preference.actualSpending / preference.budgetAmount > 0.8 ? 'warning' : 'success'}
+                          sx={{ height: 4, borderRadius: 1 }}
+                        />
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </CardContent>
