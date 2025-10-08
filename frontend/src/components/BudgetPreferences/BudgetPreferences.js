@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useBudgetPreferences } from '../../hooks/useBudgetPreferences';
 import BudgetPreferencesList from './BudgetPreferencesList';
+import { surfaceBoxSx } from "../../theme/primitives";
 
 const BudgetPreferences = ({ onOpenCreateDialog, onEdit, onDelete }) => {
   const { token } = useAuth();
