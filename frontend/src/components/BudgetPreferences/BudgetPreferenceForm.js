@@ -97,7 +97,7 @@ const BudgetPreferenceForm = ({
 
   // Handle slider change (works with percentage values)
   const handleSliderChange = (event, newValue) => {
-    const percentageValue = newValue.toString();
+    const percentageValue = newValue.toFixed(1);
     setLocalPercentage(percentageValue);
     if (totalBudget > 0) {
       const calculatedAmount = (totalBudget * (newValue / 100));
@@ -155,20 +155,34 @@ const BudgetPreferenceForm = ({
   const isValid = useMemo(() => {
     const nameValid = localName && localName.trim().length > 0;
     const percentageValid = localPercentage !== '' && 
+      !isNaN(parseFloat(localPercentage)) &&
       parseFloat(localPercentage) > 0 && 
       parseFloat(localPercentage) <= remainingPercentage;
     const categoriesValid = localCategories && localCategories.length > 0;
+    
+    // Debug logging to help understand validation issues
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Form Validation:', {
+        nameValid,
+        percentageValid,
+        categoriesValid,
+        localName: localName?.trim(),
+        localPercentage,
+        parseFloat: parseFloat(localPercentage),
+        remainingPercentage,
+        localCategories: localCategories?.length
+      });
+    }
     
     return nameValid && percentageValid && categoriesValid;
   }, [localName, localPercentage, localCategories, remainingPercentage]);
 
   const handleSubmit = () => {
     if (isValid) {
-      onSubmit({
-        name: localName.trim(),
-        percentage: parseFloat(localPercentage),
-        categories: localCategories
-      });
+      setName(localName.trim());
+      setPercentage(localPercentage);
+      setCategories(localCategories);
+      onSubmit();
     }
   };
 
