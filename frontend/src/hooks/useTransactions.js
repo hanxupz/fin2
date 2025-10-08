@@ -22,7 +22,7 @@ export const useTransactions = (token) => {
     setError(null);
     
     try {
-      const data = await apiService.getTransactions(token);
+      const data = await apiService.getAllTransactions(token);
       setTransactions(data);
       setLastFetch(now);
     } catch (err) {

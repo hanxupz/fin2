@@ -51,13 +51,37 @@ class ApiService {
   }
 
   // Transaction endpoints
-  async getTransactions(token) {
-    const response = await fetch(`${this.baseURL}/transactions/`, {
+  async getTransactions(token, limit = 10000, offset = 0) {
+    const response = await fetch(`${this.baseURL}/transactions/?limit=${limit}&offset=${offset}`, {
       method: 'GET',
       headers: this.getAuthHeaders(token)
     });
     
     return this.handleResponse(response);
+  }
+
+  async getTransactionsCount(token) {
+    const response = await fetch(`${this.baseURL}/transactions/count`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async getAllTransactions(token) {
+    try {
+      // First get the total count
+      const countResult = await this.getTransactionsCount(token);
+      const totalCount = countResult.total;
+      
+      // Then fetch all transactions with the correct limit
+      return await this.getTransactions(token, totalCount || 10000);
+    } catch (error) {
+      console.warn('Could not get transaction count, using high limit fallback:', error);
+      // Fallback to high limit if count fails
+      return await this.getTransactions(token, 10000);
+    }
   }
 
   async createTransaction(transaction, token) {
