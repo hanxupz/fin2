@@ -36,8 +36,8 @@ async def analyze_performance():
                 index_query = """
                     SELECT 
                         schemaname,
-                        tablename,
-                        indexname,
+                        relname as tablename,
+                        indexrelname as indexname,
                         idx_scan as index_scans,
                         idx_tup_read as tuples_read,
                         idx_tup_fetch as tuples_fetched
@@ -48,8 +48,11 @@ async def analyze_performance():
                 """
                 result = conn.execute(sqlalchemy.text(index_query)).fetchall()
                 
-                for row in result:
-                    logger.info(f"  {row[1]}.{row[2]}: {row[3]:,} scans, {row[4]:,} tuples read")
+                if result:
+                    for row in result:
+                        logger.info(f"  {row[1]}.{row[2]}: {row[3]:,} scans, {row[4]:,} tuples read")
+                else:
+                    logger.info("  No index usage statistics available yet")
                     
             except Exception as e:
                 logger.warning(f"Could not fetch index statistics: {e}")
@@ -57,19 +60,46 @@ async def analyze_performance():
             # Check for missing indexes on foreign keys
             logger.info("\n⚠️  Checking for potential performance issues:")
             
-            # Sample query performance for transactions
+            # Check if indexes exist
             try:
+                index_check_query = """
+                    SELECT 
+                        tablename,
+                        indexname,
+                        indexdef
+                    FROM pg_indexes 
+                    WHERE schemaname = 'public'
+                    AND (
+                        indexname LIKE '%user_id%' OR 
+                        indexname LIKE '%control_date%' OR
+                        indexname LIKE '%date%'
+                    )
+                    ORDER BY tablename, indexname;
+                """
+                indexes = conn.execute(sqlalchemy.text(index_check_query)).fetchall()
+                
+                if indexes:
+                    logger.info("  Key performance indexes found:")
+                    for idx in indexes:
+                        logger.info(f"    {idx[0]}.{idx[1]}")
+                else:
+                    logger.warning("  ⚠️  No performance indexes found! Run migrate_performance_indexes.py")
+                
+            except Exception as e:
+                logger.warning(f"Could not check indexes: {e}")
+            
+            # Sample query performance for transactions (fixed transaction handling)
+            try:
+                conn.commit()  # Ensure clean transaction state
                 start_time = datetime.now()
                 result = conn.execute(sqlalchemy.text("""
                     SELECT COUNT(*) FROM transactions 
-                    WHERE user_id = 1 
-                    ORDER BY control_date DESC, date DESC 
-                    LIMIT 100
+                    WHERE user_id = (SELECT MIN(id) FROM users LIMIT 1)
                 """)).fetchone()
                 end_time = datetime.now()
                 duration = (end_time - start_time).total_seconds() * 1000
                 
-                logger.info(f"  Sample transaction query: {duration:.2f}ms")
+                logger.info(f"  Sample transaction count query: {duration:.2f}ms")
                 
             except Exception as e:
                 logger.warning(f"Could not test sample query: {e}")
