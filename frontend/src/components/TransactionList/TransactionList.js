@@ -29,18 +29,18 @@ const TransactionList = React.memo(({ filteredTransactions, editTransaction, del
 
   const containerSx = React.useMemo(() => (t) => ({ 
     ...surfaceBoxSx(t), 
-    p: 2,
-    minHeight: '200px' // Ensure minimum height even when empty
+    p: 1.5,
+    minHeight: '150px' // Reduced from 200px to 150px
   }), []);
 
   if (isLoading) {
     return (
       <Box sx={containerSx}>
-        <Grid container spacing={2}>
+        <Grid container spacing={1.5}>
           {[1, 2, 3].map((i) => (
             <Grid item xs={12} key={i}>
               <Box sx={{ 
-                height: '140px',
+                height: '100px', // Reduced from 140px to 100px
                 bgcolor: 'action.hover',
                 borderRadius: 2,
                 animation: 'pulse 1.5s ease-in-out infinite'
@@ -62,7 +62,7 @@ const TransactionList = React.memo(({ filteredTransactions, editTransaction, del
 
   return (
     <Box sx={containerSx}>
-      <Grid container spacing={2}>
+      <Grid container spacing={1.5}>
         {sortedTransactions.map((transaction) => (
           <TransactionItem
             key={transaction.id}

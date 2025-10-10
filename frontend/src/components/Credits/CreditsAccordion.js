@@ -27,7 +27,7 @@ const CreditsAccordion = ({
   };
 
   return (
-    <Box>
+    <Box sx={{ '& .MuiAccordion-root': { mb: 1 } }}>
       {credits.map((credit, index) => {
         const payments = paymentsByCredit[credit.id] || [];
         const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
@@ -46,31 +46,41 @@ const CreditsAccordion = ({
                 ...surfaceBoxSx(t), 
                 p: 0, 
                 background: t.palette.background.paper,
-                minHeight: '100px' // Ensure minimum height
+                minHeight: '60px' // Reduced from 100px to 60px
               })}>
             <AccordionSummary 
               expandIcon={<ExpandMoreIcon />}
               sx={{
-                minHeight: '72px !important', // Fixed height for summary
+                minHeight: '56px !important', // Reduced from 72px to 56px
                 '& .MuiAccordionSummary-content': {
-                  margin: '12px 0 !important'
+                  margin: '8px 0 !important' // Reduced from 12px to 8px
                 }
               }}>
-              <Box sx={{ flexGrow:1, height: '100%' }}>
-                <Typography variant="subtitle1" fontWeight={600}>{credit.name}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ minHeight: '48px' }}>
-                  {credit.total_amount && <><br />Total: {credit.total_amount.toFixed(2)}</>}
-                  {remaining !== null && <><br />Remaining: {remaining.toFixed(2)}</>}
-                </Typography>
+              <Box sx={{ flexGrow:1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" fontWeight={600} sx={{ fontSize: '0.9rem' }}>{credit.name}</Typography>
+                  <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
+                    {credit.total_amount && (
+                      <Typography variant="caption" color="text.secondary">
+                        Total: {credit.total_amount.toFixed(2)}€
+                      </Typography>
+                    )}
+                    {remaining !== null && (
+                      <Typography variant="caption" color="text.secondary">
+                        Remaining: {remaining.toFixed(2)}€
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
                 {credit.total_amount && credit.total_amount > 0 && (
-                  <Box sx={{ mt: 1, mr: 2 }}>
-                    {/* Custom progress bar */}
+                  <Box sx={{ width: '100px', ml: 1 }}>
+                    {/* Compact progress bar */}
                     <Box
                       sx={{
                         width: '100%',
-                        height: 6,
+                        height: 4, // Reduced from 6px to 4px
                         backgroundColor: (theme) => theme.palette.grey[200],
-                        borderRadius: 3,
+                        borderRadius: 2,
                         overflow: 'hidden',
                         position: 'relative'
                       }}
@@ -95,12 +105,12 @@ const CreditsAccordion = ({
                   </Box>
                 )}
               </Box>
-              <Stack direction="row" spacing={1} alignItems="center">
+              <Stack direction="row" spacing={0.5} alignItems="center">
                 <Tooltip title="Add payment">
                   <IconButton
                     size="small"
                     onClick={(e)=>{ e.stopPropagation(); onAddPayment(credit); }}
-                    sx={{ width: 32, height: 32 }}
+                    sx={{ width: 28, height: 28 }} // Reduced from 32px to 28px
                   >
                     <AddIcon fontSize="small" />
                   </IconButton>
@@ -109,7 +119,7 @@ const CreditsAccordion = ({
                   <IconButton
                     size="small"
                     onClick={(e)=>{ e.stopPropagation(); onEditCredit(credit); }}
-                    sx={{ width: 32, height: 32 }}
+                    sx={{ width: 28, height: 28 }} // Reduced from 32px to 28px
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>
@@ -118,25 +128,25 @@ const CreditsAccordion = ({
                   <IconButton
                     size="small"
                     onClick={(e)=>{ e.stopPropagation(); onDeleteCredit(credit.id); }}
-                    sx={{ width: 32, height: 32 }}
+                    sx={{ width: 28, height: 28 }} // Reduced from 32px to 28px
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
               </Stack>
             </AccordionSummary>
-            <AccordionDetails>
-              <Stack spacing={1}>
-                {payments.length === 0 && <Typography variant="body2" color="text.secondary">No payments recorded</Typography>}
+            <AccordionDetails sx={{ pt: 1, pb: 1 }}>
+              <Stack spacing={0.5}>
+                {payments.length === 0 && <Typography variant="caption" color="text.secondary">No payments recorded</Typography>}
                 {payments.map(p => (
-                  <Box key={p.id} sx={{ display:'flex', alignItems:'center', gap:1, border:'1px solid', borderColor:'divider', p:1, borderRadius:1 }}>
+                  <Box key={p.id} sx={{ display:'flex', alignItems:'center', gap:0.5, border:'1px solid', borderColor:'divider', p:0.75, borderRadius:1, minHeight: '36px' }}>
                     <Box sx={{ flexGrow:1 }}>
-                      <Typography variant="body2" fontWeight={600}>{p.value.toFixed(2)}</Typography>
-                      <Typography variant="caption" color="text.secondary">{formatDate(p.date)}</Typography>
+                      <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.75rem' }}>{p.value.toFixed(2)}€</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', ml: 1 }}>{formatDate(p.date)}</Typography>
                     </Box>
-                    <Chip size="small" label={p.type === 'scheduled' ? 'Scheduled' : 'Off Schedule'} color={p.type === 'scheduled' ? 'primary' : 'default'} />
-                    <IconButton size="small" onClick={()=>onEditPayment(credit, p)}><EditIcon fontSize="inherit" /></IconButton>
-                    <IconButton size="small" onClick={()=>onDeletePayment(p.id, credit.id)}><DeleteIcon fontSize="inherit" /></IconButton>
+                    <Chip size="small" label={p.type === 'scheduled' ? 'Sched' : 'Off'} color={p.type === 'scheduled' ? 'primary' : 'default'} sx={{ height: '20px', fontSize: '0.6rem' }} />
+                    <IconButton size="small" onClick={()=>onEditPayment(credit, p)} sx={{ width: '24px', height: '24px' }}><EditIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
+                    <IconButton size="small" onClick={()=>onDeletePayment(p.id, credit.id)} sx={{ width: '24px', height: '24px' }}><DeleteIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
                   </Box>
                 ))}
               </Stack>
