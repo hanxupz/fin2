@@ -41,11 +41,24 @@ const CreditsAccordion = ({
         }
         
         return (
-          <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} sx={(t)=>({ ...surfaceBoxSx(t), p: 0, background: t.palette.background.paper })}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box sx={{ flexGrow:1 }}>
+          <Accordion key={credit.id} expanded={expanded === credit.id} onChange={handleChange(credit.id, credit.id)} 
+              sx={(t)=>({ 
+                ...surfaceBoxSx(t), 
+                p: 0, 
+                background: t.palette.background.paper,
+                minHeight: '100px' // Ensure minimum height
+              })}>
+            <AccordionSummary 
+              expandIcon={<ExpandMoreIcon />}
+              sx={{
+                minHeight: '72px !important', // Fixed height for summary
+                '& .MuiAccordionSummary-content': {
+                  margin: '12px 0 !important'
+                }
+              }}>
+              <Box sx={{ flexGrow:1, height: '100%' }}>
                 <Typography variant="subtitle1" fontWeight={600}>{credit.name}</Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{ minHeight: '48px' }}>
                   {credit.total_amount && <><br />Total: {credit.total_amount.toFixed(2)}</>}
                   {remaining !== null && <><br />Remaining: {remaining.toFixed(2)}</>}
                 </Typography>

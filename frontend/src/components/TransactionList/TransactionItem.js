@@ -19,9 +19,20 @@ const TransactionItem = React.memo(({ transaction, onEdit, onClone, onDelete }) 
 
   return (
     <Grid item xs={12}>
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardContent sx={{ pb: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+      <Card variant="outlined" sx={{ 
+        borderRadius: 2,
+        minHeight: '140px', // Fixed minimum height for the card
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <CardContent sx={{ pb: 1, flexGrow: 1 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-start', 
+            mb: 1,
+            minHeight: '32px' // Fixed height for the amount and date row
+          }}>
             <Typography variant="h6" sx={{ color, fontWeight: 600 }}>
               {transaction.amount?.toFixed(2)}€
             </Typography>

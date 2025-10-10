@@ -96,34 +96,78 @@ const BudgetPreferencesList = ({
     return { totalBudget, preferencesWithBudget };
   }, [controlDate, transactions, budget_preferences]);
 
+  // Skeleton loading state that maintains layout
   if (loading) {
     return (
-      <Paper elevation={2} sx={(t) => ({ ...surfaceBoxSx(t), p: 3 })}>
+      <Paper 
+        elevation={2} 
+        sx={(t) => ({ 
+          ...surfaceBoxSx(t), 
+          p: 3,
+          minHeight: '400px', // Fixed minimum height
+        })}
+      >
         <Typography variant="h6" gutterBottom fontWeight={600}>
           Budget Preferences
         </Typography>
-        <LinearProgress />
+        <Box sx={{ height: '48px', mb: 2 }}>
+          <LinearProgress />
+        </Box>
+        {/* Skeleton cards to maintain layout */}
+        <Stack spacing={1}>
+          {[1, 2, 3].map((n) => (
+            <Card 
+              key={`skeleton-${n}`}
+              elevation={1}
+              sx={{ 
+                height: '100px',
+                backgroundColor: (t) => t.palette.action.hover,
+              }}
+            />
+          ))}
+        </Stack>
       </Paper>
     );
   }
 
   return (
-    <Box>
+    <Box sx={{ 
+      minHeight: '400px', // Fixed minimum height
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       {/* Overall Budget Status */}
-      <Box sx={{ mb: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+      <Box sx={{ 
+        mb: 2,
+        minHeight: '48px', // Fixed height for status section
+      }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          mb: 0.5,
+          height: '32px' // Fixed height for status bar
+        }}>
           <Typography variant="body2" color="text.secondary" fontWeight={500}>
             Budget Allocation
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            minWidth: '80px', // Fixed width for percentage area
+            justifyContent: 'flex-end'
+          }}>
             <Typography variant="body2" fontWeight={600}>
               {total_percentage?.toFixed(1) || 0}%
             </Typography>
-            {is_complete ? (
-              <CheckCircleIcon color="success" fontSize="small" />
-            ) : (
-              <WarningIcon color="warning" fontSize="small" />
-            )}
+            <Box sx={{ width: '20px', display: 'flex', alignItems: 'center' }}>
+              {is_complete ? (
+                <CheckCircleIcon color="success" fontSize="small" />
+              ) : (
+                <WarningIcon color="warning" fontSize="small" />
+              )}
+            </Box>
           </Box>
         </Box>
 
@@ -164,38 +208,79 @@ const BudgetPreferencesList = ({
               elevation={1} 
               sx={(t) => ({
                 border: `1px solid ${t.palette.divider}`,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  transform: 'translateY(-1px)',
-                  boxShadow: t.shadows[2]
-                }
+                minHeight: '100px', // Fixed minimum height
+                transition: 'none', // Disable animations that might cause layout shifts
               })}
             >
-              <CardContent sx={{ py: 1, px: 2, '&:last-child': { pb: 1 } }}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <CardContent sx={{ 
+                py: 1, 
+                px: 2, 
+                '&:last-child': { pb: 1 },
+                height: '100%', // Ensure consistent height
+              }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'flex-start', 
+                  justifyContent: 'space-between',
+                  height: '100%'
+                }}>
                   {/* Left side: Title, Categories, and Budget Info */}
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Box sx={{ 
+                    flex: 1, 
+                    minWidth: 0,
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
                     {/* Title row with name, percentage, and status */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
-                      <Typography variant="body1" fontWeight={600} sx={{ color: 'text.primary' }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 1, 
+                      mb: 0.25,
+                      height: '32px' // Fixed height for title row
+                    }}>
+                      <Typography 
+                        variant="body1" 
+                        fontWeight={600} 
+                        sx={{ 
+                          color: 'text.primary',
+                          flex: 1,
+                          minWidth: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
                         {preference.name}
                       </Typography>
-                      <Typography 
-                        variant="body2" 
-                        color="primary.main" 
-                        fontWeight={600}
-                      >
-                        {preference.percentage?.toFixed(1)}%
-                      </Typography>
-                      {preference.budgetAmount !== undefined && (
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 1,
+                        minWidth: '120px', // Fixed width for status area
+                        justifyContent: 'flex-end'
+                      }}>
+                        <Typography 
+                          variant="body2" 
+                          color="primary.main" 
+                          fontWeight={600}
+                          sx={{ minWidth: '50px', textAlign: 'right' }}
+                        >
+                          {preference.percentage?.toFixed(1)}%
+                        </Typography>
                         <Typography 
                           variant="caption" 
                           color={preference.isOverBudget ? 'error.main' : 'success.main'}
                           fontWeight={600}
+                          sx={{ 
+                            minWidth: '60px', 
+                            textAlign: 'right',
+                            visibility: preference.budgetAmount !== undefined ? 'visible' : 'hidden'
+                          }}
                         >
-                          €{preference.budgetAmount.toFixed(0)}
+                          €{preference.budgetAmount?.toFixed(0) || '0'}
                         </Typography>
-                      )}
+                      </Box>
                       {/* Budget Status Icon */}
                       {preference.budgetAmount !== undefined && (
                         <Tooltip title={
