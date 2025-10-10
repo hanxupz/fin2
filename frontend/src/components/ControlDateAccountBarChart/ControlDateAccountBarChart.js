@@ -95,7 +95,7 @@ const ControlDateAccountBarChart = ({ data }) => {
   };
 
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper, height : 600 })}>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 2, background: t.palette.background.paper, height : 400 })}>
       <Bar data={chartData} options={options} />
     </Paper>
   );

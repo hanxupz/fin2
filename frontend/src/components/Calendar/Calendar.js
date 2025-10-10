@@ -54,7 +54,7 @@ const Calendar = React.memo(({ transactions, year, month }) => {
         sx={{
           position: 'relative',
           borderRadius: 2,
-          p: 1,
+          p: 0.5,
           aspectRatio: '1', // Force square cells
           display: 'flex',
           flexDirection: 'column',
@@ -71,8 +71,9 @@ const Calendar = React.memo(({ transactions, year, month }) => {
           sx={{ 
             fontWeight: 600, 
             opacity: 0.8,
-            height: '20px', // Fixed height for day number
-            display: 'block'
+            height: '16px', // Reduced height for day number
+            display: 'block',
+            fontSize: '0.7rem'
           }}
         >
           {day.toString().padStart(2, '0')}
@@ -83,9 +84,10 @@ const Calendar = React.memo(({ transactions, year, month }) => {
             fontWeight: 700,
             color: totalAmount > 0 ? theme.palette.success.main : theme.palette.error.main,
             textAlign: 'right',
-            height: '20px', // Fixed height for amount
+            height: '16px', // Reduced height for amount
             visibility: totalAmount !== 0 ? 'visible' : 'hidden', // Keep space even when no amount
-            display: 'block'
+            display: 'block',
+            fontSize: '0.65rem'
           }}
         >
           {totalAmount !== 0 ? totalAmount.toFixed(2) : '0.00'}
@@ -102,9 +104,9 @@ const Calendar = React.memo(({ transactions, year, month }) => {
       elevation={3} 
       sx={(t)=>({ 
         ...surfaceBoxSx(t), 
-        p: 3, 
+        p: 2, 
         background: t.palette.background.paper,
-        minHeight: '500px', // Fixed minimum height
+        minHeight: '320px', // Reduced minimum height
         display: 'flex',
         flexDirection: 'column'
       })}
@@ -120,10 +122,10 @@ const Calendar = React.memo(({ transactions, year, month }) => {
             key={d} 
             sx={{
               textAlign: 'center',
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: 600,
-              p: 1,
-              height: 32, // Fixed height for weekday headers
+              p: 0.5,
+              height: 24, // Reduced height for weekday headers
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

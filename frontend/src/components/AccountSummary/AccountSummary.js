@@ -69,8 +69,8 @@ const AccountSummary = React.memo(({ transactions, controlDate, credits = [], pa
   ];
 
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
-      <Grid container spacing={2}>
+    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 2, background: t.palette.background.paper })}>
+      <Grid container spacing={1.5}>
         {extendedConfigs.map((config) => {
           let amount;
             if (config.isRemaining) {
@@ -99,32 +99,32 @@ const AccountSummary = React.memo(({ transactions, controlDate, credits = [], pa
                   '&:hover': { transform: 'translateY(-4px)', boxShadow: theme.shadows[6] },
                 }}
               >
-                <CardContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <CardContent sx={{ p: 1.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Avatar
                       variant="rounded"
                       sx={{
                         bgcolor: alpha(config.color, 0.15),
                         color: config.color,
-                        width: 48,
-                        height: 48,
+                        width: 36,
+                        height: 36,
                         border: `1px solid ${alpha(config.color, 0.4)}`,
-                        fontSize: 26,
+                        fontSize: 20,
                       }}
                     >
                       <config.icon fontSize="inherit" />
                     </Avatar>
                     <Box sx={{
-                      width: 10,
-                      height: 10,
+                      width: 8,
+                      height: 8,
                       borderRadius: '50%',
                       backgroundColor: alpha(config.color, 0.6)
                     }} />
                   </Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, letterSpacing: '.5px', color: theme.palette.text.secondary }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, letterSpacing: '.5px', color: theme.palette.text.secondary, fontSize: '0.75rem' }}>
                     {config.name}
                   </Typography>
-                  <Typography variant="h6"
+                  <Typography variant="subtitle1"
                     sx={{
                       fontWeight: 700,
                       display: 'flex',
