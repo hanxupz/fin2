@@ -536,7 +536,6 @@ const AppContent = () => {
             <CreditsAccordion
               credits={credits}
               paymentsByCredit={paymentsByCredit}
-              onExpandFetchPayments={fetchPayments}
               onEditCredit={editCredit}
               onDeleteCredit={removeCredit}
               onAddPayment={addPayment}

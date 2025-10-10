@@ -14,7 +14,6 @@ const formatDate = (d) => d ? new Date(d).toISOString().split('T')[0] : '';
 const CreditsAccordion = ({
   credits,
   paymentsByCredit,
-  onExpandFetchPayments,
   onEditCredit,
   onDeleteCredit,
   onAddPayment,
@@ -23,11 +22,8 @@ const CreditsAccordion = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const handleChange = (panel, creditId) => (event, isExpanded) => {
+  const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
-    if (isExpanded) {
-      onExpandFetchPayments(creditId);
-    }
   };
 
   return (
