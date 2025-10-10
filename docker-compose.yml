@@ -8,6 +8,9 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: transactions
+      POSTGRES_LOGGING: "error"  # Only show error logs
+      POSTGRES_LOG_MIN_MESSAGES: "error"
+      POSTGRES_LOG_MIN_DURATION_STATEMENT: "-1"  # Disable statement logging
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
