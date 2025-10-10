@@ -10,11 +10,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.get("/", response_model=List[Transaction])
-async def get_transactions(current_user: dict = Depends(get_current_user)):
-    """Get all transactions for the current user."""
-    transactions = await TransactionService.get_user_transactions(current_user["id"])
-    logger.info(f"Fetched {len(transactions)} transactions from DB for user {current_user['username']}")
+async def get_transactions(
+    limit: int = 100,
+    offset: int = 0,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get paginated transactions for the current user."""
+    transactions = await TransactionService.get_user_transactions(
+        current_user["id"], limit=limit, offset=offset
+    )
+    logger.info(f"Fetched {len(transactions)} transactions from DB for user {current_user['username']} (limit={limit}, offset={offset})")
     return transactions
+
+@router.get("/count", response_model=dict)
+async def get_transactions_count(current_user: dict = Depends(get_current_user)):
+    """Get total count of transactions for the current user."""
+    count = await TransactionService.get_user_transactions_count(current_user["id"])
+    return {"total": count}
 
 @router.post("/", response_model=Transaction, status_code=status.HTTP_201_CREATED)
 async def create_transaction(

@@ -4,10 +4,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import create_tables, connect_db, disconnect_db
-from .routes import auth_router, transactions_router, control_dates_router, credits_router
+from .routes import auth_router, transactions_router, control_dates_router, credits_router, budget_preferences_router
+from .middleware import PerformanceMiddleware
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging with better performance for production
+logging.basicConfig(
+    level=logging.INFO if not settings.DEBUG else logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 logger = logging.getLogger(__name__)
 
 # Create FastAPI app
@@ -16,14 +23,17 @@ app = FastAPI(
     debug=settings.DEBUG
 )
 
-# Configure CORS with enhanced settings
+# Add performance monitoring middleware
+app.add_middleware(PerformanceMiddleware, slow_query_threshold=1.0)
+
+# Configure CORS with optimized settings
+cors_origins = ["*"] if settings.DEBUG else settings.CORS_ORIGINS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.DEBUG else settings.CORS_ORIGINS,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=[
-        "*",
         "Authorization",
         "Content-Type",
         "X-Requested-With",
@@ -32,7 +42,7 @@ app.add_middleware(
         "Access-Control-Request-Method",
         "Access-Control-Request-Headers"
     ],
-    expose_headers=["*"],
+    expose_headers=["Authorization", "Content-Type", "X-Process-Time"],
     max_age=86400,  # 24 hours
 )
 
@@ -41,6 +51,7 @@ app.include_router(auth_router, tags=["authentication"])
 app.include_router(transactions_router, prefix="/transactions", tags=["transactions"])
 app.include_router(control_dates_router, prefix="/config/control_date", tags=["control_dates"])
 app.include_router(credits_router, prefix="/credits", tags=["credits"])
+app.include_router(budget_preferences_router, prefix="/budget-preferences", tags=["budget_preferences"])
 
 # Application lifecycle events
 @app.on_event("startup")
@@ -56,10 +67,12 @@ async def startup():
         await connect_db()
         logger.info("Database connection established.")
         
-        # Log CORS configuration
+        # Log configuration
         cors_origins = ["*"] if settings.DEBUG else settings.CORS_ORIGINS
         logger.info(f"CORS middleware configured. Debug mode: {settings.DEBUG}")
         logger.info(f"Allowed origins: {cors_origins}")
+        logger.info("Performance middleware enabled with 1.0s slow query threshold")
+        logger.info("Database connection pool optimized for production workloads")
         logger.info("Application startup complete.")
         
     except Exception as e:

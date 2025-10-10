@@ -51,13 +51,37 @@ class ApiService {
   }
 
   // Transaction endpoints
-  async getTransactions(token) {
-    const response = await fetch(`${this.baseURL}/transactions/`, {
+  async getTransactions(token, limit = 10000, offset = 0) {
+    const response = await fetch(`${this.baseURL}/transactions/?limit=${limit}&offset=${offset}`, {
       method: 'GET',
       headers: this.getAuthHeaders(token)
     });
     
     return this.handleResponse(response);
+  }
+
+  async getTransactionsCount(token) {
+    const response = await fetch(`${this.baseURL}/transactions/count`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    return this.handleResponse(response);
+  }
+
+  async getAllTransactions(token) {
+    try {
+      // First get the total count
+      const countResult = await this.getTransactionsCount(token);
+      const totalCount = countResult.total;
+      
+      // Then fetch all transactions with the correct limit
+      return await this.getTransactions(token, totalCount || 10000);
+    } catch (error) {
+      console.warn('Could not get transaction count, using high limit fallback:', error);
+      // Fallback to high limit if count fails
+      return await this.getTransactions(token, 10000);
+    }
   }
 
   async createTransaction(transaction, token) {
@@ -192,6 +216,60 @@ class ApiService {
       headers: this.getAuthHeaders(token)
     });
     if (response.ok) return { success: true };
+    return this.handleResponse(response);
+  }
+
+  // Budget Preferences endpoints
+  async getBudgetPreferences(token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    return this.handleResponse(response);
+  }
+
+  async createBudgetPreference(budgetPreference, token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(budgetPreference)
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateBudgetPreference(id, budgetPreference, token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/${id}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(budgetPreference)
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteBudgetPreference(id, token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/${id}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    if (response.ok) {
+      // 204 No Content has no body, so just return success
+      if (response.status === 204) {
+        return { success: true };
+      }
+      // For other successful responses, try to parse JSON
+      return await response.json();
+    }
+    
+    // Handle error responses
+    return this.handleResponse(response);
+  }
+
+  async validateBudgetPreferences(token) {
+    const response = await fetch(`${this.baseURL}/budget-preferences/validate`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token)
+    });
     return this.handleResponse(response);
   }
 }

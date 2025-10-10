@@ -4,22 +4,29 @@ import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from '
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import { surfaceBoxSx } from '../../theme/primitives';
+import { formatChartCurrency } from '../../utils/charts';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
+const TransactionsByTypeGraph = React.memo(({ transactions, categoryColors }) => {
   const theme = useTheme();
-  const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
+  
+  // Memoize expensive calculations
+  const chartData = React.useMemo(() => {
+    const correnteTransactions = transactions.filter(t => t.account === 'Corrente');
 
+    // Group by category, sum all amounts (can be negative or positive)
+    const grouped = {};
+    correnteTransactions.forEach(({ category, amount }) => {
+      if (!grouped[category]) grouped[category] = 0;
+      grouped[category] += amount;
+    });
 
-  // Group by category, sum all amounts (can be negative or positive)
-  const grouped = {};
-  correnteTransactions.forEach(({ category, amount }) => {
-    if (!grouped[category]) grouped[category] = 0;
-    grouped[category] += amount;
-  });
+    const categories = Object.keys(grouped);
+    return { grouped, categories };
+  }, [transactions]);
 
-  const categories = Object.keys(grouped);
+  const { grouped, categories } = chartData;
   const labelColor = theme.palette.text.primary;
   const gridColor = theme.palette.divider;
   const paletteBase = theme.palette.charts.category;
@@ -64,7 +71,9 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       legend: { display: false },
       title: { display: true, text: 'Total por Categoria (Corrente)', color: labelColor },
       tooltip: {
-        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
+        callbacks: { 
+          label: (c) => `${c.dataset.label}: ${formatChartCurrency(c.parsed.x)}` 
+        },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
@@ -77,7 +86,12 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
         min,
         max,
         title: { display: true, text: 'Valor', color: labelColor },
-        ticks: { color: labelColor },
+        ticks: { 
+          color: labelColor,
+          callback: function(value) {
+            return formatChartCurrency(value);
+          }
+        },
         grid: { color: gridColor },
       },
       y: {
@@ -94,6 +108,8 @@ const TransactionsByTypeGraph = ({ transactions, categoryColors }) => {
       <Bar data={data} options={options} />
     </Paper>
   );
-};
+});
+
+TransactionsByTypeGraph.displayName = 'TransactionsByTypeGraph';
 
 export default TransactionsByTypeGraph;

@@ -40,19 +40,23 @@ class CreditService:
 
     @staticmethod
     async def update_credit(credit_id: int, data: CreditUpdate, user_id: int) -> Optional[dict]:
-        existing = await CreditService.get_credit_by_id(credit_id, user_id)
-        if not existing:
-            return None
+        # Optimize by checking existence within the update query
         update_data = data.dict(exclude_unset=True)
         if not update_data:
-            return existing
+            return await CreditService.get_credit_by_id(credit_id, user_id)
+        
         update_data["update_by"] = user_id
         update_data["update_date"] = datetime.utcnow()
+        
         upd = credits_table.update().where(
             credits_table.c.id == credit_id,
             credits_table.c.user_id == user_id
         ).values(**update_data)
-        await database.execute(upd)
+        
+        result = await database.execute(upd)
+        if result == 0:  # No rows affected
+            return None
+            
         return await CreditService.get_credit_by_id(credit_id, user_id)
 
     @staticmethod

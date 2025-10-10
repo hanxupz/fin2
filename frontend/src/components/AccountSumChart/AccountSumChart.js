@@ -4,31 +4,39 @@ import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from '
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import { surfaceBoxSx } from '../../theme/primitives';
+import { formatChartCurrency } from '../../utils/charts';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const AccountSumChart = ({ transactions, controlDate }) => {
+const AccountSumChart = React.memo(({ transactions, controlDate }) => {
   const theme = useTheme();
 
-  const grouped = {};
-  let poupancaSum = 0;
-  transactions.forEach(({ account, amount }) => {
-    if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
-      poupancaSum += amount;
-    } else {
-      if (!grouped[account]) grouped[account] = 0;
-      grouped[account] += amount;
+  // Memoize expensive calculations
+  const chartData = React.useMemo(() => {
+    const grouped = {};
+    let poupancaSum = 0;
+    transactions.forEach(({ account, amount }) => {
+      if (account === 'Poupança Física' || account === 'Poupança Objectivo') {
+        poupancaSum += amount;
+      } else {
+        if (!grouped[account]) grouped[account] = 0;
+        grouped[account] += amount;
+      }
+    });
+
+    if (poupancaSum !== 0) {
+      grouped['Poupança'] = poupancaSum;
+      delete grouped['Poupança Física'];
+      delete grouped['Poupança Objectivo'];
     }
-  });
 
-  if (poupancaSum !== 0) {
-    grouped['Poupança'] = poupancaSum;
-    delete grouped['Poupança Física'];
-    delete grouped['Poupança Objectivo'];
-  }
+    const accounts = Object.keys(grouped);
+    const values = accounts.map(acc => grouped[acc]);
+    
+    return { accounts, values, grouped };
+  }, [transactions]);
 
-  const accounts = Object.keys(grouped);
-  const values = accounts.map(acc => grouped[acc]);
+  const { accounts, values } = chartData;
   const labelColor = theme.palette.text.primary;
   const gridColor = theme.palette.divider;
   const palette = theme.palette.charts.category;
@@ -55,14 +63,26 @@ const AccountSumChart = ({ transactions, controlDate }) => {
       legend: { display: false },
       title: { display: true, text: 'Sum of Values by Account', color: labelColor },
       tooltip: {
-        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
+        callbacks: { 
+          label: (c) => `${c.dataset.label}: ${formatChartCurrency(c.parsed.x)}` 
+        },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
       }
     },
     scales: {
-      x: { beginAtZero: true, title: { display: true, text: 'Sum', color: labelColor }, ticks: { color: labelColor }, grid: { color: gridColor } },
+      x: { 
+        beginAtZero: true, 
+        title: { display: true, text: 'Sum', color: labelColor }, 
+        ticks: { 
+          color: labelColor,
+          callback: function(value) {
+            return formatChartCurrency(value);
+          }
+        }, 
+        grid: { color: gridColor } 
+      },
       y: { ticks: { color: labelColor }, grid: { color: gridColor } },
     },
     maintainAspectRatio: false,
@@ -73,6 +93,8 @@ const AccountSumChart = ({ transactions, controlDate }) => {
       <Bar data={data} options={options} />
     </Paper>
   );
-};
+});
+
+AccountSumChart.displayName = 'AccountSumChart';
 
 export default AccountSumChart;

@@ -4,6 +4,7 @@ import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from '
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import { surfaceBoxSx } from '../../theme/primitives';
+import { formatChartCurrency } from '../../utils/charts';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -67,14 +68,27 @@ const ControlDateAccountBarChart = ({ data }) => {
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x}` },
+        callbacks: { 
+          label: (c) => `${c.dataset.label}: ${formatChartCurrency(c.parsed.x)}` 
+        },
         titleColor: labelColor,
         bodyColor: labelColor,
         backgroundColor: theme.palette.background.paper,
       },
     },
     scales: {
-      x: { stacked: true, grid: { color: gridColor }, ticks: { color: labelColor }, min: globalMin, max: globalMax },
+      x: { 
+        stacked: true, 
+        grid: { color: gridColor }, 
+        ticks: { 
+          color: labelColor,
+          callback: function(value) {
+            return formatChartCurrency(value);
+          }
+        }, 
+        min: globalMin, 
+        max: globalMax 
+      },
       y: { stacked: true, grid: { color: gridColor }, ticks: { color: labelColor } },
     },
     maintainAspectRatio: false,
