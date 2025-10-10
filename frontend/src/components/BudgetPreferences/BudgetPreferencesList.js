@@ -32,8 +32,7 @@ const BudgetPreferencesList = ({
   const { 
     budget_preferences = [], 
     total_percentage = 0, 
-    is_complete = false, 
-    missing_percentage = 100,
+    is_complete = false,
     overlapping_categories = []
   } = budgetSummary || {};
 

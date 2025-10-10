@@ -54,21 +54,14 @@ import { useCredits } from './hooks/useCredits';
 import { useBudgetPreferences } from './hooks/useBudgetPreferences';
 import { usePerformanceOptimizations } from './hooks/usePerformanceOptimizations';
 
-// Helper: format a Date as YYYY-MM-DD in LOCAL time (avoids UTC shift when using toISOString)
-const formatLocalDate = (d) => {
-  if (!d) return null;
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+
 
 const AppContent = () => {
   const { state: appState, actions: appActions } = useAppContext();
-  const { layout, updateLayout, getVisibleComponents, isComponentVisible } = useLayout();
+  const { layout, updateLayout, getVisibleComponents } = useLayout();
   const { token, isAuthenticated, login, logout } = useAuth();
   const { transactions, createTransaction, updateTransaction, deleteTransaction } = useTransactions(token);
-  const { credits, paymentsByCredit, fetchPayments, createCredit, updateCredit, deleteCredit, createPayment, updatePayment, deletePayment } = useCredits(token);
+  const { credits, paymentsByCredit, createCredit, updateCredit, deleteCredit, createPayment, updatePayment, deletePayment } = useCredits(token);
   const { budgetPreferences, budgetSummary, createBudgetPreference, updateBudgetPreference, deleteBudgetPreference } = useBudgetPreferences(token);
 
   // Local state
@@ -397,13 +390,12 @@ const AppContent = () => {
     if (token) {
       fetchControlDateConfig();
     }
-  }, [token]);
+  }, [token, fetchControlDateConfig]);
 
   // Use performance optimizations hook for expensive calculations
   const {
     filteredTransactions,
     allTransactionsFiltered,
-    transactionStats,
     formatLocalDate: optimizedFormatLocalDate
   } = usePerformanceOptimizations({
     transactions,

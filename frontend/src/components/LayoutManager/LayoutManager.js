@@ -185,7 +185,6 @@ const ComponentCard = ({ component, section, index, isVisible, onToggleVisibilit
 };
 
 const SectionPanel = ({ section, components, layout, onUpdateLayout }) => {
-  const theme = useTheme();
   const sectionDef = SECTION_DEFINITIONS[section.id];
   
   const handleMoveComponent = (componentId, direction) => {
