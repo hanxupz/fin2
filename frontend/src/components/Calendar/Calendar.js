@@ -31,7 +31,17 @@ const Calendar = React.memo(({ transactions, year, month }) => {
 
   const cells = [];
   for (let i = 0; i < startDay; i++) {
-    cells.push(<Box key={`empty-${i}`} />);
+    cells.push(
+      <Box 
+        key={`empty-${i}`} 
+        sx={{
+          aspectRatio: '1', // Force square cells for empty days
+          backgroundColor: theme.palette.calendar.dayBg,
+          opacity: 0.5,
+          borderRadius: 2
+        }}
+      />
+    );
   }
   for (let day = 1; day <= daysInMonth; day++) {
     const totalAmount = transactionMap[day] || 0;
@@ -45,7 +55,7 @@ const Calendar = React.memo(({ transactions, year, month }) => {
           position: 'relative',
           borderRadius: 2,
           p: 1,
-          minHeight: 70,
+          aspectRatio: '1', // Force square cells
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -53,52 +63,87 @@ const Calendar = React.memo(({ transactions, year, month }) => {
           color: isToday ? theme.palette.calendar.todayText : theme.palette.calendar.dayText,
           opacity: isWeekend ? 0.9 : 1,
           boxShadow: isToday ? `0 0 0 2px ${theme.palette.calendar.todayBg}` : 'none',
-          transition: 'background-color .2s',
-          '&:hover': { backgroundColor: isToday ? theme.palette.calendar.todayBg : theme.palette.action.hover },
+          transition: 'none', // Disable transitions to prevent layout shifts
         }}
       >
-        <Typography variant="caption" sx={{ fontWeight: 600, opacity: 0.8 }}>
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            fontWeight: 600, 
+            opacity: 0.8,
+            height: '20px', // Fixed height for day number
+            display: 'block'
+          }}
+        >
           {day.toString().padStart(2, '0')}
         </Typography>
-        {totalAmount !== 0 && (
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: 700,
-              color: totalAmount > 0 ? theme.palette.success.main : theme.palette.error.main,
-              textAlign: 'right'
-            }}
-          >
-            {totalAmount.toFixed(2)}
-          </Typography>
-        )}
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: 700,
+            color: totalAmount > 0 ? theme.palette.success.main : theme.palette.error.main,
+            textAlign: 'right',
+            height: '20px', // Fixed height for amount
+            visibility: totalAmount !== 0 ? 'visible' : 'hidden', // Keep space even when no amount
+            display: 'block'
+          }}
+        >
+          {totalAmount !== 0 ? totalAmount.toFixed(2) : '0.00'}
+        </Typography>
       </Box>
     );
   }
 
+  // Calculate aspect ratio for calendar cells (1:1)
+  const cellAspectRatio = '100%';
+
   return (
-    <Paper elevation={3} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>
+    <Paper 
+      elevation={3} 
+      sx={(t)=>({ 
+        ...surfaceBoxSx(t), 
+        p: 3, 
+        background: t.palette.background.paper,
+        minHeight: '500px', // Fixed minimum height
+        display: 'flex',
+        flexDirection: 'column'
+      })}
+    >
       <Box sx={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(7, 1fr)', 
         gap: 1, 
-        mb: 1 }}>
+        mb: 1,
+      }}>
         {weekdayNames.map(d => (
-          <Box key={d} sx={{
-            textAlign: 'center',
-            fontSize: 12,
-            fontWeight: 600,
-            p: 1,
-            borderRadius: 1,
-            backgroundColor: theme.palette.calendar.weekdayBg,
-            color: theme.palette.calendar.weekdayText,
-          }}>{d}</Box>
+          <Box 
+            key={d} 
+            sx={{
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: 600,
+              p: 1,
+              height: 32, // Fixed height for weekday headers
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 1,
+              backgroundColor: theme.palette.calendar.weekdayBg,
+              color: theme.palette.calendar.weekdayText,
+            }}
+          >
+            {d}
+          </Box>
         ))}
       </Box>
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(7, 1fr)', 
-        gap: 1 }}>
+      <Box 
+        sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(7, 1fr)', 
+          gap: 1,
+          flex: 1, // Take remaining space
+        }}
+      >
         {cells}
       </Box>
     </Paper>
