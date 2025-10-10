@@ -20,7 +20,7 @@ services:
     container_name: transactions_backend
     environment:
       DATABASE_URL: postgresql+psycopg2://user:password@db:5432/transactions
-      DEBUG: "true"
+      DEBUG: "false"
       JWT_SECRET: "supersecretkey"
     ports:
       - "8000:8000"
