@@ -116,10 +116,9 @@ const AppContent = () => {
   // Theme and responsive
   const theme = React.useMemo(() => createTheme(getDesignTokens(appState.theme)), [appState.theme]);
   const muiTheme = useMuiTheme();
-  const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
   // Fetch control date config
-  const fetchControlDateConfig = async () => {
+  const fetchControlDateConfig = React.useCallback(async () => {
     try {
       const data = await apiService.getControlDate(token);
       setConfigYear(data.year.toString());
@@ -128,7 +127,7 @@ const AppContent = () => {
     } catch (err) {
       console.error("Failed to fetch control date config:", err);
     }
-  };
+  }, [token, setConfigYear, setConfigMonth, setConfigControlDate]);
 
   // Submit transaction
   const submitTransaction = async () => {
