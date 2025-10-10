@@ -27,7 +27,11 @@ const CreditsAccordion = ({
   };
 
   return (
-    <Box sx={{ '& .MuiAccordion-root': { mb: 1 } }}>
+    <Box sx={{ 
+      '& .MuiAccordion-root': { mb: 1 },
+      width: '100%',
+      overflow: 'hidden'
+    }}>
       {credits.map((credit, index) => {
         const payments = paymentsByCredit[credit.id] || [];
         const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
@@ -46,39 +50,52 @@ const CreditsAccordion = ({
                 ...surfaceBoxSx(t), 
                 p: 0, 
                 background: t.palette.background.paper,
-                minHeight: '60px' // Reduced from 100px to 60px
+                minHeight: '60px',
+                overflow: 'hidden', // Prevent content from overflowing
+                '& .MuiAccordionSummary-root': {
+                  minHeight: '56px !important'
+                },
+                '& .MuiAccordionSummary-content': {
+                  margin: '8px 0 !important',
+                  minWidth: 0, // Allow flex items to shrink
+                  overflow: 'hidden'
+                }
               })}>
             <AccordionSummary 
-              expandIcon={<ExpandMoreIcon />}
-              sx={{
-                minHeight: '56px !important', // Reduced from 72px to 56px
-                '& .MuiAccordionSummary-content': {
-                  margin: '8px 0 !important' // Reduced from 12px to 8px
-                }
-              }}>
+              expandIcon={<ExpandMoreIcon />}>
               <Box sx={{ flexGrow:1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="subtitle2" fontWeight={600} sx={{ fontSize: '0.9rem' }}>{credit.name}</Typography>
-                  <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
+                <Box sx={{ flex: 1, minWidth: 0, pr: 1 }}>
+                  <Typography 
+                    variant="body1" 
+                    fontWeight={600} 
+                    sx={{ 
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {credit.name}
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.5 }}>
                     {credit.total_amount && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
                         Total: {credit.total_amount.toFixed(2)}€
                       </Typography>
                     )}
                     {remaining !== null && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
                         Remaining: {remaining.toFixed(2)}€
                       </Typography>
                     )}
                   </Box>
                 </Box>
                 {credit.total_amount && credit.total_amount > 0 && (
-                  <Box sx={{ width: '100px', ml: 1 }}>
+                  <Box sx={{ width: '80px', ml: 1, flexShrink: 0 }}>
                     {/* Compact progress bar */}
                     <Box
                       sx={{
                         width: '100%',
-                        height: 4, // Reduced from 6px to 4px
+                        height: 4,
                         backgroundColor: (theme) => theme.palette.grey[200],
                         borderRadius: 2,
                         overflow: 'hidden',
@@ -94,14 +111,16 @@ const CreditsAccordion = ({
                             totalPaid >= credit.total_amount 
                               ? theme.palette.success.main 
                               : theme.palette.error.main,
-                          borderRadius: 3,
+                          borderRadius: 2,
                           transition: 'width 0.3s ease',
-                          // Add debug border to see the actual width
                           boxSizing: 'border-box'
                         }}
                         title={`${credit.name}: ${progressPercentage}%`}
                       />
                     </Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', textAlign: 'center', display: 'block', mt: 0.25 }}>
+                      {progressPercentage.toFixed(0)}%
+                    </Typography>
                   </Box>
                 )}
               </Box>
@@ -137,16 +156,24 @@ const CreditsAccordion = ({
             </AccordionSummary>
             <AccordionDetails sx={{ pt: 1, pb: 1 }}>
               <Stack spacing={0.5}>
-                {payments.length === 0 && <Typography variant="caption" color="text.secondary">No payments recorded</Typography>}
+                {payments.length === 0 && <Typography variant="body2" color="text.secondary">No payments recorded</Typography>}
                 {payments.map(p => (
                   <Box key={p.id} sx={{ display:'flex', alignItems:'center', gap:0.5, border:'1px solid', borderColor:'divider', p:0.75, borderRadius:1, minHeight: '36px' }}>
-                    <Box sx={{ flexGrow:1 }}>
-                      <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.75rem' }}>{p.value.toFixed(2)}€</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', ml: 1 }}>{formatDate(p.date)}</Typography>
+                    <Box sx={{ flexGrow:1, minWidth: 0 }}>
+                      <Typography variant="body2" fontWeight={600} sx={{ 
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {p.value.toFixed(2)}€
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                        {formatDate(p.date)}
+                      </Typography>
                     </Box>
-                    <Chip size="small" label={p.type === 'scheduled' ? 'Sched' : 'Off'} color={p.type === 'scheduled' ? 'primary' : 'default'} sx={{ height: '20px', fontSize: '0.6rem' }} />
-                    <IconButton size="small" onClick={()=>onEditPayment(credit, p)} sx={{ width: '24px', height: '24px' }}><EditIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
-                    <IconButton size="small" onClick={()=>onDeletePayment(p.id, credit.id)} sx={{ width: '24px', height: '24px' }}><DeleteIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
+                    <Chip size="small" label={p.type === 'scheduled' ? 'Sched' : 'Off'} color={p.type === 'scheduled' ? 'primary' : 'default'} sx={{ height: '20px', fontSize: '0.65rem', flexShrink: 0 }} />
+                    <IconButton size="small" onClick={()=>onEditPayment(credit, p)} sx={{ width: '24px', height: '24px', flexShrink: 0 }}><EditIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
+                    <IconButton size="small" onClick={()=>onDeletePayment(p.id, credit.id)} sx={{ width: '24px', height: '24px', flexShrink: 0 }}><DeleteIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
                   </Box>
                 ))}
               </Stack>

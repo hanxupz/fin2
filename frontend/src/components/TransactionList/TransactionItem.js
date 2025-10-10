@@ -33,15 +33,15 @@ const TransactionItem = React.memo(({ transaction, onEdit, onClone, onDelete }) 
             mb: 0.5,
             minHeight: '24px' // Reduced from 32px to 24px
           }}>
-            <Typography variant="h6" sx={{ color, fontWeight: 600, fontSize: '1rem' }}>
+            <Typography variant="body1" sx={{ color, fontWeight: 600 }}>
               {transaction.amount?.toFixed(2)}€
             </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+            <Typography variant="caption" color="text.secondary">
               {transaction.date}
             </Typography>
           </Box>
           
-          <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
             {transaction.description}
           </Typography>
           
@@ -50,21 +50,21 @@ const TransactionItem = React.memo(({ transaction, onEdit, onClone, onDelete }) 
               label={`${CATEGORY_EMOJIS[transaction.category] || '❓'} ${transaction.category}`}
               size="small"
               variant="outlined"
-              sx={{ borderRadius: 2, height: '20px', fontSize: '0.65rem' }}
+              sx={{ borderRadius: 2, height: '24px' }}
             />
             <Chip
               label={transaction.account}
               size="small"
               color="primary"
               variant="outlined"
-              sx={{ borderRadius: 2, height: '20px', fontSize: '0.65rem' }}
+              sx={{ borderRadius: 2, height: '24px' }}
             />
             {transaction.control_date && (
               <Chip
                 label={`📅 ${transaction.control_date}`}
                 size="small"
                 variant="outlined"
-                sx={{ borderRadius: 2, height: '20px', fontSize: '0.65rem' }}
+                sx={{ borderRadius: 2, height: '24px' }}
               />
             )}
           </Box>
