@@ -587,23 +587,37 @@ const AppContent = () => {
         <AnimatedBackground />
         <MuiBox component="main" sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, pt: { xs: 6, md: 8 }, pb: 6 }}>
           {/* Main Section */}
-          <LayoutSection
-            sectionId="main"
-            components={getVisibleComponents('main')}
-            sx={{ mb: 3 }}
-          >
-            {getVisibleComponents('main').map((item, index) => 
-              renderComponent(item, index)
-            )}
-          </LayoutSection>
+          <Box sx={{ minHeight: '100px' }}> {/* Reserve space for main section */}
+            <LayoutSection
+              sectionId="main"
+              components={getVisibleComponents('main')}
+              sx={{ mb: 3 }}
+            >
+              {getVisibleComponents('main').map((item, index) => 
+                renderComponent(item, index)
+              )}
+            </LayoutSection>
+          </Box>
 
           {/* Two-column grid: Left (2/3) and Right (1/3) */}
-          <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid 
+            container 
+            spacing={3} 
+            sx={{ 
+              mt: 1,
+              minHeight: '400px', // Minimum height for grid container
+              '& .MuiGrid-item': {
+                display: 'flex',
+                flexDirection: 'column'
+              }
+            }}
+          >
             {/* Left Panel */}
             <Grid item xs={12} md={8}>
               <LayoutSection
                 sectionId="left"
                 components={getVisibleComponents('left')}
+                sx={{ height: '100%' }}
               >
                 {getVisibleComponents('left').map((item, index) => 
                   renderComponent(item, index)
@@ -616,6 +630,7 @@ const AppContent = () => {
               <LayoutSection
                 sectionId="right"
                 components={getVisibleComponents('right')}
+                sx={{ height: '100%' }}
               >
                 {getVisibleComponents('right').map((item, index) => 
                   renderComponent(item, index)

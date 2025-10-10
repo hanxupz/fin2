@@ -1,4 +1,20 @@
 export const getDesignTokens = (mode) => ({
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          transition: 'none', // Disable transitions that might cause layout shift
+        }
+      }
+    },
+    MuiBox: {
+      styleOverrides: {
+        root: {
+          transition: 'none', // Disable transitions that might cause layout shift
+        }
+      }
+    }
+  },
   palette: {
     mode,
     ...(mode === 'light'

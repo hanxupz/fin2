@@ -54,14 +54,24 @@ const LayoutComponent = ({
   }
 
   return (
-    <Box sx={{ position: 'relative', ...sx }} {...props}>
+    <Box 
+      sx={{ 
+        position: 'relative',
+        minHeight: '200px', // Minimum height to prevent layout shift
+        ...sx 
+      }} 
+      {...props}
+    >
       <Box 
         component={Paper} 
         elevation={3} 
         sx={(t) => ({ 
           ...sectionContainerSx(t), 
           p: 3, 
-          borderRadius: 4 
+          borderRadius: 4,
+          height: '100%', // Ensure full height
+          display: 'flex',
+          flexDirection: 'column'
         })}
       >
         {(title || description) && (
