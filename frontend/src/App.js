@@ -5,8 +5,6 @@ import {
   Fab,
   Dialog,
   DialogContent,
-  useMediaQuery,
-  useTheme as useMuiTheme,
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -115,7 +113,6 @@ const AppContent = () => {
 
   // Theme and responsive
   const theme = React.useMemo(() => createTheme(getDesignTokens(appState.theme)), [appState.theme]);
-  const muiTheme = useMuiTheme();
 
   // Fetch control date config
   const fetchControlDateConfig = React.useCallback(async () => {
