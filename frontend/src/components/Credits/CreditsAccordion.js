@@ -89,40 +89,6 @@ const CreditsAccordion = ({
                     )}
                   </Box>
                 </Box>
-                {credit.total_amount && credit.total_amount > 0 && (
-                  <Box sx={{ width: '80px', ml: 1, flexShrink: 0 }}>
-                    {/* Compact progress bar */}
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: 4,
-                        backgroundColor: (theme) => theme.palette.grey[200],
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        position: 'relative'
-                      }}
-                    >
-                      <Box
-                        key={`progress-bar-${credit.id}-${Date.now()}`}
-                        sx={{
-                          width: `${progressPercentage}%`,
-                          height: '100%',
-                          backgroundColor: (theme) => 
-                            totalPaid >= credit.total_amount 
-                              ? theme.palette.success.main 
-                              : theme.palette.error.main,
-                          borderRadius: 2,
-                          transition: 'width 0.3s ease',
-                          boxSizing: 'border-box'
-                        }}
-                        title={`${credit.name}: ${progressPercentage}%`}
-                      />
-                    </Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', textAlign: 'center', display: 'block', mt: 0.25 }}>
-                      {progressPercentage.toFixed(0)}%
-                    </Typography>
-                  </Box>
-                )}
               </Box>
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Tooltip title="Add payment">
@@ -176,6 +142,53 @@ const CreditsAccordion = ({
                     <IconButton size="small" onClick={()=>onDeletePayment(p.id, credit.id)} sx={{ width: '24px', height: '24px', flexShrink: 0 }}><DeleteIcon sx={{ fontSize: '0.75rem' }} /></IconButton>
                   </Box>
                 ))}
+                {/* Progress bar moved to bottom */}
+                {credit.total_amount && credit.total_amount > 0 && (
+                  <Box sx={{ mt: 2, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Payment Progress
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {progressPercentage.toFixed(1)}%
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: 8,
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        position: 'relative'
+                      }}
+                    >
+                      <Box
+                        key={`progress-bar-${credit.id}-${Date.now()}`}
+                        sx={{
+                          width: `${progressPercentage}%`,
+                          height: '100%',
+                          backgroundColor: (theme) => 
+                            totalPaid >= credit.total_amount 
+                              ? theme.palette.success.main 
+                              : theme.palette.primary.main,
+                          borderRadius: 4,
+                          transition: 'width 0.3s ease',
+                          boxSizing: 'border-box'
+                        }}
+                        title={`${credit.name}: ${progressPercentage}%`}
+                      />
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Paid: {totalPaid.toFixed(2)}€
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Total: {credit.total_amount.toFixed(2)}€
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
               </Stack>
             </AccordionDetails>
           </Accordion>
