@@ -18,6 +18,11 @@ async def list_credits(current_user: dict = Depends(get_current_user)):
     credits = await CreditService.get_credits_by_user(current_user["id"])
     return credits
 
+@router.get("/with-payments", response_model=List[dict])
+async def list_credits_with_payments(current_user: dict = Depends(get_current_user)):
+    """Get all credits with their associated payments in a single request."""
+    return await CreditService.get_all_credits_with_payments(current_user["id"])
+
 @router.post("/", response_model=Credit, status_code=status.HTTP_201_CREATED)
 async def create_credit(data: CreditCreate, current_user: dict = Depends(get_current_user)):
     created = await CreditService.create_credit(data, current_user["id"])

@@ -77,6 +77,41 @@ class CreditService:
 
     # Credit Payments
     @staticmethod
+    async def get_all_credits_with_payments(user_id: int) -> List[dict]:
+        # First get all credits for the user
+        credits = await CreditService.get_credits_by_user(user_id)
+        
+        if not credits:
+            return []
+            
+        # Get all credit IDs
+        credit_ids = [credit['id'] for credit in credits]
+        
+        # Fetch all payments for these credits in a single query
+        payments_query = credit_payments_table.select().where(
+            credit_payments_table.c.credit_id.in_(credit_ids)
+        ).order_by(credit_payments_table.c.date.desc())
+        
+        all_payments = await database.fetch_all(payments_query)
+        
+        # Group payments by credit_id
+        payments_by_credit = {}
+        for payment in all_payments:
+            credit_id = payment['credit_id']
+            if credit_id not in payments_by_credit:
+                payments_by_credit[credit_id] = []
+            payments_by_credit[credit_id].append(dict(payment))
+        
+        # Combine credits with their payments
+        result = []
+        for credit in credits:
+            credit_dict = dict(credit)
+            credit_dict['payments'] = payments_by_credit.get(credit['id'], [])
+            result.append(credit_dict)
+            
+        return result
+
+    @staticmethod
     async def get_payments_by_credit(credit_id: int, user_id: int) -> List[dict]:
         # Ensure credit belongs to user
         credit = await CreditService.get_credit_by_id(credit_id, user_id)

@@ -50,6 +50,16 @@ class ApiService {
     return this.handleResponse(response);
   }
 
+  // Credits endpoints
+  async getCreditsWithPayments(token) {
+    const response = await fetch(`${this.baseURL}/credits/with-payments`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(token)
+    });
+    
+    return this.handleResponse(response);
+  }
+
   // Transaction endpoints
   async getTransactions(token, limit = 10000, offset = 0) {
     const response = await fetch(`${this.baseURL}/transactions/?limit=${limit}&offset=${offset}`, {
