@@ -13,7 +13,7 @@ function ControlDateConfig({
   configControlDate,
   updateControlDateConfig
 }) {
-  const theme = useTheme();
+
 
   return (
     <Paper style={{ padding: "1rem" }}>

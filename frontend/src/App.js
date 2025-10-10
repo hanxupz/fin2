@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import {
   Grid,
   Box,
-  CssBaseline,
-  Typography,
   Fab,
   Dialog,
   DialogContent,
   useMediaQuery,
   useTheme as useMuiTheme,
-  Paper
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -21,7 +18,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import './App.css';
 import { fabSx } from './theme/primitives';
-import { sectionContainerSx } from './theme/primitives';
 
 // Refactored imports
 import { AppProvider, useAppContext } from './context/AppContext';
@@ -423,7 +419,7 @@ const AppContent = () => {
   const categoryColors = React.useMemo(() => {
     const palette = theme.palette.charts.category;
     return CATEGORIES.reduce((acc, cat, idx) => ({ ...acc, [cat]: palette[idx % palette.length] }), {});
-  }, [theme, appState.theme]);
+  }, [theme]);
 
   // Helper function to render components based on their ID
   const renderComponent = (item, index) => {

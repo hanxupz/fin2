@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Accordion, AccordionSummary, AccordionDetails,
-  Typography, IconButton, Box, Stack, Divider, Tooltip, Chip, LinearProgress
+  Typography, IconButton, Box, Stack, Tooltip, Chip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';

@@ -1,8 +1,6 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import {
-  Paper,
-  Typography,
   Button,
   Select,
   MenuItem,
@@ -22,7 +20,7 @@ function Filters({
   categories,
   accounts
 }) {
-  const theme = useTheme();
+
 
   return (
     <Stack spacing={2} sx={(t)=>({ ...surfaceBoxSx(t), p: 3, background: t.palette.background.paper })}>

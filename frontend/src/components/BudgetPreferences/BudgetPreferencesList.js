@@ -4,15 +4,12 @@ import {
   Typography,
   Box,
   Stack,
-  Chip,
   IconButton,
   LinearProgress,
   Tooltip,
   Alert,
   Card,
-  CardContent,
-  CardActions,
-  Grid
+  CardContent
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,7 +19,7 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { surfaceBoxSx } from '../../theme/primitives';
-import { CATEGORY_EMOJIS } from '../../constants';
+
 
 const BudgetPreferencesList = ({
   budgetSummary,

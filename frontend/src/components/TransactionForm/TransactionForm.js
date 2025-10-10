@@ -70,7 +70,7 @@ const TransactionForm = React.memo(({
     if (!editingId && !controlDate && configControlDate) {
       setControlDate(new Date(configControlDate));
     }
-  }, [editingId, configControlDate, setControlDate]);
+  }, [editingId, configControlDate, setControlDate, controlDate]);
 
   // Sync local state with props
   useEffect(() => {
